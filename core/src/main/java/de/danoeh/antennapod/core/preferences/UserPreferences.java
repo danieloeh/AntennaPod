@@ -89,6 +89,7 @@ public class UserPreferences {
     public static final String PREF_VIDEO_BEHAVIOR = "prefVideoBehavior";
     private static final String PREF_TIME_RESPECTS_SPEED = "prefPlaybackTimeRespectsSpeed";
     public static final String PREF_STREAM_OVER_DOWNLOAD = "prefStreamOverDownload";
+    private static final String PREF_AUTO_ADD_PLAYING_MEDIA = "prefAutoAddPlaying";
 
     // Network
     private static final String PREF_ENQUEUE_DOWNLOADED = "prefEnqueueDownloaded";
@@ -1057,5 +1058,9 @@ public class UserPreferences {
         prefs.edit()
                 .putString(PREF_QUEUE_KEEP_SORTED_ORDER, sortOrder.name())
                 .apply();
+    }
+
+    public static boolean getAutoAddPlayingMedia() {
+        return prefs.getBoolean(PREF_AUTO_ADD_PLAYING_MEDIA, true);
     }
 }

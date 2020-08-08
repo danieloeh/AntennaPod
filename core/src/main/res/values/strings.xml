@@ -522,6 +522,8 @@
     <string name="back_button_go_to_page_title">Select page</string>
     <string name="pref_delete_removes_from_queue_title">Delete removes from Queue</string>
     <string name="pref_delete_removes_from_queue_sum">Automatically remove an episode from the queue when it is deleted.</string>
+    <string name="pref_auto_enqueue_playing_media_title">Auto Enqueue Playing</string>
+    <string name="pref_auto_enqueue_playing_media_summary">Automatically add currently playing episodes to the queue.</string>
 
     <!-- About screen -->
     <string name="about_pref">About</string>

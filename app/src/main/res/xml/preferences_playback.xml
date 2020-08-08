@@ -87,6 +87,12 @@
                 android:key="prefEnqueueDownloaded"
                 android:summary="@string/pref_enqueue_downloaded_summary"
                 android:title="@string/pref_enqueue_downloaded_title" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:enabled="true"
+            android:key="prefAutoAddPlaying"
+            android:summary="@string/pref_auto_enqueue_playing_media_summary"
+            android:title="@string/pref_auto_enqueue_playing_media_title" />
         <ListPreference
                 android:defaultValue="BACK"
                 android:entries="@array/enqueue_location_options"
