@@ -35,6 +35,7 @@ import de.danoeh.antennapod.core.feed.FeedItem;
 import de.danoeh.antennapod.core.feed.FeedItemFilter;
 import de.danoeh.antennapod.core.feed.FeedMedia;
 import de.danoeh.antennapod.core.feed.FeedPreferences;
+import de.danoeh.antennapod.core.feed.Note;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
 import de.danoeh.antennapod.core.service.download.DownloadStatus;
 import de.danoeh.antennapod.core.util.LongIntMap;
@@ -118,6 +119,11 @@ public class PodDBAdapter {
     public static final String KEY_FEED_TAGS = "tags";
     public static final String KEY_EPISODE_NOTIFICATION = "episode_notification";
 
+    public static final String KEY_NOTES = "notes";
+    //store titles so we can display them in the UI in the Notes screen
+    public static final String KEY_FEED_TITLE = "feed_title";
+    public static final String KEY_FEED_ITEM_TITLE = "feed_item_title";
+
     // Table names
     public static final String TABLE_NAME_FEEDS = "Feeds";
     public static final String TABLE_NAME_FEED_ITEMS = "FeedItems";
@@ -127,6 +133,7 @@ public class PodDBAdapter {
     public static final String TABLE_NAME_QUEUE = "Queue";
     public static final String TABLE_NAME_SIMPLECHAPTERS = "SimpleChapters";
     public static final String TABLE_NAME_FAVORITES = "Favorites";
+    public static final String TABLE_NAME_NOTES = "Notes";
 
     // SQL Statements for creating new tables
     private static final String TABLE_PRIMARY_KEY = KEY_ID
@@ -224,6 +231,11 @@ public class PodDBAdapter {
             + TABLE_NAME_FAVORITES + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
             + KEY_FEEDITEM + " INTEGER," + KEY_FEED + " INTEGER)";
 
+    static final String CREATE_TABLE_NOTES = "CREATE TABLE "
+            + TABLE_NAME_NOTES + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
+            + KEY_FEEDITEM + " INTEGER," + KEY_FEED + " INTEGER," + KEY_NOTES + " TEXT," + KEY_FEED_TITLE + " TEXT,"
+            + KEY_FEED_ITEM_TITLE + " TEXT)";
+
     /**
      * Select all columns from the feed-table
      */
@@ -273,7 +285,8 @@ public class PodDBAdapter {
             TABLE_NAME_DOWNLOAD_LOG,
             TABLE_NAME_QUEUE,
             TABLE_NAME_SIMPLECHAPTERS,
-            TABLE_NAME_FAVORITES
+            TABLE_NAME_FAVORITES,
+            TABLE_NAME_NOTES
     };
 
     public static final String SELECT_KEY_ITEM_ID = "item_id";
@@ -1381,6 +1394,42 @@ public class PodDBAdapter {
     }
 
     /**
+     * Inserts or updates a note for an episode
+     *
+     * @return the id of the entry
+     */
+    public long setNote(FeedItem item) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_FEEDITEM, item.getId());
+        values.put(KEY_FEED, item.getFeedId());
+        Note note = item.getNote();
+        values.put(KEY_NOTES, note.getNotes());
+        values.put(KEY_FEED_TITLE, item.getFeed().getFeedTitle());
+        values.put(KEY_FEED_ITEM_TITLE, item.getTitle());
+        if (note.getNoteId() == 0) {
+            long noteId = db.insert(TABLE_NAME_NOTES, null, values);
+            note.setNoteId(noteId);
+            Log.d(TAG, "setNote: inserted new note with id: " + noteId);
+        } else {
+            db.update(TABLE_NAME_NOTES, values, KEY_ID + "=?",
+                    new String[]{String.valueOf(note.getNoteId())});
+            Log.d(TAG, "setNote: updated existing note " + note.getNotes());
+        }
+        return note.getNoteId();
+    }
+
+    public Cursor getNote(FeedItem item) {
+        String query = String.format(Locale.US, "SELECT * from %s WHERE %s=%d",
+                TABLE_NAME_NOTES, KEY_FEEDITEM, item.getId());
+        return db.rawQuery(query, null);
+    }
+
+    public Cursor getAllNotes() {
+        String query = String.format(Locale.US, "SELECT * from %s ORDER BY %s DESC", TABLE_NAME_NOTES, KEY_ID);
+        return db.rawQuery(query, null);
+    }
+
+    /**
      * Insert raw data to the database.     *
      * Call method only for unit tests.
      */
@@ -1435,6 +1484,7 @@ public class PodDBAdapter {
             db.execSQL(CREATE_TABLE_QUEUE);
             db.execSQL(CREATE_TABLE_SIMPLECHAPTERS);
             db.execSQL(CREATE_TABLE_FAVORITES);
+            db.execSQL(CREATE_TABLE_NOTES);
 
             db.execSQL(CREATE_INDEX_FEEDITEMS_FEED);
             db.execSQL(CREATE_INDEX_FEEDITEMS_PUBDATE);

@@ -64,4 +64,6 @@
     <attr name="ic_notifications" format="reference"/>
     <attr name="seek_background" format="color" />
     <attr name="ic_share" format="reference"/>
+    <attr name="ic_add_note" format="reference"/>
+    <attr name="ic_notes" format="reference"/>
 </resources>

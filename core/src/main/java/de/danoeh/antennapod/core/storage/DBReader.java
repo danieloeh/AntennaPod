@@ -21,6 +21,7 @@ import de.danoeh.antennapod.core.feed.FeedItem;
 import de.danoeh.antennapod.core.feed.FeedItemFilter;
 import de.danoeh.antennapod.core.feed.FeedMedia;
 import de.danoeh.antennapod.core.feed.FeedPreferences;
+import de.danoeh.antennapod.core.feed.Note;
 import de.danoeh.antennapod.core.feed.SubscriptionsFilter;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
 import de.danoeh.antennapod.core.service.download.DownloadStatus;
@@ -904,5 +905,45 @@ public final class DBReader {
                 feedCounters, UserPreferences.getEpisodeCleanupAlgorithm().getReclaimableItems());
         adapter.close();
         return result;
+    }
+
+    public static Note getNoteForEpisode(final FeedItem feedItem) {
+        Log.d(TAG, "getNoteForEpisode: " + feedItem);
+
+        PodDBAdapter adapter = PodDBAdapter.getInstance();
+        adapter.open();
+        try {
+            try (Cursor cursor = adapter.getNote(feedItem)) {
+                if (!cursor.moveToNext()) {
+                    Log.d(TAG, "getNoteForEpisode: no notes for this episode");
+                    return null;
+                }
+                Note note = Note.fromCursor(cursor);
+                Log.d(TAG, "getNoteForEpisode: got note: " + note);
+                return note;
+            }
+        } finally {
+            adapter.close();
+        }
+    }
+
+    public static List<Note> getAllNotes() {
+        Log.d(TAG, "getallnotes");
+        List<Note> lstNotes;
+        PodDBAdapter adapter = PodDBAdapter.getInstance();
+        adapter.open();
+        try {
+            try (Cursor cursor = adapter.getAllNotes()) {
+                lstNotes = new ArrayList<>(cursor.getCount());
+                while (cursor.moveToNext()) {
+                    Note note = Note.fromCursor(cursor);
+                    lstNotes.add(note);
+                }
+                Log.d(TAG, "getAllNotes: size " + lstNotes.size());
+            }
+        } finally {
+            adapter.close();
+        }
+        return lstNotes;
     }
 }

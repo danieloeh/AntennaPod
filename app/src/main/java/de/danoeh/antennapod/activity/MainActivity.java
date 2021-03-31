@@ -50,6 +50,7 @@ import de.danoeh.antennapod.fragment.DownloadsFragment;
 import de.danoeh.antennapod.fragment.EpisodesFragment;
 import de.danoeh.antennapod.fragment.FeedItemlistFragment;
 import de.danoeh.antennapod.fragment.NavDrawerFragment;
+import de.danoeh.antennapod.fragment.NotesListFragment;
 import de.danoeh.antennapod.fragment.PlaybackHistoryFragment;
 import de.danoeh.antennapod.fragment.QueueFragment;
 import de.danoeh.antennapod.fragment.SearchFragment;
@@ -266,6 +267,9 @@ public class MainActivity extends CastEnabledActivity {
                 break;
             case SubscriptionFragment.TAG:
                 fragment = new SubscriptionFragment();
+                break;
+            case NotesListFragment.TAG:
+                fragment = new NotesListFragment();
                 break;
             default:
                 // default to the queue

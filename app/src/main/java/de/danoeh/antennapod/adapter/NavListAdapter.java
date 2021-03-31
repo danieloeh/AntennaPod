@@ -29,6 +29,7 @@ import de.danoeh.antennapod.fragment.AddFeedFragment;
 import de.danoeh.antennapod.fragment.DownloadsFragment;
 import de.danoeh.antennapod.fragment.EpisodesFragment;
 import de.danoeh.antennapod.fragment.NavDrawerFragment;
+import de.danoeh.antennapod.fragment.NotesListFragment;
 import de.danoeh.antennapod.fragment.PlaybackHistoryFragment;
 import de.danoeh.antennapod.fragment.QueueFragment;
 import de.danoeh.antennapod.fragment.SubscriptionFragment;
@@ -131,6 +132,9 @@ public class NavListAdapter extends RecyclerView.Adapter<NavListAdapter.Holder>
                 break;
             case AddFeedFragment.TAG:
                 icon = R.attr.content_new;
+                break;
+            case NotesListFragment.TAG:
+                icon = R.attr.ic_notes;
                 break;
             default:
                 return null;

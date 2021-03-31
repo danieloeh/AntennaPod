@@ -67,6 +67,7 @@ public class NavDrawerFragment extends Fragment implements SharedPreferences.OnS
             SubscriptionFragment.TAG,
             DownloadsFragment.TAG,
             PlaybackHistoryFragment.TAG,
+            NotesListFragment.TAG,
             AddFeedFragment.TAG,
             NavListAdapter.SUBSCRIPTION_LIST_TAG
     };

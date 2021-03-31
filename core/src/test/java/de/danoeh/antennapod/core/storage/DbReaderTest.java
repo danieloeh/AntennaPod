@@ -11,6 +11,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import de.danoeh.antennapod.core.feed.Feed;
 import de.danoeh.antennapod.core.feed.FeedItem;
 import de.danoeh.antennapod.core.feed.FeedMedia;
+import de.danoeh.antennapod.core.feed.Note;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
 import de.danoeh.antennapod.core.util.LongList;
 import org.junit.After;
@@ -416,5 +417,25 @@ public class DbReaderTest {
         item2.setChapters(DBReader.loadChaptersOfFeedItem(item2));
         assertTrue(item2.hasChapters());
         assertEquals(item1.getChapters(), item2.getChapters());
+    }
+
+    @Test
+    public void testGetAllNotes() throws Exception {
+        Feed feed = new Feed("url", null, "title");
+        List<FeedItem> items = new ArrayList<>();
+        feed.setItems(items);
+        FeedItem item = new FeedItem(0, "Title with note", "id1", "link1",
+                new Date(), FeedItem.PLAYED, feed);
+        Note note = new Note();
+        note.setNotes("My awesome note");
+        item.setNote(note);
+        feed.getItems().add(item);
+
+        DbTestUtils.withPodDB(adapter -> adapter.setNote(item));
+
+        List<Note> allNotes = DBReader.getAllNotes();
+        assertNotNull(allNotes);
+        assertEquals(1, allNotes.size());
+        assertEquals(note.getNotes(), allNotes.get(0).getNotes());
     }
 }

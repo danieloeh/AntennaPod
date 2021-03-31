@@ -77,6 +77,12 @@ public class FeedItem extends FeedComponent implements Serializable {
     private long autoDownload = 1;
 
     /**
+     * The id of the notes saved into db for this feeditem
+     * Added note here since we needed access to it from FeedItemMenuHandler which only uses FeedItem
+     */
+    private Note note;
+
+    /**
      * Any tags assigned to this item
      */
     private final Set<String> tags = new HashSet<>();
@@ -460,6 +466,14 @@ public class FeedItem extends FeedComponent implements Serializable {
      */
     public void removeTag(String tag) {
         tags.remove(tag);
+    }
+
+    public Note getNote() {
+        return note;
+    }
+
+    public void setNote(Note note) {
+        this.note = note;
     }
 
     @NonNull

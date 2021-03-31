@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -28,6 +29,7 @@ import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.CastEnabledActivity;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.core.event.FavoritesEvent;
+import de.danoeh.antennapod.core.event.NotesEvent;
 import de.danoeh.antennapod.core.event.PlaybackPositionEvent;
 import de.danoeh.antennapod.core.feed.Chapter;
 import de.danoeh.antennapod.core.event.UnreadItemsUpdateEvent;
@@ -36,6 +38,7 @@ import de.danoeh.antennapod.core.feed.FeedMedia;
 import de.danoeh.antennapod.core.feed.util.PlaybackSpeedUtils;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
 import de.danoeh.antennapod.core.service.playback.PlaybackService;
+import de.danoeh.antennapod.core.storage.DBReader;
 import de.danoeh.antennapod.core.util.ChapterUtils;
 import de.danoeh.antennapod.core.util.Converter;
 import de.danoeh.antennapod.core.util.IntentUtils;
@@ -424,6 +427,8 @@ public class AudioPlayerFragment extends Fragment implements
         updatePlaybackSpeedButton(media);
         setChapterDividers(media);
         setupOptionsMenu(media);
+
+        loadNotes(media);
     }
 
     @Override
@@ -453,6 +458,25 @@ public class AudioPlayerFragment extends Fragment implements
         if (disposable != null) {
             disposable.dispose();
         }
+    }
+
+    private void loadNotes(Playable media) {
+        final @Nullable FeedItem feedItem = (media instanceof FeedMedia) ? ((FeedMedia) media).getItem() : null;
+        if (feedItem == null) {
+            return;
+        }
+        if (disposable != null) {
+            disposable.dispose();
+        }
+        Log.d(TAG, "loadNotes: ");
+        disposable = Maybe.fromCallable(() -> DBReader.getNoteForEpisode(feedItem))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        note -> {
+                            Log.d(TAG, "loadNotes got note: " + note);
+                            feedItem.setNote(note);
+                        }, error -> Log.e(TAG, Log.getStackTraceString(error)));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -604,5 +628,12 @@ public class AudioPlayerFragment extends Fragment implements
         public int getItemCount() {
             return NUM_CONTENT_FRAGMENTS;
         }
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNoteSaved(NotesEvent event) {
+        Log.d(TAG, "onNoteSaved: event called");
+        Toast.makeText(getContext(), R.string.note_saved, Toast.LENGTH_SHORT).show();
     }
 }

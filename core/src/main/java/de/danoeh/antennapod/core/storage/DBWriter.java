@@ -29,6 +29,7 @@ import de.danoeh.antennapod.core.event.FavoritesEvent;
 import de.danoeh.antennapod.core.event.FeedItemEvent;
 import de.danoeh.antennapod.core.event.FeedListUpdateEvent;
 import de.danoeh.antennapod.core.event.MessageEvent;
+import de.danoeh.antennapod.core.event.NotesEvent;
 import de.danoeh.antennapod.core.event.PlaybackHistoryEvent;
 import de.danoeh.antennapod.core.event.QueueEvent;
 import de.danoeh.antennapod.core.event.UnreadItemsUpdateEvent;
@@ -547,6 +548,15 @@ public class DBWriter {
             item.removeTag(FeedItem.TAG_FAVORITE);
             EventBus.getDefault().post(FavoritesEvent.removed(item));
             EventBus.getDefault().post(FeedItemEvent.updated(item));
+        });
+    }
+
+    public static Future<?> saveNote(final FeedItem item) {
+        return dbExec.submit(() -> {
+            final PodDBAdapter adapter = PodDBAdapter.getInstance().open();
+            long id = adapter.setNote(item);
+            adapter.close();
+            EventBus.getDefault().post(NotesEvent.saved(id));
         });
     }
 

@@ -47,7 +47,7 @@ public class ShareUtils {
         shareFeedItemDownloadLink(context, item, false);
     }
 
-    private static String getItemShareText(FeedItem item) {
+    public static String getItemShareText(FeedItem item) {
         return item.getFeed().getTitle() + ": " + item.getTitle();
     }
 

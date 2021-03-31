@@ -6,10 +6,10 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.util.Log;
 
-import androidx.core.util.Consumer;
 import androidx.preference.PreferenceManager;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import de.danoeh.antennapod.core.feed.Note;
 import org.awaitility.Awaitility;
 import org.junit.After;
 import org.junit.Before;
@@ -675,7 +675,7 @@ public class DbWriterTest {
         Feed feed = createTestFeed(numItems);
 
         List<FeedItem> itemsToAdd = feed.getItems().subList(0, numInQueue);
-        withPodDB(adapter -> adapter.setQueue(itemsToAdd));
+        DbTestUtils.withPodDB(adapter -> adapter.setQueue(itemsToAdd));
 
         // Actual tests
         //
@@ -816,22 +816,12 @@ public class DbWriterTest {
             feed.getItems().add(item);
         }
 
-        withPodDB(adapter -> adapter.setCompleteFeed(feed));
+        DbTestUtils.withPodDB(adapter -> adapter.setCompleteFeed(feed));
 
         for (FeedItem item : feed.getItems()) {
             assertTrue(item.getId() != 0);
         }
         return feed;
-    }
-
-    private static void withPodDB(Consumer<PodDBAdapter> action) {
-        PodDBAdapter adapter = PodDBAdapter.getInstance();
-        try {
-            adapter.open();
-            action.accept(adapter);
-        } finally {
-            adapter.close();
-        }
     }
 
     private static void assertQueueByItemIds(String message, long... itemIdsExpected) {
@@ -851,5 +841,24 @@ public class DbWriterTest {
             itemIds.add(item.getId());
         }
         return itemIds;
+    }
+
+    @Test
+    public void testSetNote() throws Exception {
+        Feed feed = new Feed("url", null, "title");
+        List<FeedItem> items = new ArrayList<>();
+        feed.setItems(items);
+        FeedItem item = new FeedItem(0, "Title with note", "id1", "link1",
+                new Date(), FeedItem.PLAYED, feed);
+        Note note = new Note();
+        note.setNotes("My awesome note");
+        item.setNote(note);
+        feed.getItems().add(item);
+
+        DbTestUtils.withPodDB(adapter -> adapter.setNote(item));
+
+        Note noteFromDb = DBReader.getNoteForEpisode(item);
+        assertNotNull(noteFromDb);
+        assertEquals(note.getNotes(), noteFromDb.getNotes());
     }
 }

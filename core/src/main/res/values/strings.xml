@@ -913,4 +913,13 @@
     <string name="on_demand_config_setting_changed">Setting updated successfully.</string>
     <string name="on_demand_config_stream_text">Looks like you stream a lot. Do you want episode lists to show stream buttons?</string>
     <string name="on_demand_config_download_text">Looks like you download a lot. Do you want episode lists to show download buttons?</string>
+
+    <!-- Notes -->
+    <string name="add_to_notes">Add to Notes</string>
+    <string name="notes_dialog_title">Notes for this episode</string>
+    <string name="dialog_save">Save</string>
+    <string name="note_saved">Note saved</string>
+    <string name="notes">Notes</string>
+    <string name="no_notes_header">No notes saved</string>
+    <string name="no_notes">You can save some notes from the audio player view</string>
 </resources>

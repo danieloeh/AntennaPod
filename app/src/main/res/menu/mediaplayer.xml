@@ -16,6 +16,12 @@
     </item>
 
     <item
+            android:id="@+id/add_note"
+            android:icon="?attr/ic_add_note"
+            custom:showAsAction="always"
+            android:title="@string/add_to_notes">
+    </item>
+    <item
         android:id="@+id/disable_sleeptimer_item"
         android:icon="?attr/ic_sleep_off"
         custom:showAsAction="always"

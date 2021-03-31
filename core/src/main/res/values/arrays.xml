@@ -217,6 +217,7 @@
         <item>@string/subscriptions_label</item>
         <item>@string/downloads_label</item>
         <item>@string/playback_history_label</item>
+        <item>@string/notes</item>
         <item>@string/add_feed_label</item>
         <item>@string/subscriptions_list_label</item>
     </string-array>

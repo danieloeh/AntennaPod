@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.fragment.app.FragmentManager;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
@@ -24,6 +25,7 @@ import de.danoeh.antennapod.core.sync.model.EpisodeAction;
 import de.danoeh.antennapod.core.util.FeedItemUtil;
 import de.danoeh.antennapod.core.util.IntentUtils;
 import de.danoeh.antennapod.core.util.ShareUtils;
+import de.danoeh.antennapod.dialog.AddNoteDialog;
 import de.danoeh.antennapod.dialog.ShareDialog;
 
 /**
@@ -85,6 +87,7 @@ public class FeedItemMenuHandler {
         setItemVisibility(menu, R.id.add_to_favorites_item, !isFavorite);
         setItemVisibility(menu, R.id.remove_from_favorites_item, isFavorite);
         setItemVisibility(menu, R.id.remove_item, fileDownloaded);
+        setItemVisibility(menu, R.id.add_note, !selectedItem.getFeed().isLocalFeed());
         return true;
     }
 
@@ -219,7 +222,11 @@ public class FeedItemMenuHandler {
                 break;
             case R.id.share_item:
                 ShareDialog shareDialog = ShareDialog.newInstance(selectedItem);
-                shareDialog.show((fragment.getActivity().getSupportFragmentManager()), "ShareEpisodeDialog");
+                shareDialog.show(getSupportFragmentManager(fragment), "ShareEpisodeDialog");
+                break;
+            case R.id.add_note:
+                AddNoteDialog addNoteDialog = AddNoteDialog.newInstance(selectedItem);
+                addNoteDialog.show(getSupportFragmentManager(fragment), "AddNoteForEpisodeDialog");
                 break;
             default:
                 Log.d(TAG, "Unknown menuItemId: " + menuItemId);
@@ -228,6 +235,10 @@ public class FeedItemMenuHandler {
         // Refresh menu state
 
         return true;
+    }
+
+    private static FragmentManager getSupportFragmentManager(Fragment fragment) {
+        return fragment.getActivity().getSupportFragmentManager();
     }
 
     /**

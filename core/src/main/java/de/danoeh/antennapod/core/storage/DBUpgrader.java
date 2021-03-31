@@ -322,6 +322,9 @@ class DBUpgrader {
             db.execSQL("ALTER TABLE " + PodDBAdapter.TABLE_NAME_FEEDS
                     + " ADD COLUMN " + PodDBAdapter.KEY_FEED_TAGS + " TEXT;");
         }
+        if (oldVersion < 2020001) {
+            db.execSQL(PodDBAdapter.CREATE_TABLE_NOTES);
+        }
     }
 
 }

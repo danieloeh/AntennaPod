@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import androidx.core.util.Consumer;
 import de.danoeh.antennapod.core.feed.Chapter;
 import de.danoeh.antennapod.core.feed.Feed;
 import de.danoeh.antennapod.core.feed.FeedItem;
@@ -74,4 +75,15 @@ abstract class DbTestUtils {
 
         return feeds;
     }
+
+    public static void withPodDB(Consumer<PodDBAdapter> action) {
+        PodDBAdapter adapter = PodDBAdapter.getInstance();
+        try {
+            adapter.open();
+            action.accept(adapter);
+        } finally {
+            adapter.close();
+        }
+    }
+
 }

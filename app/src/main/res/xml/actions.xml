@@ -21,5 +21,6 @@
         <entity identifier="DOWNLOADS" name="@string/downloads_label" />
         <entity identifier="SUBSCRIPTIONS" name="@string/subscriptions_label" />
         <entity identifier="HISTORY" name="@string/playback_history_label" />
+        <entity identifier="NOTES" name="@string/notes" />
     </entity-set>
 </actions>
