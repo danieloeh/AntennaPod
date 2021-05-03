@@ -604,11 +604,13 @@
     <string name="extend_sleep_timer_label">+%d min</string>
     <string name="sleep_timer_label">Sleep timer</string>
     <string name="time_dialog_invalid_input">Invalid input, time has to be an integer</string>
+    <string name="time_dialog_invalid_episodes_input">Invalid input, not enough episodes in queue</string>
     <string name="shake_to_reset_label">Shake to reset</string>
     <string name="timer_vibration_label">Vibrate shortly before end</string>
     <string name="time_seconds">seconds</string>
     <string name="time_minutes">minutes</string>
     <string name="time_hours">hours</string>
+    <string name="time_episodes">episodes</string>
     <plurals name="time_seconds_quantified">
         <item quantity="one">1 second</item>
         <item quantity="other">%d seconds</item>

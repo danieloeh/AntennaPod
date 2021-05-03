@@ -865,7 +865,11 @@ public class PlaybackService extends MediaBrowserServiceCompat {
                     // set sleep timer if auto-enabled
                     if (newInfo.oldPlayerStatus != null && newInfo.oldPlayerStatus != PlayerStatus.SEEKING
                             && SleepTimerPreferences.autoEnable() && !sleepTimerActive()) {
-                        setSleepTimer(SleepTimerPreferences.timerMillis());
+                        if (SleepTimerPreferences.isEpisodesEnabled()) {
+                            setSleepTimerEpisodes((int) SleepTimerPreferences.timerMillis());
+                        } else {
+                            setSleepTimer(SleepTimerPreferences.timerMillis());
+                        }
                         EventBus.getDefault().post(new MessageEvent(getString(R.string.sleep_timer_enabled_label),
                                 PlaybackService.this::disableSleepTimer));
                     }
@@ -990,6 +994,7 @@ public class PlaybackService extends MediaBrowserServiceCompat {
 
         @Override
         public void onPlaybackEnded(MediaType mediaType, boolean stopPlaying) {
+            sleepTimerPlaybackEnded();
             PlaybackService.this.onPlaybackEnded(mediaType, stopPlaying);
         }
     };
@@ -1148,6 +1153,12 @@ public class PlaybackService extends MediaBrowserServiceCompat {
     public void setSleepTimer(long waitingTime) {
         Log.d(TAG, "Setting sleep timer to " + waitingTime + " milliseconds");
         taskManager.setSleepTimer(waitingTime);
+        sendNotificationBroadcast(NOTIFICATION_TYPE_SLEEPTIMER_UPDATE, 0);
+    }
+
+    public void setSleepTimerEpisodes(int waitingEpisodes) {
+        Log.d(TAG, "Setting sleep timer to " + waitingEpisodes + " episodes");
+        taskManager.setSleepTimerEpisodes(waitingEpisodes);
         sendNotificationBroadcast(NOTIFICATION_TYPE_SLEEPTIMER_UPDATE, 0);
     }
 
@@ -1460,6 +1471,10 @@ public class PlaybackService extends MediaBrowserServiceCompat {
 
     public long getSleepTimerTimeLeft() {
         return taskManager.getSleepTimerTimeLeft();
+    }
+
+    public void sleepTimerPlaybackEnded() {
+        taskManager.playbackEnded();
     }
 
     private void bluetoothNotifyChange(PlaybackServiceMediaPlayer.PSMPInfo info, String whatChanged) {

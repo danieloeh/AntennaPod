@@ -20,6 +20,7 @@ import com.google.android.material.snackbar.Snackbar;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.core.preferences.SleepTimerPreferences;
 import de.danoeh.antennapod.core.service.playback.PlaybackService;
+import de.danoeh.antennapod.core.storage.DBReader;
 import de.danoeh.antennapod.core.util.Converter;
 import de.danoeh.antennapod.core.util.playback.PlaybackController;
 import io.reactivex.Observable;
@@ -115,10 +116,11 @@ public class SleepTimerDialog extends DialogFragment {
             imm.showSoftInput(etxtTime, InputMethodManager.SHOW_IMPLICIT);
         }, 100);
 
-        String[] spinnerContent = new String[] {
+        String[] spinnerContent = new String[]{
                 getString(R.string.time_seconds),
                 getString(R.string.time_minutes),
-                getString(R.string.time_hours) };
+                getString(R.string.time_hours),
+                getString(R.string.time_episodes)};
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_item, spinnerContent);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -153,10 +155,23 @@ public class SleepTimerDialog extends DialogFragment {
                 return;
             }
             try {
+                if (spTimeUnit.getSelectedItemPosition() >= 3) {
+                    int timeValue = Integer.parseInt(etxtTime.getText().toString());
+                    if (timeValue > DBReader.getQueueIDList().size()) {
+                        Snackbar.make(content,
+                                R.string.time_dialog_invalid_episodes_input, Snackbar.LENGTH_LONG).show();
+                        return;
+                    }
+                }
+
                 SleepTimerPreferences.setLastTimer(etxtTime.getText().toString(), spTimeUnit.getSelectedItemPosition());
                 long time = SleepTimerPreferences.timerMillis();
                 if (controller != null) {
-                    controller.setSleepTimer(time);
+                    if (SleepTimerPreferences.isEpisodesEnabled()) {
+                        controller.setSleepTimerEpisodes((int) time);
+                    } else {
+                        controller.setSleepTimer(time);
+                    }
                 }
                 closeKeyboard(content);
             } catch (NumberFormatException e) {
@@ -173,7 +188,11 @@ public class SleepTimerDialog extends DialogFragment {
         }
         timeSetup.setVisibility(controller.sleepTimerActive() ? View.GONE : View.VISIBLE);
         timeDisplay.setVisibility(controller.sleepTimerActive() ? View.VISIBLE : View.GONE);
-        time.setText(Converter.getDurationStringLong((int) controller.getSleepTimerTimeLeft()));
+        if (SleepTimerPreferences.isEpisodesEnabled()) {
+            time.setText(controller.getSleepTimerTimeLeft() + " " + getString(R.string.time_episodes));
+        } else {
+            time.setText(Converter.getDurationStringLong((int) controller.getSleepTimerTimeLeft()));
+        }
     }
 
     private void closeKeyboard(View content) {

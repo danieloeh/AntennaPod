@@ -243,6 +243,19 @@ public class PlaybackServiceTaskManager {
         sleepTimerFuture = schedExecutor.schedule(sleepTimer, 0, TimeUnit.MILLISECONDS);
     }
 
+    public synchronized void setSleepTimerEpisodes(int waitingEpisodes) {
+        if (waitingEpisodes <= 0) {
+            throw new IllegalArgumentException("Waiting time <= 0");
+        }
+
+        Log.d(TAG, "Setting sleep timer to " + waitingEpisodes + " episodes");
+        if (isSleepTimerActive()) {
+            sleepTimerFuture.cancel(true);
+        }
+        sleepTimer = new SleepTimer(waitingEpisodes);
+        sleepTimerFuture = schedExecutor.schedule(sleepTimer, 0, TimeUnit.MILLISECONDS);
+    }
+
     /**
      * Returns true if the sleep timer is currently active.
      */
@@ -282,6 +295,12 @@ public class PlaybackServiceTaskManager {
             return sleepTimer.getWaitingTime();
         } else {
             return 0;
+        }
+    }
+
+    public synchronized void playbackEnded() {
+        if (isSleepTimerActive()) {
+            sleepTimer.playbackEnded();
         }
     }
 
@@ -371,15 +390,36 @@ public class PlaybackServiceTaskManager {
         private static final long UPDATE_INTERVAL = 1000L;
         public static final long NOTIFICATION_THRESHOLD = 10000;
         private boolean hasVibrated = false;
-        private final long waitingTime;
-        private long timeLeft;
         private ShakeListener shakeListener;
         private final Handler handler;
+
+        private final boolean episodes;
+        private final long waitingTime;
+        private long timeLeft;
+        private final int waitingEpisodes;
+        private int episodesLeft;
 
         public SleepTimer(long waitingTime) {
             super();
             this.waitingTime = waitingTime;
             this.timeLeft = waitingTime;
+            this.waitingEpisodes = 0;
+            this.episodes = false;
+
+            if (UserPreferences.useExoplayer() && Looper.myLooper() == Looper.getMainLooper()) {
+                // Run callbacks in main thread so they can call ExoPlayer methods themselves
+                this.handler = new Handler(Looper.getMainLooper());
+            } else {
+                this.handler = null;
+            }
+        }
+
+        public SleepTimer(int waitingEpisodes) {
+            super();
+            this.waitingTime = 0;
+            this.waitingEpisodes = waitingEpisodes;
+            this.episodesLeft = waitingEpisodes;
+            this.episodes = true;
 
             if (UserPreferences.useExoplayer() && Looper.myLooper() == Looper.getMainLooper()) {
                 // Run callbacks in main thread so they can call ExoPlayer methods themselves
@@ -399,6 +439,59 @@ public class PlaybackServiceTaskManager {
 
         @Override
         public void run() {
+            if (episodes) {
+                checkEpisodes();
+            } else {
+                checkTime();
+            }
+        }
+
+        public void playbackEnded() {
+            episodesLeft--;
+            if (episodesLeft <= 0) {
+                Log.d(TAG, "Sleep timer expired");
+                if (shakeListener != null) {
+                    shakeListener.pause();
+                    shakeListener = null;
+                }
+                hasVibrated = false;
+                if (!Thread.currentThread().isInterrupted()) {
+                    postCallback(callback::onSleepTimerExpired);
+                } else {
+                    Log.d(TAG, "Sleep timer interrupted");
+                }
+            }
+        }
+
+        private void checkEpisodes() {
+            Log.d(TAG, "Starting");
+            while (episodesLeft > 0) {
+                try {
+                    Thread.sleep(UPDATE_INTERVAL);
+                } catch (InterruptedException e) {
+                    Log.d(TAG, "Thread was interrupted while waiting");
+                    e.printStackTrace();
+                    break;
+                }
+
+                if (episodesLeft <= 1) {
+                    Log.d(TAG, "Sleep timer is about to expire");
+                    //TODO: Implement vibrate shortly before end
+                    if (SleepTimerPreferences.vibrate() && !hasVibrated) {
+                        Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                        if (v != null) {
+                            v.vibrate(500);
+                            hasVibrated = true;
+                        }
+                    }
+                    if (shakeListener == null && SleepTimerPreferences.shakeToReset()) {
+                        shakeListener = new ShakeListener(context, this);
+                    }
+                }
+            }
+        }
+
+        private void checkTime() {
             Log.d(TAG, "Starting");
             long lastTick = System.currentTimeMillis();
             while (timeLeft > 0) {
@@ -445,12 +538,16 @@ public class PlaybackServiceTaskManager {
         }
 
         public long getWaitingTime() {
-            return timeLeft;
+            return episodes ? episodesLeft : timeLeft;
         }
 
         public void restart() {
             postCallback(() -> {
-                setSleepTimer(waitingTime);
+                if (episodes) {
+                    setSleepTimerEpisodes(waitingEpisodes);
+                } else {
+                    setSleepTimer(waitingTime);
+                }
                 callback.onSleepTimerReset();
             });
             if (shakeListener != null) {

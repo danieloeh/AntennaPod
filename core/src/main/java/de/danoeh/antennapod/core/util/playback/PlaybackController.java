@@ -488,6 +488,12 @@ public abstract class PlaybackController {
         }
     }
 
+    public void setSleepTimerEpisodes(int time) {
+        if (playbackService != null) {
+            playbackService.setSleepTimerEpisodes(time);
+        }
+    }
+
     public void seekToChapter(Chapter chapter) {
         if (playbackService != null) {
             playbackService.seekToChapter(chapter);
