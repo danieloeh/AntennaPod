@@ -7,11 +7,11 @@ import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
-import de.danoeh.antennapod.core.service.download.DownloadRequest;
+import de.danoeh.antennapod.net.downloadservice.DownloadRequest;
 import de.danoeh.antennapod.core.storage.DBReader;
 import de.danoeh.antennapod.core.storage.DBWriter;
-import de.danoeh.antennapod.core.storage.DownloadRequester;
 import de.danoeh.antennapod.dialog.AuthenticationDialog;
+import de.danoeh.antennapod.net.downloadservice.DownloadWorker;
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -62,7 +62,7 @@ public class DownloadAuthenticationActivity extends AppCompatActivity {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(() -> {
-                            DownloadRequester.getInstance().download(DownloadAuthenticationActivity.this, request);
+                            DownloadWorker.enqueue(getContext(), request);
                             finish();
                         });
             }

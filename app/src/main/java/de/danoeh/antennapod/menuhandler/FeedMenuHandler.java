@@ -8,8 +8,12 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 
+import de.danoeh.antennapod.net.downloadservice.DownloadRequester;
+import de.danoeh.antennapod.net.downloadservice.DownloadWorker;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Set;
 
 import de.danoeh.antennapod.R;
@@ -17,7 +21,7 @@ import de.danoeh.antennapod.core.dialog.ConfirmationDialog;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.core.storage.DBTasks;
 import de.danoeh.antennapod.core.storage.DBWriter;
-import de.danoeh.antennapod.core.storage.DownloadRequestException;
+import de.danoeh.antennapod.net.downloadservice.DownloadRequestException;
 import de.danoeh.antennapod.core.util.IntentUtils;
 import de.danoeh.antennapod.core.util.ShareUtils;
 import de.danoeh.antennapod.model.feed.SortOrder;
@@ -62,10 +66,12 @@ public class FeedMenuHandler {
                                                final Feed selectedFeed) throws DownloadRequestException {
         switch (item.getItemId()) {
             case R.id.refresh_item:
-                DBTasks.forceRefreshFeed(context, selectedFeed, true);
+                DownloadWorker.enqueue(context, DownloadRequester.getInstance()
+                        .createRequest(selectedFeed, false, true, true));
                 break;
             case R.id.refresh_complete_item:
-                DBTasks.forceRefreshCompleteFeed(context, selectedFeed);
+                DownloadWorker.enqueue(context, DownloadRequester.getInstance()
+                        .createRequest(selectedFeed, true, true, true));
                 break;
             case R.id.sort_items:
                 showSortDialog(context, selectedFeed);

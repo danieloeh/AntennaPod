@@ -33,8 +33,6 @@ import de.danoeh.antennapod.core.export.opml.OpmlReader;
 import de.danoeh.antennapod.core.export.opml.OpmlWriter;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.core.storage.DBReader;
-import de.danoeh.antennapod.core.storage.DownloadRequestException;
-import de.danoeh.antennapod.core.storage.DownloadRequester;
 
 public class OpmlBackupAgent extends BackupAgentHelper {
     private static final String OPML_BACKUP_KEY = "opml";
@@ -146,7 +144,7 @@ public class OpmlBackupAgent extends BackupAgentHelper {
             try {
                 ArrayList<OpmlElement> opmlElements = new OpmlReader().readDocument(reader);
                 mChecksum = digester == null ? null : digester.digest();
-                DownloadRequester downloader = DownloadRequester.getInstance();
+                /*DownloadRequester downloader = DownloadRequester.getInstance();
 
                 for (OpmlElement opmlElem : opmlElements) {
                     Feed feed = new Feed(opmlElem.getXmlUrl(), null, opmlElem.getText());
@@ -156,7 +154,7 @@ public class OpmlBackupAgent extends BackupAgentHelper {
                     } catch (DownloadRequestException e) {
                         Log.d(TAG, "Error while restoring/downloading feed", e);
                     }
-                }
+                }*/
             } catch (XmlPullParserException e) {
                 Log.e(TAG, "Error while parsing the OPML file", e);
             } catch (IOException e) {

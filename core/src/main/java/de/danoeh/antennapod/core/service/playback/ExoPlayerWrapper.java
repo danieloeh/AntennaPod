@@ -33,7 +33,7 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 
 import de.danoeh.antennapod.core.ClientConfig;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
-import de.danoeh.antennapod.core.service.download.HttpDownloader;
+import de.danoeh.antennapod.core.service.BasicAuthorizationInterceptor;
 import de.danoeh.antennapod.core.util.playback.IPlayer;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -198,7 +198,7 @@ public class ExoPlayerWrapper implements IPlayer {
 
         if (!TextUtils.isEmpty(user) && !TextUtils.isEmpty(password)) {
             httpDataSourceFactory.getDefaultRequestProperties().set("Authorization",
-                    HttpDownloader.encodeCredentials(
+                    BasicAuthorizationInterceptor.encodeCredentials(
                             user,
                             password,
                             "ISO-8859-1"));

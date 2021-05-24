@@ -110,18 +110,6 @@ public class AutoUpdateManager {
 
     }
 
-    /**
-     /**
-     * Run auto feed refresh once in background immediately, using its own thread.
-     *
-     * Callers where the additional threads is not suitable should use {@link #runOnce(Context)}
-     */
-    public static void runImmediate(@NonNull Context context) {
-        Log.d(TAG, "Run auto update immediately in background.");
-        new Thread(() -> DBTasks.refreshAllFeeds(
-                context.getApplicationContext(), true), "ManualRefreshAllFeeds").start();
-    }
-
     public static void disableAutoUpdate(Context context) {
         WorkManager.getInstance(context).cancelUniqueWork(WORK_ID_FEED_UPDATE);
     }

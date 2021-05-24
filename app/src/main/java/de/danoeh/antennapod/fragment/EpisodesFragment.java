@@ -13,12 +13,16 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.menuhandler.MenuItemUtils;
+import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.net.downloadservice.DownloadRequest;
 
 public class EpisodesFragment extends PagedToolbarFragment {
 
@@ -33,6 +37,7 @@ public class EpisodesFragment extends PagedToolbarFragment {
 
     private TabLayout tabLayout;
     private boolean displayUpArrow;
+    private Toolbar toolbar;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +47,7 @@ public class EpisodesFragment extends PagedToolbarFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.pager_fragment, container, false);
-        Toolbar toolbar = rootView.findViewById(R.id.toolbar);
+        toolbar = rootView.findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.episodes_label);
         toolbar.inflateMenu(R.menu.episodes);
         MenuItemUtils.setupSearchItem(toolbar.getMenu(), (MainActivity) getActivity(), 0, "");
@@ -80,8 +85,27 @@ public class EpisodesFragment extends PagedToolbarFragment {
         SharedPreferences prefs = getActivity().getSharedPreferences(TAG, Context.MODE_PRIVATE);
         int lastPosition = prefs.getInt(PREF_LAST_TAB_POSITION, 0);
         viewPager.setCurrentItem(lastPosition, false);
+        setupRefreshIndicator();
 
         return rootView;
+    }
+
+    private void setupRefreshIndicator() {
+        WorkManager.getInstance(getContext()).getWorkInfosByTagLiveData(DownloadRequest.TAG)
+                .observe(getViewLifecycleOwner(), workInfos -> {
+                    boolean isDownloadingFeed = false;
+                    for (WorkInfo workInfo : workInfos) {
+                        if (workInfo.getState().isFinished()) {
+                            continue;
+                        }
+                        DownloadRequest request = DownloadRequest.from(workInfo.getProgress());
+                        if (request.getFeedfileType() == Feed.FEEDFILETYPE_FEED) {
+                            isDownloadingFeed = true;
+                            break;
+                        }
+                    }
+                    MenuItemUtils.updateRefreshMenuItem(toolbar.getMenu(), R.id.refresh_item, isDownloadingFeed);
+                });
     }
 
     @Override

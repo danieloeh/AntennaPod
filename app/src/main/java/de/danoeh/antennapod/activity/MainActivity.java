@@ -38,6 +38,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 
+import de.danoeh.antennapod.net.downloadservice.DownloadRequester;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
 import org.greenrobot.eventbus.EventBus;
@@ -512,7 +513,7 @@ public class MainActivity extends CastEnabledActivity {
             Bundle args = intent.getBundleExtra(EXTRA_FRAGMENT_ARGS);
             boolean refreshOnStart = intent.getBooleanExtra(EXTRA_REFRESH_ON_START, false);
             if (refreshOnStart) {
-                AutoUpdateManager.runImmediate(this);
+                DownloadRequester.getInstance().refreshAllFeeds(this);
             }
 
             long feedId = intent.getLongExtra(EXTRA_FEED_ID, 0);

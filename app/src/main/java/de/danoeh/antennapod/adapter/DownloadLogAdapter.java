@@ -14,15 +14,15 @@ import androidx.fragment.app.ListFragment;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.core.dialog.DownloadRequestErrorDialogCreator;
-import de.danoeh.antennapod.core.service.download.DownloadRequest;
-import de.danoeh.antennapod.core.service.download.Downloader;
+import de.danoeh.antennapod.net.downloadservice.DownloadRequest;
 import de.danoeh.antennapod.core.service.download.DownloadStatus;
 import de.danoeh.antennapod.core.storage.DBReader;
 import de.danoeh.antennapod.core.storage.DBTasks;
-import de.danoeh.antennapod.core.storage.DownloadRequestException;
-import de.danoeh.antennapod.core.storage.DownloadRequester;
+import de.danoeh.antennapod.net.downloadservice.DownloadRequestException;
+import de.danoeh.antennapod.net.downloadservice.DownloadRequester;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedMedia;
+import de.danoeh.antennapod.net.downloadservice.DownloadWorker;
 import de.danoeh.antennapod.ui.common.ThemeUtils;
 import de.danoeh.antennapod.view.viewholder.DownloadLogItemViewHolder;
 
@@ -38,7 +38,7 @@ public class DownloadLogAdapter extends BaseAdapter {
     private final Activity context;
     private final ListFragment listFragment;
     private List<DownloadStatus> downloadLog = new ArrayList<>();
-    private List<Downloader> runningDownloads = new ArrayList<>();
+    private List<DownloadRequest> runningDownloads = new ArrayList<>();
 
     public DownloadLogAdapter(Activity context, ListFragment listFragment) {
         super();
@@ -51,7 +51,7 @@ public class DownloadLogAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public void setRunningDownloads(List<Downloader> runningDownloads) {
+    public void setRunningDownloads(List<DownloadRequest> runningDownloads) {
         this.runningDownloads = runningDownloads;
         notifyDataSetChanged();
     }
@@ -69,8 +69,8 @@ public class DownloadLogAdapter extends BaseAdapter {
         Object item = getItem(position);
         if (item instanceof DownloadStatus) {
             bind(holder, (DownloadStatus) item, position);
-        } else if (item instanceof Downloader) {
-            bind(holder, (Downloader) item, position);
+        } else if (item instanceof DownloadRequest) {
+            bind(holder, (DownloadRequest) item, position);
         }
         return holder.itemView;
     }
@@ -126,8 +126,9 @@ public class DownloadLogAdapter extends BaseAdapter {
                             return;
                         }
                         try {
-                            DBTasks.forceRefreshFeed(context, feed, true);
-                        } catch (DownloadRequestException e) {
+                            DownloadWorker.enqueue(context, DownloadRequester.getInstance()
+                                    .createRequest(feed, false, true, true));
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     });
@@ -140,7 +141,8 @@ public class DownloadLogAdapter extends BaseAdapter {
                             return;
                         }
                         try {
-                            DownloadRequester.getInstance().downloadMedia(context, true, media.getItem());
+                            DownloadWorker.enqueue(context, DownloadRequester.getInstance()
+                                    .createRequest(media, true));
                             ((MainActivity) context).showSnackbarAbovePlayer(
                                     R.string.status_downloading_label, Toast.LENGTH_SHORT);
                         } catch (DownloadRequestException e) {
@@ -153,13 +155,12 @@ public class DownloadLogAdapter extends BaseAdapter {
         }
     }
 
-    private void bind(DownloadLogItemViewHolder holder, Downloader downloader, int position) {
-        DownloadRequest request = downloader.getDownloadRequest();
+    private void bind(DownloadLogItemViewHolder holder, DownloadRequest request, int position) {
         holder.title.setText(request.getTitle());
         holder.secondaryActionIcon.setImageResource(R.drawable.ic_cancel);
         holder.secondaryActionButton.setContentDescription(context.getString(R.string.cancel_download_label));
         holder.secondaryActionButton.setVisibility(View.VISIBLE);
-        holder.secondaryActionButton.setTag(downloader);
+        holder.secondaryActionButton.setTag(request.getSource());
         holder.secondaryActionButton.setOnClickListener(v ->
                 listFragment.onListItemClick(null, holder.itemView, position, 0));
         holder.reason.setVisibility(View.GONE);

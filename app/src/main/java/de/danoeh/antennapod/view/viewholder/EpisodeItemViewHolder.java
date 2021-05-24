@@ -24,9 +24,8 @@ import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.playback.MediaType;
 import de.danoeh.antennapod.core.feed.util.ImageResourceUtils;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
-import de.danoeh.antennapod.core.service.download.DownloadRequest;
 import de.danoeh.antennapod.core.service.playback.PlaybackService;
-import de.danoeh.antennapod.core.storage.DownloadRequester;
+import de.danoeh.antennapod.net.downloadservice.DownloadRequester;
 import de.danoeh.antennapod.core.util.Converter;
 import de.danoeh.antennapod.core.util.DateUtils;
 import de.danoeh.antennapod.core.util.FeedItemUtil;
@@ -141,9 +140,9 @@ public class EpisodeItemViewHolder extends RecyclerView.ViewHolder {
         }
 
         if (DownloadRequester.getInstance().isDownloadingFile(media)) {
-            final DownloadRequest downloadRequest = DownloadRequester.getInstance().getRequestFor(media);
-            float percent = 0.01f * downloadRequest.getProgressPercent();
-            secondaryActionProgress.setPercentage(Math.max(percent, 0.01f), item);
+            //final DownloadRequest downloadRequest = DownloadRequester.getInstance().getRequestFor(media);
+            //float percent = 0.01f * downloadRequest.getProgressPercent();
+            //secondaryActionProgress.setPercentage(Math.max(percent, 0.01f), item);
         } else if (media.isDownloaded()) {
             secondaryActionProgress.setPercentage(1, item); // Do not animate 100% -> 0%
         } else {

@@ -1,0 +1,22 @@
+apply plugin: "com.android.library"
+apply from: "../../common.gradle"
+apply from: "../../playFlavor.gradle" // Because of the dependency on core
+
+dependencies {
+    implementation project(':core')
+    implementation project(':model')
+    implementation project(':net:sync:model')
+    implementation project(':ui:app-start-intent')
+    implementation project(':ui:png-icons')
+
+    implementation "androidx.work:work-runtime:$workManagerVersion"
+    implementation 'androidx.core:core:1.5.0'
+
+    implementation "commons-io:commons-io:$commonsioVersion"
+    implementation "org.greenrobot:eventbus:$eventbusVersion"
+    implementation "com.squareup.okhttp3:okhttp:$okhttpVersion"
+    implementation "com.squareup.okhttp3:okhttp-urlconnection:$okhttpVersion"
+
+    testImplementation 'junit:junit:4.13'
+    testImplementation 'org.robolectric:robolectric:4.5-alpha-1'
+}

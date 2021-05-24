@@ -1,9 +1,9 @@
-package de.danoeh.antennapod.core.service.download.handler;
+package de.danoeh.antennapod.net.downloadservice.handler;
 
 import android.util.Log;
 import de.danoeh.antennapod.model.feed.Feed;
-import de.danoeh.antennapod.core.service.download.DownloadRequest;
 import de.danoeh.antennapod.core.storage.DBWriter;
+import de.danoeh.antennapod.net.downloadservice.DownloadRequest;
 
 /**
  * Handles failed downloads.

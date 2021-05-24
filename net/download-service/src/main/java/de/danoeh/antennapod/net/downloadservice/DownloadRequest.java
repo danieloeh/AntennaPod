@@ -1,17 +1,16 @@
-package de.danoeh.antennapod.core.service.download;
+package de.danoeh.antennapod.net.downloadservice;
 
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
+import androidx.work.Data;
 import de.danoeh.antennapod.model.feed.FeedFile;
-import de.danoeh.antennapod.core.util.URLChecker;
 
 public class DownloadRequest implements Parcelable {
+    public static final String TAG = "DownloadRequest";
 
     private final String destination;
     private final String source;
@@ -30,6 +29,7 @@ public class DownloadRequest implements Parcelable {
     private int statusMsg;
     private boolean mediaEnqueued;
     private boolean initiatedByUser;
+    private boolean cleanupMedia = false;
 
     public DownloadRequest(@NonNull String destination, @NonNull String source, @NonNull String title, long feedfileId,
                            int feedfileType, String username, String password, boolean deleteOnFailure,
@@ -159,6 +159,53 @@ public class DownloadRequest implements Parcelable {
         result = 31 * result + statusMsg;
         result = 31 * result + (mediaEnqueued ? 1 : 0);
         return result;
+    }
+
+    private static final String KEY_DESTINATION = "destination";
+    private static final String KEY_SOURCE = "source";
+    private static final String KEY_TITLE = "title";
+    private static final String KEY_FEEDFILE_ID = "feedfile_id";
+    private static final String KEY_FEEDFILE_TYPE = "feedfile_type";
+    private static final String KEY_USERNAME = "username";
+    private static final String KEY_PASSWORD = "password";
+    private static final String KEY_DELETE_ON_FAILURE = "delete_on_failure";
+    private static final String KEY_INITIATED_BY_USER = "initiated_by_user";
+    private static final String KEY_PROGRESS = "progress";
+
+    public Data toWorkData() {
+        Data.Builder data = new Data.Builder();
+        data.putString(KEY_DESTINATION, getDestination());
+        data.putString(KEY_SOURCE, getSource());
+        data.putString(KEY_TITLE, getTitle());
+        data.putLong(KEY_FEEDFILE_ID, getFeedfileId());
+        data.putInt(KEY_FEEDFILE_TYPE, getFeedfileType());
+        data.putString(KEY_USERNAME, getUsername());
+        data.putString(KEY_PASSWORD, getPassword());
+        data.putBoolean(KEY_DELETE_ON_FAILURE, isDeleteOnFailure());
+        data.putBoolean(KEY_INITIATED_BY_USER, isInitiatedByUser());
+        data.putBoolean(KEY_INITIATED_BY_USER, isInitiatedByUser());
+        data.putInt(KEY_PROGRESS, getProgressPercent());
+        return data.build();
+    }
+
+    public static DownloadRequest from(Data data) {
+        DownloadRequest request = new DownloadRequest(
+                data.getString(KEY_DESTINATION),
+                data.getString(KEY_SOURCE),
+                data.getString(KEY_TITLE),
+                data.getLong(KEY_FEEDFILE_ID, 0),
+                data.getInt(KEY_FEEDFILE_TYPE, 0),
+                data.getString(KEY_USERNAME),
+                data.getString(KEY_PASSWORD),
+                data.getBoolean(KEY_DELETE_ON_FAILURE, false),
+                new Bundle(),
+                data.getBoolean(KEY_INITIATED_BY_USER, false));
+        request.setProgressPercent(data.getInt(KEY_PROGRESS, 0));
+        return request;
+    }
+
+    public boolean isCleanupMedia() {
+        return cleanupMedia;
     }
 
     public String getDestination() {

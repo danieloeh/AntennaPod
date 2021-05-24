@@ -21,6 +21,7 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import de.danoeh.antennapod.core.R;
 import de.danoeh.antennapod.core.event.SyncServiceEvent;
+import de.danoeh.antennapod.core.util.UrlComparer;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
@@ -30,11 +31,8 @@ import de.danoeh.antennapod.core.service.download.AntennapodHttpClient;
 import de.danoeh.antennapod.core.storage.DBReader;
 import de.danoeh.antennapod.core.storage.DBTasks;
 import de.danoeh.antennapod.core.storage.DBWriter;
-import de.danoeh.antennapod.core.storage.DownloadRequestException;
-import de.danoeh.antennapod.core.storage.DownloadRequester;
 import de.danoeh.antennapod.core.util.FeedItemUtil;
 import de.danoeh.antennapod.core.util.LongList;
-import de.danoeh.antennapod.core.util.URLChecker;
 import de.danoeh.antennapod.core.util.gui.NotificationUtils;
 import de.danoeh.antennapod.net.sync.gpoddernet.GpodnetService;
 import de.danoeh.antennapod.net.sync.model.EpisodeAction;
@@ -329,13 +327,14 @@ public class SyncService extends Worker {
 
         Log.d(TAG, "Downloaded subscription changes: " + subscriptionChanges);
         for (String downloadUrl : subscriptionChanges.getAdded()) {
-            if (!URLChecker.containsUrl(localSubscriptions, downloadUrl) && !queuedRemovedFeeds.contains(downloadUrl)) {
+            if (!UrlComparer.containsUrl(localSubscriptions, downloadUrl)
+                    && !queuedRemovedFeeds.contains(downloadUrl)) {
                 Feed feed = new Feed(downloadUrl, null);
-                try {
+                /*try {
                     DownloadRequester.getInstance().downloadFeed(getApplicationContext(), feed);
                 } catch (DownloadRequestException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
         }
 

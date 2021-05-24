@@ -27,7 +27,7 @@ import de.danoeh.antennapod.activity.OnlineFeedViewActivity;
 import de.danoeh.antennapod.activity.OpmlImportActivity;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.core.storage.DBTasks;
-import de.danoeh.antennapod.core.storage.DownloadRequestException;
+import de.danoeh.antennapod.net.downloadservice.DownloadRequestException;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.databinding.AddfeedBinding;
 import de.danoeh.antennapod.databinding.EditTextDialogBinding;
@@ -36,6 +36,8 @@ import de.danoeh.antennapod.discovery.FyydPodcastSearcher;
 import de.danoeh.antennapod.discovery.ItunesPodcastSearcher;
 import de.danoeh.antennapod.discovery.PodcastIndexPodcastSearcher;
 import de.danoeh.antennapod.fragment.gpodnet.GpodnetMainFragment;
+import de.danoeh.antennapod.net.downloadservice.DownloadRequester;
+import de.danoeh.antennapod.net.downloadservice.DownloadWorker;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -216,7 +218,13 @@ public class AddFeedFragment extends Fragment {
         dirFeed.setItems(Collections.emptyList());
         dirFeed.setSortOrder(SortOrder.EPISODE_TITLE_A_Z);
         Feed fromDatabase = DBTasks.updateFeed(getContext(), dirFeed, false);
-        DBTasks.forceRefreshFeed(getContext(), fromDatabase, true);
+
+        try {
+            DownloadWorker.enqueue(getContext(), DownloadRequester.getInstance()
+                    .createRequest(fromDatabase, false, false, true));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return fromDatabase;
     }
 }

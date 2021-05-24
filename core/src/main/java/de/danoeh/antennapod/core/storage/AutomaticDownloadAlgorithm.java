@@ -92,11 +92,11 @@ public class AutomaticDownloadAlgorithm {
                 if (itemsToDownload.length > 0) {
                     Log.d(TAG, "Enqueueing " + itemsToDownload.length + " items for download");
 
-                    try {
+                    /*try {
                         DownloadRequester.getInstance().downloadMedia(false, context, false, itemsToDownload);
                     } catch (DownloadRequestException e) {
                         e.printStackTrace();
-                    }
+                    }*/
                 }
             }
         };

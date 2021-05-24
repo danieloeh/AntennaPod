@@ -112,6 +112,7 @@ android {
 dependencies {
     implementation project(":core")
     implementation project(':model')
+    implementation project(':net:download-service')
     implementation project(':net:sync:gpoddernet')
     implementation project(':net:sync:model')
     implementation project(':ui:app-start-intent')

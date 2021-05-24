@@ -3,6 +3,7 @@ package de.danoeh.antennapod.ui.appstartintent;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 /**
  * Launches the main activity of the app with specific arguments.
@@ -36,6 +37,14 @@ public class MainActivityStarter {
 
     public MainActivityStarter withOpenPlayer() {
         intent.putExtra(EXTRA_OPEN_PLAYER, true);
+        return this;
+    }
+
+    public MainActivityStarter withOpenDownloadLogs() {
+        intent.putExtra("fragment_tag", "DownloadsFragment");
+        Bundle args = new Bundle();
+        args.putInt("selected_tab", 1);
+        intent.putExtra("fragment_args", args);
         return this;
     }
 }

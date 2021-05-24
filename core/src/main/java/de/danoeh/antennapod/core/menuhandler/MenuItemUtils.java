@@ -21,14 +21,18 @@ public class MenuItemUtils {
      * @return The returned value of the UpdateRefreshMenuItemChecker's isRefreshing() method.
      */
     public static boolean updateRefreshMenuItem(Menu menu, int resId, UpdateRefreshMenuItemChecker checker) {
-        // expand actionview if feeds are being downloaded, collapse otherwise
+        updateRefreshMenuItem(menu, resId, checker.isRefreshing());
+        return checker.isRefreshing();
+    }
+
+    public static void updateRefreshMenuItem(Menu menu, int resId, boolean isRefreshing) {
         MenuItem refreshItem = menu.findItem(resId);
-        if (checker.isRefreshing()) {
-            refreshItem.setActionView(R.layout.refresh_action_view);
-            return true;
+        if (isRefreshing) {
+            if (refreshItem.getActionView() == null) { // Don't flicker
+                refreshItem.setActionView(R.layout.refresh_action_view);
+            }
         } else {
             refreshItem.setActionView(null);
-            return false;
         }
     }
 

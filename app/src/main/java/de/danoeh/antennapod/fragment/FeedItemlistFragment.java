@@ -26,6 +26,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.appbar.AppBarLayout;
@@ -36,8 +38,6 @@ import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.adapter.EpisodeItemListAdapter;
 import de.danoeh.antennapod.core.dialog.DownloadRequestErrorDialogCreator;
-import de.danoeh.antennapod.core.event.DownloadEvent;
-import de.danoeh.antennapod.core.event.DownloaderUpdate;
 import de.danoeh.antennapod.core.event.FeedItemEvent;
 import de.danoeh.antennapod.core.event.FeedListUpdateEvent;
 import de.danoeh.antennapod.core.event.PlaybackPositionEvent;
@@ -49,12 +49,12 @@ import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.core.glide.ApGlideSettings;
 import de.danoeh.antennapod.core.glide.FastBlurTransformation;
-import de.danoeh.antennapod.core.service.download.DownloadService;
 import de.danoeh.antennapod.core.storage.DBReader;
 import de.danoeh.antennapod.core.storage.DBTasks;
 import de.danoeh.antennapod.core.storage.DBWriter;
-import de.danoeh.antennapod.core.storage.DownloadRequestException;
-import de.danoeh.antennapod.core.storage.DownloadRequester;
+import de.danoeh.antennapod.net.downloadservice.DownloadRequest;
+import de.danoeh.antennapod.net.downloadservice.DownloadRequestException;
+import de.danoeh.antennapod.net.downloadservice.DownloadRequester;
 import de.danoeh.antennapod.core.util.FeedItemPermutors;
 import de.danoeh.antennapod.core.util.FeedItemUtil;
 import de.danoeh.antennapod.core.util.gui.MoreContentListFooterUtil;
@@ -65,6 +65,7 @@ import de.danoeh.antennapod.dialog.RenameFeedDialog;
 import de.danoeh.antennapod.menuhandler.FeedItemMenuHandler;
 import de.danoeh.antennapod.menuhandler.FeedMenuHandler;
 import de.danoeh.antennapod.menuhandler.MenuItemUtils;
+import de.danoeh.antennapod.net.downloadservice.DownloadWorker;
 import de.danoeh.antennapod.view.EpisodeItemListRecyclerView;
 import de.danoeh.antennapod.view.ToolbarIconTintManager;
 import de.danoeh.antennapod.view.viewholder.EpisodeItemViewHolder;
@@ -111,7 +112,6 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
     private long feedID;
     private Feed feed;
     private boolean headerCreated = false;
-    private boolean isUpdatingFeed;
     private Disposable disposable;
 
     /**
@@ -193,7 +193,7 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
             if (feed != null) {
                 try {
                     DBTasks.loadNextPageOfFeed(getActivity(), feed, false);
-                } catch (DownloadRequestException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     DownloadRequestErrorDialogCreator.newRequestErrorDialog(getActivity(), e.getMessage());
                 }
@@ -214,8 +214,9 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         SwipeRefreshLayout swipeRefreshLayout = root.findViewById(R.id.swipeRefresh);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             try {
-                DBTasks.forceRefreshFeed(requireContext(), feed, true);
-            } catch (DownloadRequestException e) {
+                DownloadWorker.enqueue(getContext(), DownloadRequester.getInstance()
+                        .createRequest(feed, false, false, true));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             new Handler(Looper.getMainLooper()).postDelayed(() -> swipeRefreshLayout.setRefreshing(false),
@@ -223,6 +224,7 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         });
 
         loadItems();
+        setupRefreshIndicator();
         return root;
     }
 
@@ -246,7 +248,8 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
     private final MenuItemUtils.UpdateRefreshMenuItemChecker updateRefreshMenuItemChecker = new MenuItemUtils.UpdateRefreshMenuItemChecker() {
         @Override
         public boolean isRefreshing() {
-            return feed != null && DownloadService.isRunning && DownloadRequester.getInstance().isDownloadingFile(feed);
+            return false;
+            //return feed != null && DownloadService.isRunning && DownloadRequester.getInstance().isDownloadingFile(feed);
         }
     };
 
@@ -258,9 +261,6 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
 
         toolbar.getMenu().findItem(R.id.share_link_item).setVisible(feed.getLink() != null);
         toolbar.getMenu().findItem(R.id.visit_website_item).setVisible(feed.getLink() != null);
-
-        isUpdatingFeed = MenuItemUtils.updateRefreshMenuItem(toolbar.getMenu(),
-                R.id.refresh_item, updateRefreshMenuItemChecker);
         FeedMenuHandler.onPrepareOptionsMenu(toolbar.getMenu(), feed);
     }
 
@@ -364,6 +364,26 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         }
     }
 
+    private void setupRefreshIndicator() {
+        WorkManager.getInstance(getContext()).getWorkInfosByTagLiveData(DownloadRequest.TAG)
+                .observe(getViewLifecycleOwner(), workInfos -> {
+                    boolean isDownloadingCurrentFeed = false;
+                    for (WorkInfo workInfo : workInfos) {
+                        if (workInfo.getState().isFinished()) {
+                            continue;
+                        }
+                        DownloadRequest request = DownloadRequest.from(workInfo.getProgress());
+                        if (request.getFeedfileType() == Feed.FEEDFILETYPE_FEED
+                                && request.getFeedfileId() == feedID) {
+                            isDownloadingCurrentFeed = true;
+                            break;
+                        }
+                    }
+                    MenuItemUtils.updateRefreshMenuItem(toolbar.getMenu(), R.id.refresh_item, isDownloadingCurrentFeed);
+                });
+    }
+
+/*
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEventMainThread(DownloadEvent event) {
         Log.d(TAG, "onEventMainThread() called with: " + "event = [" + event + "]");
@@ -379,7 +399,7 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
                 }
             }
         }
-    }
+    }*/
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(PlaybackPositionEvent event) {
@@ -417,9 +437,6 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
     }
 
     private void updateSyncProgressBarVisibility() {
-        if (isUpdatingFeed != updateRefreshMenuItemChecker.isRefreshing()) {
-            refreshToolbarState();
-        }
         if (!DownloadRequester.getInstance().isDownloadingFeeds()) {
             nextPageLoader.getRoot().setVisibility(View.GONE);
         }

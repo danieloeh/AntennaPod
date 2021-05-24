@@ -1,4 +1,4 @@
-package de.danoeh.antennapod.core.service.download;
+package de.danoeh.antennapod.net.downloadservice;
 
 import android.util.Log;
 import android.webkit.URLUtil;

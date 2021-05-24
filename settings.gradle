@@ -2,6 +2,7 @@ include ':app'
 include ':core'
 include ':model'
 
+include ':net:download-service'
 include ':net:ssl'
 include ':net:sync:gpoddernet'
 include ':net:sync:model'

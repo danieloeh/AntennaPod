@@ -25,6 +25,7 @@ import de.danoeh.antennapod.core.event.FeedListUpdateEvent;
 import de.danoeh.antennapod.core.event.PlaybackPositionEvent;
 import de.danoeh.antennapod.core.event.PlayerStatusEvent;
 import de.danoeh.antennapod.core.event.UnreadItemsUpdateEvent;
+import de.danoeh.antennapod.net.downloadservice.DownloadRequester;
 import de.danoeh.antennapod.view.EpisodeItemListRecyclerView;
 import de.danoeh.antennapod.view.viewholder.EpisodeItemViewHolder;
 import org.greenrobot.eventbus.EventBus;
@@ -37,13 +38,9 @@ import java.util.List;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.core.dialog.ConfirmationDialog;
-import de.danoeh.antennapod.core.event.DownloadEvent;
-import de.danoeh.antennapod.core.event.DownloaderUpdate;
 import de.danoeh.antennapod.core.event.FeedItemEvent;
 import de.danoeh.antennapod.model.feed.FeedItem;
-import de.danoeh.antennapod.core.service.download.DownloadService;
 import de.danoeh.antennapod.core.storage.DBWriter;
-import de.danoeh.antennapod.core.storage.DownloadRequester;
 import de.danoeh.antennapod.core.util.FeedItemUtil;
 import de.danoeh.antennapod.core.util.download.AutoUpdateManager;
 import de.danoeh.antennapod.menuhandler.FeedItemMenuHandler;
@@ -73,8 +70,6 @@ public abstract class EpisodesListFragment extends Fragment {
 
     @NonNull
     List<FeedItem> episodes = new ArrayList<>();
-
-    private volatile boolean isUpdatingFeeds;
     protected Disposable disposable;
     protected TextView txtvInformation;
 
@@ -111,20 +106,14 @@ public abstract class EpisodesListFragment extends Fragment {
         }
     }
 
-    private final MenuItemUtils.UpdateRefreshMenuItemChecker updateRefreshMenuItemChecker =
-            () -> DownloadService.isRunning && DownloadRequester.getInstance().isDownloadingFeeds();
-
-    @Override
-    public void onPrepareOptionsMenu(@NonNull Menu menu) {
-        isUpdatingFeeds = MenuItemUtils.updateRefreshMenuItem(menu, R.id.refresh_item, updateRefreshMenuItemChecker);
-    }
+    private final MenuItemUtils.UpdateRefreshMenuItemChecker updateRefreshMenuItemChecker = () -> false;
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (!super.onOptionsItemSelected(item)) {
             switch (item.getItemId()) {
                 case R.id.refresh_item:
-                    AutoUpdateManager.runImmediate(requireContext());
+                    DownloadRequester.getInstance().refreshAllFeeds(requireContext());
                     return true;
                 case R.id.mark_all_read_item:
                     ConfirmationDialog markAllReadConfirmationDialog = new ConfirmationDialog(getActivity(),
@@ -205,7 +194,7 @@ public abstract class EpisodesListFragment extends Fragment {
 
         SwipeRefreshLayout swipeRefreshLayout = root.findViewById(R.id.swipeRefresh);
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            AutoUpdateManager.runImmediate(requireContext());
+            DownloadRequester.getInstance().refreshAllFeeds(requireContext());
             new Handler(Looper.getMainLooper()).postDelayed(() -> swipeRefreshLayout.setRefreshing(false),
                     getResources().getInteger(R.integer.swipe_to_refresh_duration_in_ms));
         });
@@ -274,9 +263,6 @@ public abstract class EpisodesListFragment extends Fragment {
         if (restoreScrollPosition) {
             recyclerView.restoreScrollPosition(getPrefName());
         }
-        if (isUpdatingFeeds != updateRefreshMenuItemChecker.isRefreshing()) {
-            ((PagedToolbarFragment) getParentFragment()).invalidateOptionsMenuIfActive(this);
-        }
     }
 
     /**
@@ -325,13 +311,10 @@ public abstract class EpisodesListFragment extends Fragment {
         return true;
     }
 
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    /*@Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEventMainThread(DownloadEvent event) {
         Log.d(TAG, "onEventMainThread() called with: " + "event = [" + event + "]");
         DownloaderUpdate update = event.update;
-        if (event.hasChangedFeedUpdateStatus(isUpdatingFeeds)) {
-            ((PagedToolbarFragment) getParentFragment()).invalidateOptionsMenuIfActive(this);
-        }
         if (update.mediaIds.length > 0) {
             for (long mediaId : update.mediaIds) {
                 int pos = FeedItemUtil.indexOfItemWithMediaId(episodes, mediaId);
@@ -340,13 +323,10 @@ public abstract class EpisodesListFragment extends Fragment {
                 }
             }
         }
-    }
+    }*/
 
     private void updateUi() {
         loadItems();
-        if (isUpdatingFeeds != updateRefreshMenuItemChecker.isRefreshing()) {
-            ((PagedToolbarFragment) getParentFragment()).invalidateOptionsMenuIfActive(this);
-        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -1,40 +1,28 @@
-package de.danoeh.antennapod.core.storage;
+package de.danoeh.antennapod.net.downloadservice;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.URLUtil;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.content.ContextCompat;
 
-import de.danoeh.antennapod.core.service.download.Downloader;
+import de.danoeh.antennapod.core.storage.DBReader;
+import de.danoeh.antennapod.core.storage.DownloadStateProvider;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import de.danoeh.antennapod.core.BuildConfig;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedFile;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
-import de.danoeh.antennapod.core.service.download.DownloadRequest;
-import de.danoeh.antennapod.core.service.download.DownloadService;
-import de.danoeh.antennapod.core.service.download.DownloadStatus;
-import de.danoeh.antennapod.core.util.DownloadError;
 import de.danoeh.antennapod.core.util.FileNameGenerator;
-import de.danoeh.antennapod.core.util.IntentUtils;
-import de.danoeh.antennapod.core.util.URLChecker;
 
 
 /**
@@ -59,10 +47,8 @@ public class DownloadRequester implements DownloadStateProvider {
 
     private static DownloadRequester downloader;
 
-    private final Map<String, DownloadRequest> downloads;
-
     private DownloadRequester() {
-        downloads = new ConcurrentHashMap<>();
+
     }
 
     public static synchronized DownloadRequester getInstance() {
@@ -72,49 +58,8 @@ public class DownloadRequester implements DownloadStateProvider {
         return downloader;
     }
 
-    /**
-     * Starts a new download with the given a list of DownloadRequest. This method should only
-     * be used from outside classes if the DownloadRequest was created by the DownloadService to
-     * ensure that the data is valid. Use downloadFeed(), downloadImage() or downloadMedia() instead.
-     *
-     * @param context Context object for starting the DownloadService
-     * @param requests The list of DownloadRequest objects. If another DownloadRequest
-     *                 with the same source URL is already stored, this one will be skipped.
-     * @return True if any of the download request was accepted, false otherwise.
-     */
-    public synchronized boolean download(@NonNull Context context, DownloadRequest... requests) {
-        return download(context, false, requests);
-    }
-
-    private boolean download(@NonNull Context context, boolean cleanupMedia, DownloadRequest... requests) {
-        if (requests.length <= 0) {
-            return false;
-        }
-        boolean result = false;
-
-        ArrayList<DownloadRequest> requestsToSend = new ArrayList<>(requests.length);
-        for (DownloadRequest request : requests) {
-            if (downloads.containsKey(request.getSource())) {
-                if (BuildConfig.DEBUG) Log.i(TAG, "DownloadRequest is already stored.");
-                continue;
-            }
-            downloads.put(request.getSource(), request);
-
-            requestsToSend.add(request);
-            result = true;
-        }
-        Intent launchIntent = new Intent(context, DownloadService.class);
-        launchIntent.putParcelableArrayListExtra(DownloadService.EXTRA_REQUESTS, requestsToSend);
-        if (cleanupMedia) {
-            launchIntent.putExtra(DownloadService.EXTRA_CLEANUP_MEDIA, cleanupMedia);
-        }
-        ContextCompat.startForegroundService(context, launchIntent);
-
-        return result;
-    }
-
     @Nullable
-    private DownloadRequest createRequest(FeedFile item, FeedFile container, File dest, boolean overwriteIfExists,
+    public DownloadRequest createRequest(FeedFile item, FeedFile container, File dest, boolean overwriteIfExists,
                                           String username, String password, String lastModified,
                                           boolean deleteOnFailure, Bundle arguments, boolean initiatedByUser) {
         final boolean partiallyDownloadedFileExists = item.getFile_url() != null && new File(item.getFile_url()).exists();
@@ -170,6 +115,7 @@ public class DownloadRequester implements DownloadStateProvider {
      * taken by another requested download.
      */
     private boolean isFilenameAvailable(String path) {
+        return true;/*
         for (String key : downloads.keySet()) {
             DownloadRequest r = downloads.get(key);
             if (TextUtils.equals(r.getDestination(), path)) {
@@ -181,63 +127,48 @@ public class DownloadRequester implements DownloadStateProvider {
         }
         if (BuildConfig.DEBUG)
             Log.d(TAG, path + " is available as a download destination");
-        return true;
+        return true;*/
     }
 
-    /**
-     * Downloads a feed.
-     *
-     * @param context The application's environment.
-     * @param feed Feeds to download
-     * @param loadAllPages Set to true to download all pages
-     */
-    public synchronized void downloadFeed(Context context, Feed feed, boolean loadAllPages,
-                                           boolean force, boolean initiatedByUser) throws DownloadRequestException {
-        downloadFeeds(context, Collections.singletonList(feed), loadAllPages, force, initiatedByUser);
+    public void refreshAllFeeds(Context context) {
+        new Thread(() -> {
+            List<Feed> feeds = DBReader.getFeedList();
+            for (Feed feed : feeds) {
+                try {
+                    DownloadWorker.enqueue(context, createRequest(feed, false, false, false));
+                } catch (DownloadRequestException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
+
 
     /**
      * Downloads a list of feeds.
      *
-     * @param context The application's environment.
-     * @param feeds Feeds to download
      * @param loadAllPages Set to true to download all pages
      */
-    public synchronized void downloadFeeds(Context context, List<Feed> feeds, boolean loadAllPages,
+    public synchronized DownloadRequest createRequest(Feed feed, boolean loadAllPages,
                                           boolean force, boolean initiatedByUser) throws DownloadRequestException {
-        List<DownloadRequest> requests = new ArrayList<>();
-        for (Feed feed : feeds) {
-            if (!feedFileValid(feed)) {
-                continue;
-            }
-            String username = (feed.getPreferences() != null) ? feed.getPreferences().getUsername() : null;
-            String password = (feed.getPreferences() != null) ? feed.getPreferences().getPassword() : null;
-            String lastModified = feed.isPaged() || force ? null : feed.getLastUpdate();
-
-            Bundle args = new Bundle();
-            args.putInt(REQUEST_ARG_PAGE_NR, feed.getPageNr());
-            args.putBoolean(REQUEST_ARG_LOAD_ALL_PAGES, loadAllPages);
-
-            DownloadRequest request = createRequest(feed, null, new File(getFeedfilePath(), getFeedfileName(feed)),
-                    true, username, password, lastModified, true, args, initiatedByUser
-            );
-            if (request != null) {
-                requests.add(request);
-            }
+        if (!feedFileValid(feed)) {
+            return null;
         }
-        if (!requests.isEmpty()) {
-            download(context, requests.toArray(new DownloadRequest[0]));
-        }
-    }
+        String username = (feed.getPreferences() != null) ? feed.getPreferences().getUsername() : null;
+        String password = (feed.getPreferences() != null) ? feed.getPreferences().getPassword() : null;
+        String lastModified = feed.isPaged() || force ? null : feed.getLastUpdate();
 
-    public synchronized void downloadFeed(Context context, Feed feed) throws DownloadRequestException {
-        downloadFeed(context, feed, false, false, true);
+        Bundle args = new Bundle();
+        args.putInt(REQUEST_ARG_PAGE_NR, feed.getPageNr());
+        args.putBoolean(REQUEST_ARG_LOAD_ALL_PAGES, loadAllPages);
+
+        return createRequest(feed, null, new File(getFeedfilePath(), getFeedfileName(feed)),
+                true, username, password, lastModified, true, args, initiatedByUser);
     }
 
     public synchronized void downloadMedia(@NonNull Context context, boolean initiatedByUser, FeedItem... feedItems)
             throws DownloadRequestException {
         downloadMedia(true, context, initiatedByUser, feedItems);
-
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -247,7 +178,7 @@ public class DownloadRequester implements DownloadStateProvider {
         Log.d(TAG, "downloadMedia() called with: performAutoCleanup = [" + performAutoCleanup
                 + "], #items = [" + items.length + "]");
 
-        List<DownloadRequest> requests = new ArrayList<>(items.length);
+        /*List<DownloadRequest> requests = new ArrayList<>(items.length);
         for (FeedItem item : items) {
             try {
                 DownloadRequest request = createRequest(item.getMedia(), initiatedByUser);
@@ -272,11 +203,11 @@ public class DownloadRequester implements DownloadStateProvider {
                 }
             }
         }
-        download(context, performAutoCleanup, requests.toArray(new DownloadRequest[0]));
+        download(context, performAutoCleanup, requests.toArray(new DownloadRequest[0]));*/
     }
 
     @Nullable
-    private DownloadRequest createRequest(@Nullable FeedMedia feedmedia, boolean initiatedByUser)
+    public DownloadRequest createRequest(@Nullable FeedMedia feedmedia, boolean initiatedByUser)
             throws DownloadRequestException {
         if (!feedFileValid(feedmedia)) {
             return null;
@@ -328,31 +259,18 @@ public class DownloadRequester implements DownloadStateProvider {
      * Cancels a running download.
      */
     public synchronized void cancelDownload(final Context context, final String downloadUrl) {
-        if (BuildConfig.DEBUG)
-            Log.d(TAG, "Cancelling download with url " + downloadUrl);
-        Intent cancelIntent = new Intent(DownloadService.ACTION_CANCEL_DOWNLOAD);
-        cancelIntent.putExtra(DownloadService.EXTRA_DOWNLOAD_URL, downloadUrl);
-        cancelIntent.setPackage(context.getPackageName());
-        context.sendBroadcast(cancelIntent);
     }
 
     /**
      * Cancels all running downloads
      */
     public synchronized void cancelAllDownloads(Context context) {
-        Log.d(TAG, "Cancelling all running downloads");
-        IntentUtils.sendLocalBroadcast(context, DownloadService.ACTION_CANCEL_ALL_DOWNLOADS);
     }
 
     /**
      * Returns true if there is at least one Feed in the downloads queue.
      */
     public synchronized boolean isDownloadingFeeds() {
-        for (DownloadRequest r : downloads.values()) {
-            if (r.getFeedfileType() == Feed.FEEDFILETYPE_FEED) {
-                return true;
-            }
-        }
         return false;
     }
 
@@ -360,16 +278,13 @@ public class DownloadRequester implements DownloadStateProvider {
      * Checks if feedfile is in the downloads list
      */
     public synchronized boolean isDownloadingFile(@NonNull FeedFile item) {
-        return item.getDownload_url() != null && downloads.containsKey(item.getDownload_url());
+        return false;
     }
 
     /**
      * Get the downloader for this item.
      */
-    public synchronized DownloadRequest getRequestFor(FeedFile item) {
-        if (isDownloadingFile(item)) {
-            return downloads.get(item.getDownload_url());
-        }
+    public synchronized String /*DownloadRequest*/ getRequestFor(FeedFile item) {
         return null;
     }
 
@@ -377,28 +292,18 @@ public class DownloadRequester implements DownloadStateProvider {
      * Checks if feedfile with the given download url is in the downloads list
      */
     public synchronized boolean isDownloadingFile(String downloadUrl) {
-        return downloads.get(downloadUrl) != null;
+        return false;
     }
 
     public synchronized boolean hasNoDownloads() {
-        return downloads.isEmpty();
-    }
-
-    /**
-     * Remove an object from the downloads-list of the requester.
-     */
-    public synchronized void removeDownload(DownloadRequest r) {
-        if (downloads.remove(r.getSource()) == null) {
-            Log.e(TAG,
-                    "Could not remove object with url " + r.getSource());
-        }
+        return false;
     }
 
     /**
      * Get the number of uncompleted Downloads
      */
     public synchronized int getNumberOfDownloads() {
-        return downloads.size();
+        return 0;
     }
 
     private synchronized String getFeedfilePath() throws DownloadRequestException {
@@ -457,14 +362,5 @@ public class DownloadRequester implements DownloadStateProvider {
             filename = URLBaseFilename;
         }
         return filename;
-    }
-
-    public void updateProgress(List<Downloader> newDownloads) {
-        for (Downloader downloader : newDownloads) {
-            DownloadRequest request = downloader.getDownloadRequest();
-            if (downloads.containsKey(request.getSource())) {
-                downloads.put(request.getSource(), request);
-            }
-        }
     }
 }

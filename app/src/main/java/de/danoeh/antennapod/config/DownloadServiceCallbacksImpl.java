@@ -8,15 +8,13 @@ import android.os.Bundle;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.DownloadAuthenticationActivity;
 import de.danoeh.antennapod.activity.MainActivity;
-import de.danoeh.antennapod.core.DownloadServiceCallbacks;
-import de.danoeh.antennapod.core.service.download.DownloadRequest;
+import de.danoeh.antennapod.net.downloadservice.DownloadRequest;
 import de.danoeh.antennapod.fragment.DownloadsFragment;
 import de.danoeh.antennapod.fragment.QueueFragment;
 
 
-public class DownloadServiceCallbacksImpl implements DownloadServiceCallbacks {
+public class DownloadServiceCallbacksImpl {
 
-    @Override
     public PendingIntent getNotificationContentIntent(Context context) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra(MainActivity.EXTRA_FRAGMENT_TAG, DownloadsFragment.TAG);
@@ -27,7 +25,6 @@ public class DownloadServiceCallbacksImpl implements DownloadServiceCallbacks {
                 R.id.pending_intent_download_service_notification, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    @Override
     public PendingIntent getAuthentificationNotificationContentIntent(Context context, DownloadRequest request) {
         final Intent activityIntent = new Intent(context.getApplicationContext(), DownloadAuthenticationActivity.class);
         activityIntent.setAction("request" + request.getFeedfileId());
@@ -36,7 +33,6 @@ public class DownloadServiceCallbacksImpl implements DownloadServiceCallbacks {
                 R.id.pending_intent_download_service_auth, activityIntent, PendingIntent.FLAG_ONE_SHOT);
     }
 
-    @Override
     public PendingIntent getReportNotificationContentIntent(Context context) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra(MainActivity.EXTRA_FRAGMENT_TAG, DownloadsFragment.TAG);
@@ -47,7 +43,6 @@ public class DownloadServiceCallbacksImpl implements DownloadServiceCallbacks {
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    @Override
     public PendingIntent getAutoDownloadReportNotificationContentIntent(Context context) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra(MainActivity.EXTRA_FRAGMENT_TAG, QueueFragment.TAG);

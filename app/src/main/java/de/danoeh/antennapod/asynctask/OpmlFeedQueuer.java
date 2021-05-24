@@ -10,8 +10,8 @@ import de.danoeh.antennapod.activity.OpmlImportHolder;
 import de.danoeh.antennapod.core.R;
 import de.danoeh.antennapod.core.export.opml.OpmlElement;
 import de.danoeh.antennapod.model.feed.Feed;
-import de.danoeh.antennapod.core.storage.DownloadRequestException;
-import de.danoeh.antennapod.core.storage.DownloadRequester;
+import de.danoeh.antennapod.net.downloadservice.DownloadRequestException;
+import de.danoeh.antennapod.net.downloadservice.DownloadRequester;
 
 /** Queues items for download in the background. */
 public class OpmlFeedQueuer extends AsyncTask<Void, Void, Void> {
@@ -46,11 +46,11 @@ public class OpmlFeedQueuer extends AsyncTask<Void, Void, Void> {
 			OpmlElement element = OpmlImportHolder.getReadElements().get(selected);
 			Feed feed = new Feed(element.getXmlUrl(), null,
 					element.getText());
-			try {
+			/*try {
 				requester.downloadFeed(context.getApplicationContext(), feed);
 			} catch (DownloadRequestException e) {
 				e.printStackTrace();
-			}
+			}*/
 		}
 		return null;
 	}

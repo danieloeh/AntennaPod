@@ -152,7 +152,7 @@ public class DBWriter {
      */
     public static Future<?> deleteFeed(final Context context, final long feedId) {
         return dbExec.submit(() -> {
-            DownloadRequester requester = DownloadRequester.getInstance();
+            //DownloadRequester requester = DownloadRequester.getInstance();
             final Feed feed = DBReader.getFeed(feedId);
             if (feed == null) {
                 return;
@@ -189,7 +189,7 @@ public class DBWriter {
      * Deleting media also removes the download log entries.
      */
     private static void deleteFeedItemsSynchronous(@NonNull Context context, @NonNull List<FeedItem> items) {
-        DownloadRequester requester = DownloadRequester.getInstance();
+        //DownloadRequester requester = DownloadRequester.getInstance();
         List<FeedItem> queue = DBReader.getQueue();
         List<FeedItem> removedFromQueue = new ArrayList<>();
         for (FeedItem item : items) {
@@ -204,9 +204,9 @@ public class DBWriter {
                 }
                 if (item.getMedia().isDownloaded()) {
                     deleteFeedMediaSynchronous(context, item.getMedia());
-                } else if (requester.isDownloadingFile(item.getMedia())) {
+                } /*else if (requester.isDownloadingFile(item.getMedia())) {
                     requester.cancelDownload(context, item.getMedia());
-                }
+                }*/
             }
         }
 

@@ -1,4 +1,4 @@
-package de.danoeh.antennapod.core.service.download;
+package de.danoeh.antennapod.net.downloadservice;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -9,9 +9,11 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import de.danoeh.antennapod.core.ClientConfig;
 import de.danoeh.antennapod.core.R;
+import de.danoeh.antennapod.core.service.download.DownloadStatus;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.core.util.gui.NotificationUtils;
+import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
 
 import java.util.List;
 
@@ -27,12 +29,13 @@ public class DownloadServiceNotification {
     }
 
     private void setupNotificationBuilders() {
+
         notificationCompatBuilder = new NotificationCompat.Builder(context, NotificationUtils.CHANNEL_ID_DOWNLOADING)
                 .setOngoing(false)
                 .setWhen(0)
                 .setOnlyAlertOnce(true)
                 .setShowWhen(false)
-                .setContentIntent(ClientConfig.downloadServiceCallbacks.getNotificationContentIntent(context))
+                .setContentIntent(new MainActivityStarter(context).withOpenDownloadLogs().getPendingIntent())
                 .setSmallIcon(R.drawable.ic_notification_sync);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             notificationCompatBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
@@ -164,14 +167,14 @@ public class DownloadServiceNotification {
                 channelId = NotificationUtils.CHANNEL_ID_AUTO_DOWNLOAD;
                 titleId = R.string.auto_download_report_title;
                 iconId = R.drawable.ic_notification_new;
-                intent = ClientConfig.downloadServiceCallbacks.getAutoDownloadReportNotificationContentIntent(context);
+                intent = new MainActivityStarter(context).withOpenDownloadLogs().getPendingIntent();
                 id = R.id.notification_auto_download_report;
                 content = createAutoDownloadNotificationContent(reportQueue);
             } else {
                 channelId = NotificationUtils.CHANNEL_ID_DOWNLOAD_ERROR;
                 titleId = R.string.download_report_title;
                 iconId = R.drawable.ic_notification_sync_error;
-                intent = ClientConfig.downloadServiceCallbacks.getReportNotificationContentIntent(context);
+                intent = new MainActivityStarter(context).withOpenDownloadLogs().getPendingIntent();
                 id = R.id.notification_download_report;
                 content = createFailedDownloadNotificationContent(reportQueue);
             }
@@ -206,8 +209,8 @@ public class DownloadServiceNotification {
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(context.getText(R.string.authentication_notification_msg)
                         + ": " + resourceTitle))
                 .setSmallIcon(R.drawable.ic_notification_key)
-                .setAutoCancel(true)
-                .setContentIntent(ClientConfig.downloadServiceCallbacks.getAuthentificationNotificationContentIntent(context, downloadRequest));
+                .setAutoCancel(true);
+                //.setContentIntent(ClientConfig.downloadServiceCallbacks.getAuthentificationNotificationContentIntent(context, downloadRequest));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         }

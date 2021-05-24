@@ -22,8 +22,8 @@ class ItemEnqueuePositionCalculator {
     @NonNull
     private final EnqueueLocation enqueueLocation;
 
-    @VisibleForTesting
-    DownloadStateProvider downloadStateProvider = DownloadRequester.getInstance();
+    //@VisibleForTesting
+    //DownloadStateProvider downloadStateProvider = DownloadRequester.getInstance();
 
     public ItemEnqueuePositionCalculator(@NonNull EnqueueLocation enqueueLocation) {
         this.enqueueLocation = enqueueLocation;
@@ -74,7 +74,7 @@ class ItemEnqueuePositionCalculator {
 
         if (curItem != null
                 && curItem.getMedia() != null
-                && downloadStateProvider.isDownloadingFile(curItem.getMedia())) {
+                /*&& downloadStateProvider.isDownloadingFile(curItem.getMedia())*/) {
             return true;
         } else {
             return false;

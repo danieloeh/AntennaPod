@@ -23,7 +23,6 @@ import junit.framework.AssertionFailedError;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
-import de.danoeh.antennapod.core.service.download.DownloadService;
 import de.danoeh.antennapod.core.service.playback.PlaybackService;
 import de.danoeh.antennapod.core.storage.PodDBAdapter;
 import de.danoeh.antennapod.dialog.RatingDialog;
@@ -221,7 +220,7 @@ public class EspressoTestUtils {
     }
 
     public static void tryKillDownloadService() {
-        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        /*Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         context.stopService(new Intent(context, DownloadService.class));
         try {
             // Android has no reliable way to stop a service instantly.
@@ -232,7 +231,7 @@ public class EspressoTestUtils {
         } catch (ConditionTimeoutException e) {
             e.printStackTrace();
         }
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();*/
     }
 
     public static Matcher<View> actionBarOverflow() {
