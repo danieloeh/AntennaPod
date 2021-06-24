@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+            android:key="pref_nextcloud_gpodnet_description"
+            android:icon="@drawable/nextcloud_logo_svg"
+            android:summary="Use Nextcloud GPodder app to sync"/>
+    <Preference
+            android:key="pref_nextcloud_gpodder_connect"
+            android:title="@string/pref_nextcloud_gpodder_connect_title"
+            android:summary="@string/pref_nextcloud_gpodder_connect_summary"/>
+    <Preference
+            android:key="pref_nextcloud_gpodder_sync"
+            android:title="@string/pref_nextcloud_gpodder_sync_changes_title"
+            android:summary="@string/pref_nextcloud_gpodder_sync_changes_sum"/>
+    <Preference
+            android:key="pref_nextcloud_gpodder_force_full_sync"
+            android:title="@string/pref_nextcloud_gpodder_full_sync_title"
+            android:summary="@string/pref_nextcloud_gpodder_full_sync_sum"/>
+    <Preference
+            android:key="pref_nextcloud_gpodder_disconnect"
+            android:title="@string/pref_nextcloud_gpodder_disconnect_title"/>
+
+</PreferenceScreen>

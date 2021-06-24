@@ -22,7 +22,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat {
     private static final String PREF_SCREEN_USER_INTERFACE = "prefScreenInterface";
     private static final String PREF_SCREEN_PLAYBACK = "prefScreenPlayback";
     private static final String PREF_SCREEN_NETWORK = "prefScreenNetwork";
-    private static final String PREF_SCREEN_GPODDER = "prefScreenGpodder";
+    private static final String PREF_SCREEN_SYNCHRONIZATION = "prefScreenSynchronization";
     private static final String PREF_SCREEN_STORAGE = "prefScreenStorage";
     private static final String PREF_DOCUMENTATION = "prefDocumentation";
     private static final String PREF_VIEW_FORUM = "prefViewForum";
@@ -74,8 +74,8 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat {
             ((PreferenceActivity) getActivity()).openScreen(R.xml.preferences_network);
             return true;
         });
-        findPreference(PREF_SCREEN_GPODDER).setOnPreferenceClickListener(preference -> {
-            ((PreferenceActivity) getActivity()).openScreen(R.xml.preferences_gpodder);
+        findPreference(PREF_SCREEN_SYNCHRONIZATION).setOnPreferenceClickListener(preference -> {
+            ((PreferenceActivity) getActivity()).openScreen(R.xml.preferences_synchronization);
             return true;
         });
         findPreference(PREF_SCREEN_STORAGE).setOnPreferenceClickListener(preference -> {

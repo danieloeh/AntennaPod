@@ -28,7 +28,7 @@
             android:icon="@drawable/ic_network" />
 
     <Preference
-            android:key="prefScreenGpodder"
+            android:key="prefScreenSynchronization"
             android:title="@string/synchronization_pref"
             android:summary="@string/synchronization_sum"
             android:icon="@drawable/ic_star" />

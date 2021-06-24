@@ -263,11 +263,13 @@ public class SyncService extends Worker {
     }
 
     public static boolean isLastSyncSuccessful(Context context) {
+        //@todo move to service specific class
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
                 .getBoolean(PREF_LAST_SYNC_ATTEMPT_SUCCESS, false);
     }
 
     public static long getLastSyncAttempt(Context context) {
+        //@todo move to service specific class
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
                 .getLong(PREF_LAST_SYNC_ATTEMPT_TIMESTAMP, 0);
     }

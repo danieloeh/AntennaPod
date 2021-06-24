@@ -152,6 +152,8 @@ dependencies {
     implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.3'
     implementation 'com.annimon:stream:1.2.2'
 
+    implementation "com.github.nextcloud:Android-SingleSignOn:0.5.1"
+
     // Non-free dependencies:
     playImplementation 'com.google.android.play:core:1.8.0'
     compileOnly "com.google.android.wearable:wearable:$wearableSupportVersion"

@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.appcompat.app.ActionBar;
@@ -15,6 +17,9 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResult;
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResultListener;
+import com.nextcloud.android.sso.AccountImporter;
+import com.nextcloud.android.sso.exceptions.AccountImportCancelledException;
+import com.nextcloud.android.sso.helper.SingleAccountHelper;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
@@ -24,10 +29,12 @@ import de.danoeh.antennapod.fragment.preferences.GpodderPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.ImportExportPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.MainPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.NetworkPreferencesFragment;
+import de.danoeh.antennapod.fragment.preferences.NextcloudGpodderPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.NotificationPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.PlaybackPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.StoragePreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.SwipePreferencesFragment;
+import de.danoeh.antennapod.fragment.preferences.SynchronizationPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.UserInterfacePreferencesFragment;
 
 /**
@@ -75,8 +82,12 @@ public class PreferenceActivity extends AppCompatActivity implements SearchPrefe
             prefFragment = new ImportExportPreferencesFragment();
         } else if (screen == R.xml.preferences_autodownload) {
             prefFragment = new AutoDownloadPreferencesFragment();
+        } else if (screen == R.xml.preferences_synchronization) {
+            prefFragment = new SynchronizationPreferencesFragment();
         } else if (screen == R.xml.preferences_gpodder) {
             prefFragment = new GpodderPreferencesFragment();
+        } else if (screen == R.xml.preferences_nextcloud_gpodder) {
+            prefFragment = new NextcloudGpodderPreferencesFragment();
         } else if (screen == R.xml.preferences_playback) {
             prefFragment = new PlaybackPreferencesFragment();
         } else if (screen == R.xml.preferences_notifications) {
@@ -168,5 +179,28 @@ public class PreferenceActivity extends AppCompatActivity implements SearchPrefe
             PreferenceFragmentCompat fragment = openScreen(result.getResourceFile());
             result.highlight(fragment);
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        try {
+            AccountImporter.onActivityResult(requestCode, resultCode, data, this, account -> {
+                // As this library supports multiple accounts we created some helper methods if you only want to use one.
+                // The following line stores the selected account as the "default" account which can be queried by using
+                // the SingleAccountHelper.getCurrentSingleSignOnAccount(context) method
+                SingleAccountHelper.setCurrentAccount(getApplicationContext(), account.name);
+            });
+        } catch (AccountImportCancelledException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        AccountImporter.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 }

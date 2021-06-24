@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translate="false">AntennaPod</string>
+    <string name="pref_nextcloud_gpodder_connect_title">connect</string>
+    <string name="pref_nextcloud_gpodder_connect_summary">connect to nextcloud gpodder app</string>
+    <string name="pref_nextcloud_gpodder_disconnect_title">disconnect from nextcloud gpodder</string>
+    <string name="pref_nextcloud_gpodder_sync_changes_title">do sync</string>
+    <string name="pref_nextcloud_gpodder_sync_changes_sum">do sync now</string>
+    <string name="pref_nextcloud_gpodder_full_sync_title">do full sync</string>
+    <string name="pref_nextcloud_gpodder_full_sync_sum">do full sync now</string>
+    <string name="GPodder_net">GPodder.net</string>
 </resources>

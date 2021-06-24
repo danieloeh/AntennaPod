@@ -352,7 +352,7 @@
     <string name="storage_sum">Episode auto delete, Import, Export</string>
     <string name="project_pref">Project</string>
     <string name="synchronization_pref">Synchronization</string>
-    <string name="synchronization_sum">Synchronize with other devices using gpodder.net</string>
+    <string name="synchronization_sum">Synchronize with other devices</string>
     <string name="automation">Automation</string>
     <string name="download_pref_details">Details</string>
     <string name="import_export_pref">Import/Export</string>
