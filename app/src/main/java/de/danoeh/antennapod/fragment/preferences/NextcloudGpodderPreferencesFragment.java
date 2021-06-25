@@ -53,9 +53,6 @@ public class NextcloudGpodderPreferencesFragment extends PreferenceFragmentCompa
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void syncStatusChanged(SyncServiceEvent event) {
         updateGpodnetPreferenceScreen();
-        if (!GpodnetPreferences.loggedIn()) {
-            return;
-        }
         if (event.getMessageResId() == R.string.sync_status_error
                 || event.getMessageResId() == R.string.sync_status_success) {
             updateLastGpodnetSyncReport(SyncService.isLastSyncSuccessful(getContext()),

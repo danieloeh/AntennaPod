@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.collection.ArrayMap;
 import androidx.core.app.NotificationCompat;
@@ -19,6 +20,7 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+
 import de.danoeh.antennapod.core.R;
 import de.danoeh.antennapod.core.event.SyncServiceEvent;
 import de.danoeh.antennapod.model.feed.Feed;
@@ -43,8 +45,10 @@ import de.danoeh.antennapod.net.sync.model.ISyncService;
 import de.danoeh.antennapod.net.sync.model.SubscriptionChanges;
 import de.danoeh.antennapod.net.sync.model.SyncServiceException;
 import de.danoeh.antennapod.net.sync.model.UploadChangesResponse;
+import de.danoeh.antennapod.net.sync.nextcloud_gpodder.NextcloudGpodderService;
 import io.reactivex.Completable;
 import io.reactivex.schedulers.Schedulers;
+
 import org.apache.commons.lang3.StringUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
@@ -69,29 +73,39 @@ public class SyncService extends Worker {
     private static final String WORK_ID_SYNC = "SyncServiceWorkId";
     private static final ReentrantLock lock = new ReentrantLock();
 
-    private ISyncService syncServiceImpl;
+    private final ArrayList<ISyncService> syncServices = new ArrayList<>();
 
     public SyncService(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
+        if (!GpodnetPreferences.loggedIn()) {
+            syncServices.add(new GpodnetService(AntennapodHttpClient.getHttpClient(),
+                    GpodnetPreferences.getHosturl(), GpodnetPreferences.getDeviceID(),
+                    GpodnetPreferences.getUsername(), GpodnetPreferences.getPassword()));
+
+        }
+        syncServices.add(new NextcloudGpodderService(getApplicationContext()));
+
     }
 
     @Override
     @NonNull
     public Result doWork() {
-        if (!GpodnetPreferences.loggedIn()) {
-            return Result.success();
-        }
-        syncServiceImpl = new GpodnetService(AntennapodHttpClient.getHttpClient(),
-                GpodnetPreferences.getHosturl(), GpodnetPreferences.getDeviceID(),
-                GpodnetPreferences.getUsername(), GpodnetPreferences.getPassword());
         SharedPreferences.Editor prefs = getApplicationContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
                 .edit();
+
+        for (ISyncService syncService : syncServices) {
+            getResultForService(prefs, syncService);
+        }
+        return Result.success();
+    }
+
+    private Result getResultForService(SharedPreferences.Editor prefs, ISyncService syncServiceImpl) {
         prefs.putLong(PREF_LAST_SYNC_ATTEMPT_TIMESTAMP, System.currentTimeMillis()).apply();
         try {
             syncServiceImpl.login();
             EventBus.getDefault().postSticky(new SyncServiceEvent(R.string.sync_status_subscriptions));
-            syncSubscriptions();
-            syncEpisodeActions();
+            syncSubscriptions(syncServiceImpl);
+            syncEpisodeActions(syncServiceImpl);
             syncServiceImpl.logout();
             clearErrorNotifications();
             EventBus.getDefault().postSticky(new SyncServiceEvent(R.string.sync_status_success));
@@ -112,19 +126,16 @@ public class SyncService extends Worker {
     public static void clearQueue(Context context) {
         executeLockedAsync(() ->
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit()
-                    .putLong(PREF_LAST_SUBSCRIPTION_SYNC_TIMESTAMP, 0)
-                    .putLong(PREF_LAST_EPISODE_ACTIONS_SYNC_TIMESTAMP, 0)
-                    .putLong(PREF_LAST_SYNC_ATTEMPT_TIMESTAMP, 0)
-                    .putString(PREF_QUEUED_EPISODE_ACTIONS, "[]")
-                    .putString(PREF_QUEUED_FEEDS_ADDED, "[]")
-                    .putString(PREF_QUEUED_FEEDS_REMOVED, "[]")
-                    .apply());
+                        .putLong(PREF_LAST_SUBSCRIPTION_SYNC_TIMESTAMP, 0)
+                        .putLong(PREF_LAST_EPISODE_ACTIONS_SYNC_TIMESTAMP, 0)
+                        .putLong(PREF_LAST_SYNC_ATTEMPT_TIMESTAMP, 0)
+                        .putString(PREF_QUEUED_EPISODE_ACTIONS, "[]")
+                        .putString(PREF_QUEUED_FEEDS_ADDED, "[]")
+                        .putString(PREF_QUEUED_FEEDS_REMOVED, "[]")
+                        .apply());
     }
 
     public static void enqueueFeedAdded(Context context, String downloadUrl) {
-        if (!GpodnetPreferences.loggedIn()) {
-            return;
-        }
         executeLockedAsync(() -> {
             try {
                 SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -140,9 +151,6 @@ public class SyncService extends Worker {
     }
 
     public static void enqueueFeedRemoved(Context context, String downloadUrl) {
-        if (!GpodnetPreferences.loggedIn()) {
-            return;
-        }
         executeLockedAsync(() -> {
             try {
                 SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -158,9 +166,6 @@ public class SyncService extends Worker {
     }
 
     public static void enqueueEpisodeAction(Context context, EpisodeAction action) {
-        if (!GpodnetPreferences.loggedIn()) {
-            return;
-        }
         executeLockedAsync(() -> {
             try {
                 SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -176,9 +181,6 @@ public class SyncService extends Worker {
     }
 
     public static void enqueueEpisodePlayed(Context context, FeedMedia media, boolean completed) {
-        if (!GpodnetPreferences.loggedIn()) {
-            return;
-        }
         if (media.getItem() == null) {
             return;
         }
@@ -258,7 +260,7 @@ public class SyncService extends Worker {
                     lock.unlock();
                 }
             }).subscribeOn(Schedulers.io())
-                .subscribe();
+                    .subscribe();
         }
     }
 
@@ -319,7 +321,7 @@ public class SyncService extends Worker {
         return actions;
     }
 
-    private void syncSubscriptions() throws SyncServiceException {
+    private void syncSubscriptions(ISyncService syncServiceImpl) throws SyncServiceException {
         final long lastSync = getApplicationContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
                 .getLong(PREF_LAST_SUBSCRIPTION_SYNC_TIMESTAMP, 0);
         final List<String> localSubscriptions = DBReader.getFeedListDownloadUrls();
@@ -376,7 +378,7 @@ public class SyncService extends Worker {
                 .putLong(PREF_LAST_SUBSCRIPTION_SYNC_TIMESTAMP, newTimeStamp).apply();
     }
 
-    private void syncEpisodeActions() throws SyncServiceException {
+    private void syncEpisodeActions(ISyncService syncServiceImpl) throws SyncServiceException {
         final long lastSync = getApplicationContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
                 .getLong(PREF_LAST_EPISODE_ACTIONS_SYNC_TIMESTAMP, 0);
         EventBus.getDefault().postSticky(new SyncServiceEvent(R.string.sync_status_episodes_download));
