@@ -77,12 +77,10 @@ public class SyncService extends Worker {
 
     public SyncService(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
-        if (!GpodnetPreferences.loggedIn()) {
-            syncServices.add(new GpodnetService(AntennapodHttpClient.getHttpClient(),
-                    GpodnetPreferences.getHosturl(), GpodnetPreferences.getDeviceID(),
-                    GpodnetPreferences.getUsername(), GpodnetPreferences.getPassword()));
+        syncServices.add(new GpodnetService(AntennapodHttpClient.getHttpClient(),
+                GpodnetPreferences.getHosturl(), GpodnetPreferences.getDeviceID(),
+                GpodnetPreferences.getUsername(), GpodnetPreferences.getPassword()));
 
-        }
         syncServices.add(new NextcloudGpodderService(getApplicationContext()));
 
     }
@@ -94,7 +92,9 @@ public class SyncService extends Worker {
                 .edit();
 
         for (ISyncService syncService : syncServices) {
-            getResultForService(prefs, syncService);
+            if (syncService.authenticated()) {
+                getResultForService(prefs, syncService);
+            }
         }
         return Result.success();
     }

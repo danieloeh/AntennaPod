@@ -454,6 +454,7 @@
     <string name="pref_gpodnet_full_sync_title">Force full synchronization</string>
     <string name="pref_gpodnet_full_sync_sum">Sync all subscriptions and episode states with gpodder.net.</string>
     <string name="pref_gpodnet_login_status"><![CDATA[Logged in as <i>%1$s</i> with device <i>%2$s</i>]]></string>
+    <string name="pref_nextcloud_gpodder_login_status"><![CDATA[Logged in as <i>%1$s</i>]]></string>
     <string name="pref_playback_speed_sum">Customize the speeds available for variable speed playback</string>
     <string name="pref_feed_playback_speed_sum">The speed to use when starting audio playback for episodes in this podcast</string>
     <string name="pref_feed_skip">Auto Skip</string>

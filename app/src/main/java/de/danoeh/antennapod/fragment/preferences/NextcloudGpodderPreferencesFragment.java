@@ -10,7 +10,11 @@ import android.text.format.DateUtils;
 import com.google.android.material.snackbar.Snackbar;
 import com.nextcloud.android.sso.AccountImporter;
 import com.nextcloud.android.sso.exceptions.AndroidGetAccountsPermissionNotGranted;
+import com.nextcloud.android.sso.exceptions.NextcloudFilesAppAccountNotFoundException;
 import com.nextcloud.android.sso.exceptions.NextcloudFilesAppNotInstalledException;
+import com.nextcloud.android.sso.exceptions.NoCurrentAccountSelectedException;
+import com.nextcloud.android.sso.helper.SingleAccountHelper;
+import com.nextcloud.android.sso.model.SingleSignOnAccount;
 import com.nextcloud.android.sso.ui.UiExceptionManager;
 
 import de.danoeh.antennapod.R;
@@ -85,15 +89,23 @@ public class NextcloudGpodderPreferencesFragment extends PreferenceFragmentCompa
     }
 
     private void updateGpodnetPreferenceScreen() {
-        final boolean loggedIn = true; //@todo get current user
+        boolean loggedIn = false;
+        String ssoAccountName = "n/a";
+        try {
+            ssoAccountName = SingleAccountHelper.getCurrentSingleSignOnAccount(getContext()).name;
+            loggedIn = true;
+        } catch (NextcloudFilesAppAccountNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoCurrentAccountSelectedException e) {
+            e.printStackTrace();
+        }
         findPreference(PREF_GPODNET_LOGIN).setEnabled(!loggedIn);
         findPreference(PREF_GPODNET_SYNC).setEnabled(loggedIn);
         findPreference(PREF_GPODNET_FORCE_FULL_SYNC).setEnabled(loggedIn);
         findPreference(PREF_GPODNET_LOGOUT).setEnabled(loggedIn);
         if (loggedIn) {
-            String format = getActivity().getString(R.string.pref_gpodnet_login_status);
-            String summary = String.format(format, GpodnetPreferences.getUsername(),
-                    GpodnetPreferences.getDeviceID());
+            String format = getActivity().getString(R.string.pref_nextcloud_gpodder_login_status);
+            String summary = String.format(format, ssoAccountName);
             Spanned formattedSummary = HtmlCompat.fromHtml(summary, HtmlCompat.FROM_HTML_MODE_LEGACY);
             findPreference(PREF_GPODNET_LOGOUT).setSummary(formattedSummary);
             updateLastGpodnetSyncReport(SyncService.isLastSyncSuccessful(getContext()),
@@ -118,7 +130,4 @@ public class NextcloudGpodderPreferencesFragment extends PreferenceFragmentCompa
             UiExceptionManager.showDialogForException(getContext(), e);
         }
     }
-
-
-
 }

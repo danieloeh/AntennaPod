@@ -601,6 +601,11 @@ public class GpodnetService implements ISyncService {
     }
 
 
+    @Override
+    public boolean authenticated() {
+        return this.deviceId != null;
+    }
+
     /**
      * Logs in a specific user. This method must be called if any of the methods
      * that require authentication is used.

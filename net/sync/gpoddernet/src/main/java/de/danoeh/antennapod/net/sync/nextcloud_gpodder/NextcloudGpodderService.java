@@ -57,6 +57,18 @@ public class NextcloudGpodderService implements ISyncService {
     }
 
     @Override
+    public boolean authenticated() {
+        try {
+            SingleAccountHelper.getCurrentSingleSignOnAccount(mContext);
+            return true;
+        } catch (NextcloudFilesAppAccountNotFoundException e) {
+            return false;
+        } catch (NoCurrentAccountSelectedException e) {
+            return false;
+        }
+    }
+
+    @Override
     public void login() throws SyncServiceException {
         SingleSignOnAccount ssoAccount = null;
         try {
@@ -68,12 +80,10 @@ public class NextcloudGpodderService implements ISyncService {
             NextcloudAPI.ApiConnectedListener callback = new NextcloudAPI.ApiConnectedListener() {
                 @Override
                 public void onConnected() {
-                    // ignore this one… see 5)
                 }
 
                 @Override
                 public void onError(Exception ex) {
-                    // TODO handle errors
                 }
             };
             this.nextcloudAPI = new NextcloudAPI(mContext, ssoAccount, new GsonBuilder().create(), callback);

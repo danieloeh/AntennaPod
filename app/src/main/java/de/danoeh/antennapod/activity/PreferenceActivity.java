@@ -201,6 +201,7 @@ public class PreferenceActivity extends AppCompatActivity implements SearchPrefe
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
+        //@todo verify that app is installed
         AccountImporter.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 }
