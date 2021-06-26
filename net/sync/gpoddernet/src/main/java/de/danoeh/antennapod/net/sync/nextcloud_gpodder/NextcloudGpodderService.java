@@ -57,7 +57,7 @@ public class NextcloudGpodderService implements ISyncService {
     }
 
     @Override
-    public boolean authenticated() {
+    public boolean isAuthenticated() {
         try {
             SingleAccountHelper.getCurrentSingleSignOnAccount(mContext);
             return true;

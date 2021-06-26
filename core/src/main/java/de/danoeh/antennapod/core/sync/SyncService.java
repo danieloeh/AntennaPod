@@ -92,7 +92,7 @@ public class SyncService extends Worker {
                 .edit();
 
         for (ISyncService syncService : syncServices) {
-            if (syncService.authenticated()) {
+            if (syncService.isAuthenticated()) {
                 getResultForService(prefs, syncService);
             }
         }

@@ -67,8 +67,6 @@ public class NextcloudGpodderPreferencesFragment extends PreferenceFragmentCompa
     }
 
     private void setupGpodderScreen() {
-        final Activity activity = getActivity();
-
         findPreference(PREF_GPODNET_LOGIN).setOnPreferenceClickListener(preference -> {
             openAccountChooser();
             updateGpodnetPreferenceScreen();
@@ -84,6 +82,8 @@ public class NextcloudGpodderPreferencesFragment extends PreferenceFragmentCompa
         });
         findPreference(PREF_GPODNET_LOGOUT).setOnPreferenceClickListener(preference -> {
             //@todo unset nextcloud account
+            SingleAccountHelper.setCurrentAccount(getContext(), null);
+            updateGpodnetPreferenceScreen();
             return true;
         });
     }

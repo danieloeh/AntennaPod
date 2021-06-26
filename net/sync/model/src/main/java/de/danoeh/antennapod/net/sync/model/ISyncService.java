@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface ISyncService {
 
-    boolean authenticated();
+    boolean isAuthenticated();
 
     void login() throws SyncServiceException;
 
