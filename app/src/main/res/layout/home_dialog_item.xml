@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center"
+    android:paddingVertical="4dp">
+
+    <ImageView
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:importantForAccessibility="no"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
+        android:paddingEnd="16dp"
+        android:paddingRight="16dp"
+        android:scaleType="fitCenter"
+        app:srcCompat="?attr/dragview_background" />
+
+    <TextView
+        android:id="@+id/txtvSectionTitle"
+        android:textSize="20sp"
+        android:singleLine="true"
+        android:textColor="?android:attr/textColorPrimary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:checkMark="@drawable/ic_check"
+        android:ellipsize="end"
+        android:gravity="start"
+        android:importantForAccessibility="no" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:focusable="false"/>
+
+</LinearLayout>
+

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:custom="http://schemas.android.com/apk/res-auto">
+    xmlns:custom="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/action_search"
@@ -26,6 +26,14 @@
         custom:showAsAction="ifRoom"/>
 
     <item
+        android:id="@+id/mark_all_item"
+        android:title="@string/mark_all_label"
+        android:menuCategory="container"
+        custom:showAsAction="collapseActionView"
+        android:visible="false"
+        android:icon="@drawable/ic_check"/>
+
+    <item
         android:id="@+id/mark_all_read_item"
         android:title="@string/mark_all_read_label"
         android:menuCategory="container"
@@ -40,5 +48,12 @@
         custom:showAsAction="collapseActionView"
         android:visible="false"
         android:icon="@drawable/ic_check"/>
+
+    <item
+        android:id="@+id/swipe_settings"
+        android:title="@string/swipeactions_label"
+        android:menuCategory="container"
+        custom:showAsAction="collapseActionView"
+        android:visible="false" />
 
 </menu>

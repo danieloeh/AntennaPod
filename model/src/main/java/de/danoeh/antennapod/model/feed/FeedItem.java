@@ -248,6 +248,9 @@ public class FeedItem extends FeedComponent implements Serializable {
         return state == NEW;
     }
 
+    public int getPlayState() {
+        return state;
+    }
 
     public void setNew() {
         state = NEW;
@@ -375,6 +378,10 @@ public class FeedItem extends FeedComponent implements Serializable {
             failedAttempts = 10;
         }
         return failedAttempts;
+    }
+
+    public boolean isDownloaded() {
+        return media != null && media.isDownloaded();
     }
 
     public boolean isAutoDownloadable() {

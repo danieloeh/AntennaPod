@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -15,15 +16,18 @@ import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.core.dialog.ConfirmationDialog;
 import de.danoeh.antennapod.core.event.settings.SkipIntroEndingChangedEvent;
 import de.danoeh.antennapod.core.event.settings.SpeedPresetChangedEvent;
 import de.danoeh.antennapod.core.event.settings.VolumeAdaptionChangedEvent;
-import de.danoeh.antennapod.model.feed.Feed;
-import de.danoeh.antennapod.model.feed.FeedFilter;
-import de.danoeh.antennapod.model.feed.FeedPreferences;
-import de.danoeh.antennapod.model.feed.VolumeAdaptionSetting;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
 import de.danoeh.antennapod.core.storage.DBReader;
 import de.danoeh.antennapod.core.storage.DBWriter;
@@ -31,16 +35,15 @@ import de.danoeh.antennapod.dialog.AuthenticationDialog;
 import de.danoeh.antennapod.dialog.EpisodeFilterDialog;
 import de.danoeh.antennapod.dialog.FeedPreferenceSkipDialog;
 import de.danoeh.antennapod.dialog.TagSettingsDialog;
+import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.model.feed.FeedFilter;
+import de.danoeh.antennapod.model.feed.FeedPreferences;
+import de.danoeh.antennapod.model.feed.VolumeAdaptionSetting;
 import io.reactivex.Maybe;
 import io.reactivex.MaybeOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import org.greenrobot.eventbus.EventBus;
-
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
 
 import static de.danoeh.antennapod.model.feed.FeedPreferences.SPEED_USE_GLOBAL;
 

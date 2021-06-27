@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
@@ -29,7 +30,7 @@ public class EpisodeItemListAdapter extends RecyclerView.Adapter<EpisodeItemView
 
     private final WeakReference<MainActivity> mainActivityRef;
     private List<FeedItem> episodes = new ArrayList<>();
-    private FeedItem selectedItem;
+    public MutableLiveData<FeedItem> selectedItem = new MutableLiveData<>();
 
     public EpisodeItemListAdapter(MainActivity mainActivity) {
         super();
@@ -64,7 +65,8 @@ public class EpisodeItemListAdapter extends RecyclerView.Adapter<EpisodeItemView
         FeedItem item = episodes.get(pos);
         holder.bind(item);
         holder.itemView.setOnLongClickListener(v -> {
-            selectedItem = item;
+            //sync
+            selectedItem.setValue(item);
             return false;
         });
         holder.itemView.setOnClickListener(v -> {
@@ -114,7 +116,7 @@ public class EpisodeItemListAdapter extends RecyclerView.Adapter<EpisodeItemView
 
     @Nullable
     public FeedItem getSelectedItem() {
-        return selectedItem;
+        return selectedItem.getValue();
     }
 
     @Override
@@ -140,7 +142,7 @@ public class EpisodeItemListAdapter extends RecyclerView.Adapter<EpisodeItemView
     public void onCreateContextMenu(final ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         MenuInflater inflater = mainActivityRef.get().getMenuInflater();
         inflater.inflate(R.menu.feeditemlist_context, menu);
-        menu.setHeaderTitle(selectedItem.getTitle());
-        FeedItemMenuHandler.onPrepareMenu(menu, selectedItem, R.id.skip_episode_item);
+        menu.setHeaderTitle(getSelectedItem().getTitle());
+        FeedItemMenuHandler.onPrepareMenu(menu, getSelectedItem(), R.id.skip_episode_item);
     }
 }

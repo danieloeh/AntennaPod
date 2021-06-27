@@ -10,7 +10,9 @@
     <string name="feeds_label">Podcasts</string>
     <string name="statistics_label">Statistics</string>
     <string name="add_feed_label">Add Podcast</string>
+    <string name="home_label">Home</string>
     <string name="episodes_label">Episodes</string>
+    <string name="inbox_label">Inbox</string>
     <string name="queue_label">Queue</string>
     <string name="all_episodes_short_label">All</string>
     <string name="new_episodes_label">New</string>
@@ -34,6 +36,28 @@
 
     <!-- Google Assistant -->
     <string name="app_action_not_found">\"%1$s\" not found</string>
+
+    <!-- SwipeActions -->
+    <string name="swipeactions_label">Swipe Actions</string>
+    <string name="swipe_right">Swipe Right</string>
+    <string name="swipe_left">Swipe Left</string>
+    <string-array name="swipe_actions">
+        <item>@string/add_to_queue_label</item>
+        <item>@string/remove_new_flag_label</item>
+        <item>@string/download_label</item>
+        <item>@string/add_to_favorite_label</item>
+        <item>@string/mark_read_label</item>
+    </string-array>
+
+    <!-- Home fragment -->
+    <string name="surprise_title">Get surprised</string>
+    <string name="classics_title">Check your classics</string>
+    <string name="continue_title">Continue listening</string>
+    <string name="rediscover_title">Rediscover podcasts</string>
+    <string name="new_title">Review the new</string>
+    <string name="navigate_arrows">%s »</string>
+    <string name="bottom_half">Bottom Half</string>
+    <string name="home_dialog_min_one_section">At least one section must be selected.</string>
 
     <!-- Statistics fragment -->
     <string name="total_time_listened_to_podcasts">Total time of episodes played:</string>
@@ -148,6 +172,13 @@
     <string name="new_episode_notification_group_text">Your subscriptions have new episodes.</string>
 
     <!-- Actions on feeds -->
+    <string name="mark_all_label">Mark all as...</string>
+    <string-array name="mark_all_array">
+        <item>@string/played_label</item>
+        <item>@string/remove_all_new_flags_label</item>
+    </string-array>
+    <string name="mark_all_confirmation_msg">Please confirm that you want to mark all episodes as %s.</string>
+    <string name="removed_all_msg">Marked all \"%s\" flags</string>
     <string name="mark_all_read_label">Mark all as played</string>
     <string name="mark_all_read_msg">Marked all Episodes as played</string>
     <string name="mark_all_read_confirmation_msg">Please confirm that you want to mark all episodes as being played.</string>
@@ -197,6 +228,8 @@
     <string name="remove_new_flag_label">Remove \"new\" flag</string>
     <string name="removed_new_flag_label">Removed \"new\" flag</string>
     <string name="mark_read_label">Mark as played</string>
+    <string name="marked_read_label">Marked as played</string>
+    <string name="marked_unread_label">Marked as unplayed</string>
     <string name="mark_read_no_media_label">Mark as read</string>
     <string name="play_this_to_seek_position">To jump to positions, you need to play the episode</string>
     <plurals name="marked_read_batch_label">
@@ -257,6 +290,7 @@
     <string name="download_canceled_autodownload_enabled_msg">Download canceled\nDisabled <i>Auto Download</i> for this item</string>
     <string name="download_report_title">Downloads completed with error(s)</string>
     <string name="auto_download_report_title">Auto-downloads completed</string>
+    <string name="already_downloaded">Download already completed</string>
     <string name="download_error_io_error">IO Error</string>
     <string name="download_error_request_error">Request Error</string>
     <string name="download_error_db_access">Database Access Error</string>

@@ -62,6 +62,8 @@ public class NavDrawerFragment extends Fragment implements SharedPreferences.OnS
     public static final String TAG = "NavDrawerFragment";
 
     public static final String[] NAV_DRAWER_TAGS = {
+            HomeFragment.TAG,
+            InboxFragment.TAG,
             QueueFragment.TAG,
             EpisodesFragment.TAG,
             SubscriptionFragment.TAG,

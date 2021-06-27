@@ -22,13 +22,15 @@ import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.widget.IconTextView;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.PreferenceActivity;
+import de.danoeh.antennapod.fragment.HomeFragment;
+import de.danoeh.antennapod.fragment.InboxFragment;
+import de.danoeh.antennapod.fragment.EpisodesFragment;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.core.glide.ApGlideSettings;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
 import de.danoeh.antennapod.core.storage.NavDrawerData;
 import de.danoeh.antennapod.fragment.AddFeedFragment;
 import de.danoeh.antennapod.fragment.DownloadsFragment;
-import de.danoeh.antennapod.fragment.EpisodesFragment;
 import de.danoeh.antennapod.fragment.NavDrawerFragment;
 import de.danoeh.antennapod.fragment.PlaybackHistoryFragment;
 import de.danoeh.antennapod.fragment.QueueFragment;
@@ -109,6 +111,10 @@ public class NavListAdapter extends RecyclerView.Adapter<NavListAdapter.Holder>
 
     private @DrawableRes int getDrawable(String tag) {
         switch (tag) {
+            case HomeFragment.TAG:
+                return R.drawable.ic_home;
+            case InboxFragment.TAG:
+                return R.drawable.ic_inbox;
             case QueueFragment.TAG:
                 return R.drawable.ic_playlist;
             case EpisodesFragment.TAG:
@@ -223,18 +229,24 @@ public class NavListAdapter extends RecyclerView.Adapter<NavListAdapter.Holder>
         holder.count.setOnClickListener(null);
 
         String tag = fragmentTags.get(position);
-        if (tag.equals(QueueFragment.TAG)) {
+        if (tag.equals(InboxFragment.TAG)) {
+            int newItems = itemAccess.getNumberOfNewItems();
+            if (newItems > 0) {
+                holder.count.setText(NumberFormat.getInstance().format(newItems));
+                holder.count.setVisibility(View.VISIBLE);
+            }
+        } else if (tag.equals(QueueFragment.TAG)) {
             int queueSize = itemAccess.getQueueSize();
             if (queueSize > 0) {
                 holder.count.setText(NumberFormat.getInstance().format(queueSize));
                 holder.count.setVisibility(View.VISIBLE);
             }
-        } else if (tag.equals(EpisodesFragment.TAG)) {
+        /*} else if (tag.equals(PowerEpisodesFragment.TAG)) {
             int unreadItems = itemAccess.getNumberOfNewItems();
             if (unreadItems > 0) {
                 holder.count.setText(NumberFormat.getInstance().format(unreadItems));
                 holder.count.setVisibility(View.VISIBLE);
-            }
+            }*/
         } else if (tag.equals(SubscriptionFragment.TAG)) {
             int sum = itemAccess.getFeedCounterSum();
             if (sum > 0) {

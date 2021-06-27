@@ -230,6 +230,16 @@ public final class DBReader {
         }
     }
 
+    @NonNull
+    static List<FeedItem> getPausedQueue(PodDBAdapter adapter, int limit) {
+        Log.d(TAG, "getQueue()");
+        try (Cursor cursor = adapter.getPausedQueueCursor(limit)) {
+            List<FeedItem> items = extractItemlistFromCursor(adapter, cursor);
+            loadAdditionalFeedItemListData(items);
+            return items;
+        }
+    }
+
     /**
      * Loads the IDs of the FeedItems in the queue. This method should be preferred over
      * {@link #getQueue()} if the FeedItems of the queue are not needed.
@@ -271,6 +281,19 @@ public final class DBReader {
         adapter.open();
         try {
             return getQueue(adapter);
+        } finally {
+            adapter.close();
+        }
+    }
+
+    @NonNull
+    public static List<FeedItem> getPausedQueue(int limit) {
+        Log.d(TAG, "getQueue() called");
+
+        PodDBAdapter adapter = PodDBAdapter.getInstance();
+        adapter.open();
+        try {
+            return getPausedQueue(adapter, limit);
         } finally {
             adapter.close();
         }
@@ -384,18 +407,23 @@ public final class DBReader {
      * @param filter The filter describing which episodes to filter out.
      */
     @NonNull
-    public static List<FeedItem> getRecentlyPublishedEpisodes(int offset, int limit, FeedItemFilter filter) {
+    public static List<FeedItem> getRecentlyPublishedEpisodes(int offset, int limit, FeedItemFilter filter, boolean randomOrder) {
         Log.d(TAG, "getRecentlyPublishedEpisodes() called with: offset=" + offset + ", limit=" + limit);
 
         PodDBAdapter adapter = PodDBAdapter.getInstance();
         adapter.open();
-        try (Cursor cursor = adapter.getRecentlyPublishedItemsCursor(offset, limit, filter)) {
+        try (Cursor cursor = adapter.getRecentlyPublishedItemsCursor(offset, limit, filter, randomOrder)) {
             List<FeedItem> items = extractItemlistFromCursor(adapter, cursor);
             loadAdditionalFeedItemListData(items);
             return items;
         } finally {
             adapter.close();
         }
+    }
+
+    @NonNull
+    public static List<FeedItem> getRecentlyPublishedEpisodes(int offset, int limit, FeedItemFilter filter) {
+        return getRecentlyPublishedEpisodes(offset, limit, filter, false);
     }
 
     /**
@@ -814,7 +842,7 @@ public final class DBReader {
      * items.
      */
     @NonNull
-    public static NavDrawerData getNavDrawerData() {
+    public static NavDrawerData getNavDrawerData(Integer feedOrder) {
         Log.d(TAG, "getNavDrawerData() called with: " + "");
         PodDBAdapter adapter = PodDBAdapter.getInstance();
         adapter.open();
@@ -824,7 +852,9 @@ public final class DBReader {
         List<Feed> feeds = subscriptionsFilter.filter(getFeedList(adapter), feedCounters);
 
         Comparator<Feed> comparator;
-        int feedOrder = UserPreferences.getFeedOrder();
+        if (feedOrder == null) {
+            feedOrder = UserPreferences.getFeedOrder();
+        }
         if (feedOrder == UserPreferences.FEED_ORDER_COUNTER) {
             comparator = (lhs, rhs) -> {
                 long counterLhs = feedCounters.get(lhs.getId());
@@ -908,5 +938,10 @@ public final class DBReader {
                 feedCounters, UserPreferences.getEpisodeCleanupAlgorithm().getReclaimableItems());
         adapter.close();
         return result;
+    }
+
+    @NonNull
+    public static NavDrawerData getNavDrawerData() {
+        return getNavDrawerData(null);
     }
 }

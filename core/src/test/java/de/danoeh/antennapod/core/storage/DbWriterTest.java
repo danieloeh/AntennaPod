@@ -828,7 +828,7 @@ public class DbWriterTest {
             assertTrue(item.getId() != 0);
         }
 
-        DBWriter.markAllItemsRead().get(TIMEOUT, TimeUnit.SECONDS);
+        DBWriter.markAllItemsRead(FeedItem.PLAYED).get(TIMEOUT, TimeUnit.SECONDS);
         List<FeedItem> loadedItems = DBReader.getFeedItemList(feed);
         for (FeedItem item : loadedItems) {
             assertTrue(item.isPlayed());

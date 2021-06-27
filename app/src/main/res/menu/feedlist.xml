@@ -17,19 +17,18 @@
         custom:showAsAction="always">
     </item>
     <item
-        android:id="@+id/refresh_item"
-        android:icon="@drawable/ic_refresh"
-        android:menuCategory="container"
-        android:title="@string/refresh_label"
-        custom:showAsAction="always">
-    </item>
-    <item
         android:id="@+id/refresh_complete_item"
         android:menuCategory="container"
         android:title="@string/load_complete_feed"
         custom:showAsAction="collapseActionView">
     </item>
 
+    <item
+        android:id="@+id/refresh_item"
+        android:icon="@drawable/ic_refresh"
+        android:menuCategory="container"
+        android:title="@string/refresh_label"
+        custom:showAsAction="always"></item>
     <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search"
@@ -69,6 +68,12 @@
             </item>
         </menu>
     </item>
+
+    <item
+        android:id="@+id/swipe_settings"
+        android:title="@string/swipeactions_label"
+        android:menuCategory="container"
+        custom:showAsAction="never" />
 
 
     <item

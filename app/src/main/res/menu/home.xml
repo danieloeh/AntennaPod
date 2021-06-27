@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search"
+        custom:showAsAction="collapseActionView|always"
+        custom:actionViewClass="androidx.appcompat.widget.SearchView"
+        android:title="@string/search_label"/>
+
+    <item
+        android:id="@+id/homesettings_items"
+        android:icon="@drawable/ic_settings"
+        android:menuCategory="container"
+        android:title="@string/settings_label"
+        custom:showAsAction="always"/>
+
+</menu>

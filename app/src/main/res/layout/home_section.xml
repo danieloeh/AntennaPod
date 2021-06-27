@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sectionRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingBottom="4dp">
+
+    <TextView
+        android:id="@+id/sectionTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/sectionNavigate"
+        android:layout_alignBottom="@id/sectionNavigate"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="16dp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="18sp"
+        tools:text="Title" />
+
+    <ImageButton
+        android:id="@+id/shuffleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/sectionTitle"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginVertical="8dp"
+        android:layout_toEndOf="@+id/sectionTitle"
+        android:layout_toRightOf="@+id/sectionTitle"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:srcCompat="@drawable/ic_shuffle"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/sectionNavigate"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:paddingVertical="0dp"
+        android:layout_marginEnd="16dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/sectionRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sectionNavigate"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:clipToPadding="false"
+        android:paddingHorizontal="16dp">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+</RelativeLayout>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:navigationIcon="?homeAsUpIndicator"
+            android:id="@+id/toolbar"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtvInformation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:visibility="gone"
+            tools:text="(i) Information" />
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/loadingMore"
+            android:layout_below="@+id/txtvInformation">
+
+            <de.danoeh.antennapod.view.EpisodeItemListRecyclerView
+                android:id="@android:id/list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="0dp"
+                android:paddingHorizontal="@dimen/additional_horizontal_spacing"
+                android:paddingTop="@dimen/list_vertical_padding"
+                android:paddingBottom="@dimen/list_vertical_padding"
+                tools:itemCount="13"
+                tools:listitem="@layout/feeditemlist_item" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <ProgressBar
+            android:id="@+id/progLoading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:indeterminateOnly="true"
+            android:visibility="gone"
+            tools:background="@android:color/holo_red_light" />
+
+        <LinearLayout
+            android:id="@+id/loadingMore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingTop="4dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="4dp"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:gravity="center_horizontal"
+                android:indeterminateOnly="true"
+                tools:background="@android:color/holo_red_light" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:text="@string/loading_more" />
+
+        </LinearLayout>
+
+        <com.addisonelliott.segmentedbutton.SegmentedButtonGroup
+            android:id="@+id/floatingFilter"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="16dp"
+            android:background="?attr/background_elevated"
+            android:elevation="6dp"
+            android:visibility="gone"
+            app:position="0"
+            app:radius="30dp"
+            app:rippleColor="?attr/colorControlHighlight"
+            app:selectedBackground="@color/highlight_light"
+            app:selectionAnimationDuration="50">
+
+            <com.addisonelliott.segmentedbutton.SegmentedButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="8dp"
+                app:drawable="@drawable/ic_list" />
+
+            <com.addisonelliott.segmentedbutton.SegmentedButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="8dp"
+                app:drawable="@drawable/ic_play_24dp" />
+
+            <com.addisonelliott.segmentedbutton.SegmentedButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="8dp"
+                app:drawable="@drawable/ic_download" />
+
+            <com.addisonelliott.segmentedbutton.SegmentedButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="8dp"
+                app:drawable="@drawable/ic_star" />
+
+        </com.addisonelliott.segmentedbutton.SegmentedButtonGroup>
+
+    </RelativeLayout>
+
+</LinearLayout>

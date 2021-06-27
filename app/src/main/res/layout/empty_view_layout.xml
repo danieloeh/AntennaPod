@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              android:gravity="center"
-              android:layout_centerInParent="true"
-              android:paddingLeft="40dp"
-              android:paddingRight="40dp"
-              xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingLeft="40dp"
+    android:paddingRight="40dp">
 
     <ImageView
-            android:id="@+id/emptyViewIcon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:visibility="gone"
-            tools:src="@drawable/ic_feed"
-            tools:visibility="visible"/>
+        android:id="@+id/emptyViewIcon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:visibility="gone"
+        tools:src="@drawable/ic_feed"
+        tools:visibility="visible" />
 
     <TextView
-            android:id="@+id/emptyViewTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="Title"
-            android:textSize="16sp"
-            android:textColor="?android:attr/textColorPrimary"/>
+        android:id="@+id/emptyViewTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="16sp"
+        tools:text="Title" />
 
     <TextView
-            android:id="@+id/emptyViewMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            tools:text="Message"
-            android:textAlignment="center"/>
+        android:id="@+id/emptyViewMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        tools:text="Message" />
 
 </LinearLayout>

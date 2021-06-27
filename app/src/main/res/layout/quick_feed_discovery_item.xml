@@ -8,13 +8,13 @@
         android:clipToPadding="false">
 
     <de.danoeh.antennapod.ui.common.SquareImageView
-            android:id="@+id/discovery_cover"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:elevation="4dp"
-            android:outlineProvider="bounds"
-            android:foreground="?android:attr/selectableItemBackground"
-            squareImageView:direction="width" />
+        android:id="@+id/discovery_cover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="4dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:outlineProvider="bounds"
+        squareImageView:direction="width" />
 
 </LinearLayout>
 

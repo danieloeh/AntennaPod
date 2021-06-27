@@ -107,6 +107,8 @@ android {
     dexOptions {
         jumboMode true
     }
+
+
 }
 
 dependencies {
@@ -149,6 +151,11 @@ dependencies {
     implementation 'com.github.mfietz:fyydlin:v0.5.0'
     implementation 'com.github.ByteHamster:SearchPreference:v2.0.0'
     implementation 'com.github.skydoves:balloon:1.1.5'
+    implementation 'com.github.addisonelliott:SegmentedButton:3.1.9'
+    implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.3'
+    implementation 'com.github.ueen:slush:1.2.4.1'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.0'
+    implementation 'com.annimon:stream:1.2.2'
 
     // Non-free dependencies:
     playImplementation 'com.google.android.play:core:1.8.0'

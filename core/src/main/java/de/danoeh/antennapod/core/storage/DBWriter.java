@@ -7,8 +7,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import de.danoeh.antennapod.core.sync.SyncService;
-import de.danoeh.antennapod.net.sync.model.EpisodeAction;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
@@ -32,23 +30,25 @@ import de.danoeh.antennapod.core.event.MessageEvent;
 import de.danoeh.antennapod.core.event.PlaybackHistoryEvent;
 import de.danoeh.antennapod.core.event.QueueEvent;
 import de.danoeh.antennapod.core.event.UnreadItemsUpdateEvent;
-import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.core.feed.FeedEvent;
-import de.danoeh.antennapod.model.feed.FeedItem;
-import de.danoeh.antennapod.model.feed.FeedMedia;
-import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.core.preferences.GpodnetPreferences;
 import de.danoeh.antennapod.core.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
 import de.danoeh.antennapod.core.service.download.DownloadStatus;
 import de.danoeh.antennapod.core.service.playback.PlaybackService;
+import de.danoeh.antennapod.core.sync.SyncService;
 import de.danoeh.antennapod.core.util.FeedItemPermutors;
 import de.danoeh.antennapod.core.util.IntentUtils;
 import de.danoeh.antennapod.core.util.LongList;
 import de.danoeh.antennapod.core.util.Permutor;
+import de.danoeh.antennapod.core.util.playback.PlayableUtils;
+import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.model.feed.FeedItem;
+import de.danoeh.antennapod.model.feed.FeedMedia;
+import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.model.playback.Playable;
-import de.danoeh.antennapod.core.util.playback.PlayableUtils;
+import de.danoeh.antennapod.net.sync.model.EpisodeAction;
 
 /**
  * Provides methods for writing data to AntennaPod's database.
@@ -535,6 +535,14 @@ public class DBWriter {
         }
     }
 
+    public static Future<?> toggleFavoriteItem(final FeedItem item) {
+        if (item.isTagged(FeedItem.TAG_FAVORITE)) {
+            return removeFavoriteItem(item);
+        } else {
+            return addFavoriteItem(item);
+        }
+    }
+
     public static Future<?> addFavoriteItem(final FeedItem item) {
         return dbExec.submit(() -> {
             final PodDBAdapter adapter = PodDBAdapter.getInstance().open();
@@ -741,11 +749,11 @@ public class DBWriter {
     /**
      * Sets the 'read'-attribute of all FeedItems to PLAYED.
      */
-    public static Future<?> markAllItemsRead() {
+    public static Future<?> markAllItemsRead(int state) {
         return dbExec.submit(() -> {
             final PodDBAdapter adapter = PodDBAdapter.getInstance();
             adapter.open();
-            adapter.setFeedItems(FeedItem.PLAYED);
+            adapter.setFeedItems(state);
             adapter.close();
 
             EventBus.getDefault().post(new UnreadItemsUpdateEvent());

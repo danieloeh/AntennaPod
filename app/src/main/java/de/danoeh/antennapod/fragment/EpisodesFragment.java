@@ -4,125 +4,234 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
+import androidx.transition.ChangeBounds;
+import androidx.transition.TransitionManager;
+import androidx.transition.TransitionSet;
 
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
+import com.addisonelliott.segmentedbutton.SegmentedButtonGroup;
+import com.joanzapata.iconify.Iconify;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
+import java.util.Set;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
-import de.danoeh.antennapod.menuhandler.MenuItemUtils;
+import de.danoeh.antennapod.core.storage.DBReader;
+import de.danoeh.antennapod.core.util.download.AutoUpdateManager;
+import de.danoeh.antennapod.dialog.FilterDialog;
+import de.danoeh.antennapod.model.feed.FeedItem;
+import de.danoeh.antennapod.model.feed.FeedItemFilter;
+import de.danoeh.antennapod.view.EmptyViewHandler;
 
-public class EpisodesFragment extends PagedToolbarFragment {
+public class EpisodesFragment extends EpisodesListFragment {
 
-    public static final String TAG = "EpisodesFragment";
-    private static final String PREF_LAST_TAB_POSITION = "tab_position";
-    private static final String KEY_UP_ARROW = "up_arrow";
+    public static final String TAG = "PowerEpisodesFragment";
+    private static final String PREF_NAME = "PrefPowerEpisodesFragment";
+    private static final String PREF_POSITION = "position";
 
-    private static final int POS_NEW_EPISODES = 0;
-    private static final int POS_ALL_EPISODES = 1;
-    private static final int POS_FAV_EPISODES = 2;
-    private static final int TOTAL_COUNT = 3;
+    public static final String PREF_FILTER = "filter";
 
-    private TabLayout tabLayout;
-    private boolean displayUpArrow;
+    private FeedItemFilter feedItemFilter = new FeedItemFilter("");
+
+    public EpisodesFragment() {
+        super();
+    }
+
+    public EpisodesFragment(boolean hideToolbar) {
+        super();
+        this.hideToolbar = hideToolbar;
+    }
+
+    private SegmentedButtonGroup floatingQuickFilter;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+
+        feedItemFilter = new FeedItemFilter(getPrefFilter());
     }
 
+    @NonNull
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        View rootView = inflater.inflate(R.layout.pager_fragment, container, false);
-        Toolbar toolbar = rootView.findViewById(R.id.toolbar);
+        View rootView = super.onCreateView(inflater, container, savedInstanceState);
+
         toolbar.setTitle(R.string.episodes_label);
-        toolbar.inflateMenu(R.menu.episodes);
-        MenuItemUtils.setupSearchItem(toolbar.getMenu(), (MainActivity) getActivity(), 0, "");
-        displayUpArrow = getParentFragmentManager().getBackStackEntryCount() != 0;
-        if (savedInstanceState != null) {
-            displayUpArrow = savedInstanceState.getBoolean(KEY_UP_ARROW);
-        }
-        ((MainActivity) getActivity()).setupToolbarToggle(toolbar, displayUpArrow);
 
-        ViewPager2 viewPager = rootView.findViewById(R.id.viewpager);
-        viewPager.setAdapter(new EpisodesPagerAdapter(this));
-        viewPager.setOffscreenPageLimit(2);
-        super.setupPagedToolbar(toolbar, viewPager);
-
-        // Give the TabLayout the ViewPager
-        tabLayout = rootView.findViewById(R.id.sliding_tabs);
-
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+        floatingQuickFilter = rootView.findViewById(R.id.floatingFilter);
+        floatingQuickFilter.setVisibility(View.VISIBLE);
+        floatingQuickFilter.setOnPositionChangedListener(position -> {
+            String newFilter;
             switch (position) {
-                case POS_NEW_EPISODES:
-                    tab.setText(R.string.new_episodes_label);
-                    break;
-                case POS_ALL_EPISODES:
-                    tab.setText(R.string.all_episodes_short_label);
-                    break;
-                case POS_FAV_EPISODES:
-                    tab.setText(R.string.favorite_episodes_label);
-                    break;
                 default:
+                case QUICKFILTER_ALL:
+                    newFilter = getPrefFilter();
+                    break;
+                case QUICKFILTER_NEW:
+                    newFilter = "unplayed";
+                    break;
+                case QUICKFILTER_DOWNLOADED:
+                    newFilter = "downloaded";
+                    break;
+                case QUICKFILTER_FAV:
+                    newFilter = "is_favorite";
                     break;
             }
-        }).attach();
+            updateFeedItemFilter(newFilter);
+        });
 
-        // restore our last position
-        SharedPreferences prefs = getActivity().getSharedPreferences(TAG, Context.MODE_PRIVATE);
-        int lastPosition = prefs.getInt(PREF_LAST_TAB_POSITION, 0);
-        viewPager.setCurrentItem(lastPosition, false);
+        setSwipeActions(TAG);
 
-        return rootView;
+        return  rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        SharedPreferences prefs = getActivity().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        setQuickFilterPosition(prefs.getInt(PREF_POSITION, QUICKFILTER_ALL));
+        loadArgsIfAvailable();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        // save our tab selection
-        SharedPreferences prefs = getActivity().getSharedPreferences(TAG, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt(PREF_LAST_TAB_POSITION, tabLayout.getSelectedTabPosition());
-        editor.apply();
+        SharedPreferences prefs = getActivity().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putInt(PREF_POSITION, floatingQuickFilter.getPosition()).apply();
+    }
+
+    public String getPrefFilter() {
+        SharedPreferences prefs = getActivity().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        return prefs.getString(PREF_FILTER, "");
+    }
+
+    private void loadArgsIfAvailable() {
+        if (getArguments() != null) {
+            int argumentsFilter = getArguments().getInt(PREF_FILTER, -1);
+            if (argumentsFilter >= 0) {
+                setQuickFilterPosition(argumentsFilter);
+            }
+        }
+    }
+
+
+    @Override
+    protected String getPrefName() {
+        return PREF_NAME;
+    }
+
+    public void setQuickFilterPosition(int position) {
+        floatingQuickFilter.setPosition(position, false);
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putBoolean(KEY_UP_ARROW, displayUpArrow);
-        super.onSaveInstanceState(outState);
-    }
-
-    static class EpisodesPagerAdapter extends FragmentStateAdapter {
-
-        EpisodesPagerAdapter(@NonNull Fragment fragment) {
-            super(fragment);
-        }
-
-        @NonNull
-        @Override
-        public Fragment createFragment(int position) {
-            switch (position) {
-                case POS_NEW_EPISODES:
-                    return new NewEpisodesFragment();
-                case POS_ALL_EPISODES:
-                    return new AllEpisodesFragment();
-                default:
-                case POS_FAV_EPISODES:
-                    return new FavoriteEpisodesFragment();
+    public boolean onMenuItemClick(MenuItem item) {
+        if (!super.onMenuItemClick(item)) {
+            if (item.getItemId() == R.id.filter_items) {
+                AutoUpdateManager.runImmediate(requireContext());
+                setQuickFilterPosition(QUICKFILTER_ALL);
+                showFilterDialog();
+            } else {
+                return false;
             }
         }
 
-        @Override
-        public int getItemCount() {
-            return TOTAL_COUNT;
+        return true;
+    }
+
+    private void savePrefsBoolean(String s, Boolean b) {
+        SharedPreferences prefs = getActivity().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putBoolean(s, b).apply();
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.filter_items).setVisible(true);
+        menu.findItem(R.id.mark_all_item).setVisible(true);
+        menu.findItem(R.id.swipe_settings).setVisible(true);
+        menu.findItem(R.id.refresh_item).setVisible(false);
+    }
+
+    @Override
+    protected void onFragmentLoaded(List<FeedItem> episodes) {
+        super.onFragmentLoaded(episodes);
+
+        //smoothly animate filter info
+        TransitionSet auto = new TransitionSet();
+        auto.addTransition(new ChangeBounds());
+        auto.excludeChildren(EmptyViewHandler.class, true);
+        auto.excludeChildren(R.id.swipeRefresh, true);
+        auto.excludeChildren(R.id.floatingFilter, true);
+        TransitionManager.beginDelayedTransition(
+                (ViewGroup) txtvInformation.getParent(),
+                auto);
+
+        if (feedItemFilter.getValues().length > 0) {
+            txtvInformation.setText("{md-info-outline} " + this.getString(R.string.filtered_label));
+            Iconify.addIcons(txtvInformation);
+            txtvInformation.setVisibility(View.VISIBLE);
+        } else {
+            txtvInformation.setVisibility(View.GONE);
         }
+
+        setEmptyView(TAG + floatingQuickFilter.getPosition());
+    }
+
+    private void showFilterDialog() {
+        SharedPreferences prefs = getActivity().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        FeedItemFilter prefFilter = new FeedItemFilter(prefs.getString(PREF_FILTER, ""));
+        FilterDialog filterDialog = new FilterDialog(getContext(), prefFilter) {
+            @Override
+            protected void updateFilter(Set<String> filterValues) {
+                feedItemFilter = new FeedItemFilter(filterValues.toArray(new String[0]));
+                prefs.edit().putString(PREF_FILTER, StringUtils.join(filterValues, ",")).apply();
+                loadItems();
+            }
+        };
+
+        filterDialog.openDialog();
+    }
+
+    public void updateFeedItemFilter(String strings) {
+        feedItemFilter = new FeedItemFilter(strings);
+        loadItems();
+    }
+
+    @Override
+    protected boolean shouldUpdatedItemRemainInList(FeedItem item) {
+        SharedPreferences prefs = getActivity().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        FeedItemFilter feedItemFilter = new FeedItemFilter(prefs.getString(PREF_FILTER, ""));
+
+        if (feedItemFilter.isShowDownloaded() && (!item.hasMedia() || !item.getMedia().isDownloaded())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @NonNull
+    @Override
+    protected List<FeedItem> loadData() {
+        return load(0);
+    }
+
+    private List<FeedItem> load(int offset) {
+        int limit = EPISODES_PER_PAGE;
+        return DBReader.getRecentlyPublishedEpisodes(offset, limit, feedItemFilter);
+    }
+
+    @NonNull
+    @Override
+    protected List<FeedItem> loadMoreData() {
+        return load((page - 1) * EPISODES_PER_PAGE);
     }
 }

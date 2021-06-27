@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/dialogRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:hint="@string/bottom_half"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingVertical="2dp" >
+
+        <AutoCompleteTextView
+            android:id="@+id/homeSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            android:focusable="false"
+            android:enabled="false"
+            android:focusableInTouchMode="false"
+            android:cursorVisible="false" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+</LinearLayout>

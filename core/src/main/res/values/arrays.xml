@@ -202,6 +202,8 @@
     </string-array>
 
     <string-array name="nav_drawer_titles">
+        <item>@string/home_label</item>
+        <item>@string/inbox_label</item>
         <item>@string/queue_label</item>
         <item>@string/episodes_label</item>
         <item>@string/subscriptions_label</item>
@@ -336,14 +338,11 @@
     </string-array>
 
     <string-array name="back_button_go_to_pages">
+        <item>@string/home_label</item>
+        <item>@string/inbox_label</item>
         <item>@string/queue_label</item>
         <item>@string/episodes_label</item>
         <item>@string/subscriptions_label</item>
     </string-array>
 
-    <string-array name="back_button_go_to_pages_tags">
-        <item>QueueFragment</item>
-        <item>EpisodesFragment</item>
-        <item>SubscriptionFragment</item>
-    </string-array>
 </resources>
