@@ -44,7 +44,6 @@ public class NextcloudGpodderService implements ISyncService {
     public NextcloudGpodderService(Context mContext) {
         this.mContext = mContext;
     }
-
     @Override
     public boolean isAuthenticated() {
         try {
