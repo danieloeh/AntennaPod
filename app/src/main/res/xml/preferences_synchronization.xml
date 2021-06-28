@@ -7,7 +7,7 @@
         android:key="prefScreenGpodder"
         android:title="@string/GPodder_net"
         android:summary="Synchronize with GPodder.net"
-        android:icon="@drawable/ic_star" />
+        android:icon="@drawable/gpodder_icon" />
 
     <Preference
         android:key="prefScreenNextcloudGpodder"
