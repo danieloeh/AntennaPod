@@ -10,4 +10,5 @@
     <string name="pref_nextcloud_gpodder_full_sync_sum">do full sync now</string>
     <string name="GPodder_net">GPodder.net</string>
     <string name="synchronization">Synchronization</string>
+    <string name="pref_nextcloud_gpodder_description_summary">Use Nextcloud GPodder app to sync. You need an account on a nextcloud server that has GPodder app installed.</string>
 </resources>

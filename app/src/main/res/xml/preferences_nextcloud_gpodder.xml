@@ -4,7 +4,7 @@
     <Preference
             android:key="pref_nextcloud_gpodnet_description"
             android:icon="@drawable/nextcloud_logo_svg"
-            android:summary="Use Nextcloud GPodder app to sync"/>
+            android:summary="@string/pref_nextcloud_gpodder_description_summary"/>
     <Preference
             android:key="pref_nextcloud_gpodder_connect"
             android:title="@string/pref_nextcloud_gpodder_connect_title"
