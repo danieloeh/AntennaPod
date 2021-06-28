@@ -9,4 +9,5 @@
     <string name="pref_nextcloud_gpodder_full_sync_title">do full sync</string>
     <string name="pref_nextcloud_gpodder_full_sync_sum">do full sync now</string>
     <string name="GPodder_net">GPodder.net</string>
+    <string name="synchronization">Synchronization</string>
 </resources>

@@ -27,7 +27,7 @@ public class SynchronizationPreferencesFragment extends PreferenceFragmentCompat
     @Override
     public void onStart() {
         super.onStart();
-        ((PreferenceActivity) getActivity()).getSupportActionBar().setTitle("Synchronization");
+        ((PreferenceActivity) getActivity()).getSupportActionBar().setTitle(R.string.synchronization);
     }
 
     @Override
