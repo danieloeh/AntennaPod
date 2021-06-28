@@ -2,15 +2,10 @@ package de.danoeh.antennapod.fragment.preferences;
 
 import android.os.Bundle;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceFragmentCompat;
-
-import java.io.File;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.PreferenceActivity;
-import de.danoeh.antennapod.core.preferences.UserPreferences;
-import de.danoeh.antennapod.dialog.ChooseDataFolderDialog;
 
 public class SynchronizationPreferencesFragment extends PreferenceFragmentCompat {
     private static final String TAG = "SynchronizationPrefFragment";
@@ -28,11 +23,6 @@ public class SynchronizationPreferencesFragment extends PreferenceFragmentCompat
     public void onStart() {
         super.onStart();
         ((PreferenceActivity) getActivity()).getSupportActionBar().setTitle(R.string.synchronization);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
     private void setupStorageScreen() {
