@@ -7,7 +7,6 @@ import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.appcompat.app.ActionBar;
@@ -197,11 +196,4 @@ public class PreferenceActivity extends AppCompatActivity implements SearchPrefe
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        //@todo verify that app is installed
-        AccountImporter.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
 }
