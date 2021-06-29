@@ -45,7 +45,7 @@ import de.danoeh.antennapod.net.sync.model.ISyncService;
 import de.danoeh.antennapod.net.sync.model.SubscriptionChanges;
 import de.danoeh.antennapod.net.sync.model.SyncServiceException;
 import de.danoeh.antennapod.net.sync.model.UploadChangesResponse;
-import de.danoeh.antennapod.net.sync.nextcloud_gpodder.NextcloudGpodderService;
+import de.danoeh.antennapod.net.sync.nextcloud.NextcloudSyncService;
 import io.reactivex.Completable;
 import io.reactivex.schedulers.Schedulers;
 
@@ -81,7 +81,7 @@ public class SyncService extends Worker {
                 GpodnetPreferences.getHosturl(), GpodnetPreferences.getDeviceID(),
                 GpodnetPreferences.getUsername(), GpodnetPreferences.getPassword()));
 
-        syncServices.add(new NextcloudGpodderService(getApplicationContext()));
+        syncServices.add(new NextcloudSyncService(getApplicationContext()));
 
     }
 

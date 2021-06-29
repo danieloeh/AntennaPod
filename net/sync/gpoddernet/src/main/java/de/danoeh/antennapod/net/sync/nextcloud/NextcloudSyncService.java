@@ -1,4 +1,4 @@
-package de.danoeh.antennapod.net.sync.nextcloud_gpodder;
+package de.danoeh.antennapod.net.sync.nextcloud;
 
 import android.content.Context;
 import android.net.Uri;
@@ -36,12 +36,12 @@ import de.danoeh.antennapod.net.sync.model.UploadChangesResponse;
 
 import static java.time.Instant.now;
 
-public class NextcloudGpodderService implements ISyncService {
+public class NextcloudSyncService implements ISyncService {
 
     private final Context mContext;
     private NextcloudAPI nextcloudAPI;
 
-    public NextcloudGpodderService(Context mContext) {
+    public NextcloudSyncService(Context mContext) {
         this.mContext = mContext;
     }
     @Override
@@ -66,6 +66,7 @@ public class NextcloudGpodderService implements ISyncService {
                 e.printStackTrace();
             }
             NextcloudAPI.ApiConnectedListener callback = new NextcloudAPI.ApiConnectedListener() {
+
                 @Override
                 public void onConnected() {
                 }

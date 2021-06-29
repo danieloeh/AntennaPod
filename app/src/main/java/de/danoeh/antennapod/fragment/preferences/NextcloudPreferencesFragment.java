@@ -1,33 +1,28 @@
 package de.danoeh.antennapod.fragment.preferences;
 
-import android.app.Activity;
 import android.os.Bundle;
 import androidx.core.text.HtmlCompat;
 import androidx.preference.PreferenceFragmentCompat;
 
 import android.text.Spanned;
 import android.text.format.DateUtils;
-import com.google.android.material.snackbar.Snackbar;
 import com.nextcloud.android.sso.AccountImporter;
 import com.nextcloud.android.sso.exceptions.AndroidGetAccountsPermissionNotGranted;
 import com.nextcloud.android.sso.exceptions.NextcloudFilesAppAccountNotFoundException;
 import com.nextcloud.android.sso.exceptions.NextcloudFilesAppNotInstalledException;
 import com.nextcloud.android.sso.exceptions.NoCurrentAccountSelectedException;
 import com.nextcloud.android.sso.helper.SingleAccountHelper;
-import com.nextcloud.android.sso.model.SingleSignOnAccount;
 import com.nextcloud.android.sso.ui.UiExceptionManager;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.PreferenceActivity;
 import de.danoeh.antennapod.core.event.SyncServiceEvent;
-import de.danoeh.antennapod.core.preferences.GpodnetPreferences;
 import de.danoeh.antennapod.core.sync.SyncService;
-import de.danoeh.antennapod.dialog.AuthenticationDialog;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-public class NextcloudGpodderPreferencesFragment extends PreferenceFragmentCompat {
+public class NextcloudPreferencesFragment extends PreferenceFragmentCompat {
     private static final String PREF_GPODNET_LOGIN = "pref_nextcloud_gpodder_connect";
     private static final String PREF_GPODNET_SYNC = "pref_nextcloud_gpodder_sync";
     private static final String PREF_GPODNET_FORCE_FULL_SYNC = "pref_nextcloud_gpodder_force_full_sync";

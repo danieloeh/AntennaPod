@@ -29,7 +29,7 @@ import de.danoeh.antennapod.fragment.preferences.GpodderPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.ImportExportPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.MainPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.NetworkPreferencesFragment;
-import de.danoeh.antennapod.fragment.preferences.NextcloudGpodderPreferencesFragment;
+import de.danoeh.antennapod.fragment.preferences.NextcloudPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.NotificationPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.PlaybackPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.StoragePreferencesFragment;
@@ -87,7 +87,7 @@ public class PreferenceActivity extends AppCompatActivity implements SearchPrefe
         } else if (screen == R.xml.preferences_gpodder) {
             prefFragment = new GpodderPreferencesFragment();
         } else if (screen == R.xml.preferences_nextcloud_gpodder) {
-            prefFragment = new NextcloudGpodderPreferencesFragment();
+            prefFragment = new NextcloudPreferencesFragment();
         } else if (screen == R.xml.preferences_playback) {
             prefFragment = new PlaybackPreferencesFragment();
         } else if (screen == R.xml.preferences_notifications) {
