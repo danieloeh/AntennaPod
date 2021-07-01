@@ -30,15 +30,15 @@ public class NextcloudPreferencesFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        addPreferencesFromResource(R.xml.preferences_nextcloud_gpodder);
-        setupGpodderScreen();
+        addPreferencesFromResource(R.xml.preferences_nextcloud);
+        setupNextcloudScreen();
     }
 
     @Override
     public void onStart() {
         super.onStart();
         ((PreferenceActivity) getActivity()).getSupportActionBar().setTitle("Nextcloud GPodder");
-        updateGpodnetPreferenceScreen();
+        updateNextcloudPreferenceScreen();
         EventBus.getDefault().register(this);
     }
 
@@ -51,7 +51,7 @@ public class NextcloudPreferencesFragment extends PreferenceFragmentCompat {
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void syncStatusChanged(SyncServiceEvent event) {
-        updateGpodnetPreferenceScreen();
+        updateNextcloudPreferenceScreen();
         if (event.getMessageResId() == R.string.sync_status_error
                 || event.getMessageResId() == R.string.sync_status_success) {
             updateLastGpodnetSyncReport(SyncService.isLastSyncSuccessful(getContext()),
@@ -61,10 +61,10 @@ public class NextcloudPreferencesFragment extends PreferenceFragmentCompat {
         }
     }
 
-    private void setupGpodderScreen() {
+    private void setupNextcloudScreen() {
         findPreference(PREF_GPODNET_LOGIN).setOnPreferenceClickListener(preference -> {
             openAccountChooser();
-            updateGpodnetPreferenceScreen();
+            updateNextcloudPreferenceScreen();
             return true;
         });
         findPreference(PREF_GPODNET_SYNC).setOnPreferenceClickListener(preference -> {
@@ -76,14 +76,13 @@ public class NextcloudPreferencesFragment extends PreferenceFragmentCompat {
             return true;
         });
         findPreference(PREF_GPODNET_LOGOUT).setOnPreferenceClickListener(preference -> {
-            //@todo unset nextcloud account
             SingleAccountHelper.setCurrentAccount(getContext(), null);
-            updateGpodnetPreferenceScreen();
+            updateNextcloudPreferenceScreen();
             return true;
         });
     }
 
-    private void updateGpodnetPreferenceScreen() {
+    private void updateNextcloudPreferenceScreen() {
         boolean loggedIn = false;
         String ssoAccountName = "n/a";
         try {

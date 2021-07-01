@@ -33,7 +33,6 @@ import de.danoeh.antennapod.fragment.preferences.NotificationPreferencesFragment
 import de.danoeh.antennapod.fragment.preferences.PlaybackPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.StoragePreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.SwipePreferencesFragment;
-import de.danoeh.antennapod.fragment.preferences.SynchronizationPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.UserInterfacePreferencesFragment;
 
 /**
@@ -81,11 +80,9 @@ public class PreferenceActivity extends AppCompatActivity implements SearchPrefe
             prefFragment = new ImportExportPreferencesFragment();
         } else if (screen == R.xml.preferences_autodownload) {
             prefFragment = new AutoDownloadPreferencesFragment();
-        } else if (screen == R.xml.preferences_synchronization) {
-            prefFragment = new SynchronizationPreferencesFragment();
         } else if (screen == R.xml.preferences_gpodder) {
             prefFragment = new GpodderPreferencesFragment();
-        } else if (screen == R.xml.preferences_nextcloud_gpodder) {
+        } else if (screen == R.xml.preferences_nextcloud) {
             prefFragment = new NextcloudPreferencesFragment();
         } else if (screen == R.xml.preferences_playback) {
             prefFragment = new PlaybackPreferencesFragment();
