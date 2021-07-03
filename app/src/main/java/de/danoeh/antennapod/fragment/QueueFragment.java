@@ -3,6 +3,9 @@ package de.danoeh.antennapod.fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,6 +20,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -525,6 +529,76 @@ public class QueueFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                     Log.d(TAG, "Write to database move(" + from + ", " + to + ")");
                     DBWriter.moveQueueItem(from, to, true);
                 }
+
+                @Override
+                public void onChildDraw(Canvas c,
+                                        RecyclerView recyclerView,
+                                        RecyclerView.ViewHolder viewHolder,
+                                        float displacementX,
+                                        float displacementY,
+                                        int actionState,
+                                        boolean isCurrentlyActive) {
+                    if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                        View itemView = viewHolder.itemView;
+
+                        Paint p = new Paint();
+                        p.setColor(getResources().getColor(R.color.accent_dark));
+                        Drawable d = ContextCompat.getDrawable(getActivity(), R.drawable.ic_playlist_remove_black);
+                        int padding = 8;
+
+                        if (displacementX > 0) {
+                            c.drawRect((float) itemView.getLeft(), (float) itemView.getTop(), displacementX,
+                                    (float) itemView.getBottom(), p);
+                            if (displacementX >= d.getIntrinsicWidth() + padding) {
+                                d.setBounds(itemView.getLeft() + padding,
+                                        itemView.getTop()
+                                                + ((itemView.getBottom() - itemView.getTop()) / 2)
+                                                - d.getIntrinsicHeight() / 2,
+                                        d.getIntrinsicWidth() + padding,
+                                        itemView.getTop()
+                                                + ((itemView.getBottom() - itemView.getTop()) / 2)
+                                                + d.getIntrinsicHeight() / 2);
+                                d.draw(c);
+                            }
+                        } else {
+                            c.drawRect((float) itemView.getRight() + displacementX, (float) itemView.getTop(),
+                                    (float) itemView.getRight(), (float) itemView.getBottom(), p);
+                            if (displacementX <= - (d.getIntrinsicWidth() + padding)) {
+                                d.setBounds(itemView.getRight() - (d.getIntrinsicWidth() + padding),
+                                         itemView.getTop()
+                                                + ((itemView.getBottom() - itemView.getTop()) / 2)
+                                                 - d.getIntrinsicHeight() / 2,
+                                         itemView.getRight() - padding,
+                                         itemView.getTop()
+                                                + ((itemView.getBottom() - itemView.getTop()) / 2)
+                                                 + d.getIntrinsicHeight() / 2);
+                                d.draw(c);
+                            }
+                        }
+
+                        super.onChildDraw(c, recyclerView, viewHolder,
+                                displacementX, displacementY,
+                                actionState, isCurrentlyActive);
+                    }
+                }
+
+                @Override
+                public float getSwipeEscapeVelocity(float defaultValue) {
+                    return defaultValue * 2.0f;
+                }
+
+                @Override
+                public float getSwipeVelocityThreshold(float defaultValue) {
+                    return defaultValue * 0.4f;
+                }
+
+                @Override
+                public float getSwipeThreshold(RecyclerView.ViewHolder viewHolder) {
+                    return 0.6f;
+                }
+
+
+
             }
         );
         itemTouchHelper.attachToRecyclerView(recyclerView);
