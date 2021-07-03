@@ -22,6 +22,7 @@ import com.nextcloud.android.sso.helper.SingleAccountHelper;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
+import de.danoeh.antennapod.core.sync.SyncService;
 import de.danoeh.antennapod.databinding.SettingsActivityBinding;
 import de.danoeh.antennapod.fragment.preferences.AutoDownloadPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.GpodderPreferencesFragment;
@@ -187,6 +188,7 @@ public class PreferenceActivity extends AppCompatActivity implements SearchPrefe
                 // The following line stores the selected account as the "default" account which can be queried by using
                 // the SingleAccountHelper.getCurrentSingleSignOnAccount(context) method
                 SingleAccountHelper.setCurrentAccount(getApplicationContext(), account.name);
+                SyncService.setIsProviderConnected(getApplicationContext(), true);
             });
         } catch (AccountImportCancelledException e) {
             e.printStackTrace();

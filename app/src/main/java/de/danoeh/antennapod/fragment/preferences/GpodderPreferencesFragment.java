@@ -77,6 +77,7 @@ public class GpodderPreferencesFragment extends PreferenceFragmentCompat {
                         @Override
                         protected void onConfirmed(String username, String password) {
                             GpodnetPreferences.setPassword(password);
+                            SyncService.setIsProviderConnected(getContext(), true);
                         }
                     };
                     dialog.show();
@@ -93,6 +94,7 @@ public class GpodderPreferencesFragment extends PreferenceFragmentCompat {
         findPreference(PREF_GPODNET_LOGOUT).setOnPreferenceClickListener(preference -> {
             GpodnetPreferences.logout();
             Snackbar.make(getView(), R.string.pref_gpodnet_logout_toast, Snackbar.LENGTH_LONG).show();
+            SyncService.setIsProviderConnected(getContext(), false);
             updateGpodnetPreferenceScreen();
             return true;
         });

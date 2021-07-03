@@ -55,12 +55,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class SyncService extends Worker {
+    public static final String SHARED_PREFERENCES_SYNCHRONIZATION = "synchronization";
+    public static final String SHARED_PREFERENCE_SELECTED_SYNC_PROVIDER = "selected_sync_provider";
+    public static final String SHARED_PREFERENCE_IS_SYNC_PROVIDER_CONNECTED = "provider_is_connected";
+    public static final String SYNC_PROVIDER_CHOICE_GPODDER_NET = "GPodder.net";
+    public static final String SYNC_PROVIDER_CHOICE_NEXTCLOUD = "Nextcloud";
+
     private static final String PREF_NAME = "SyncService";
     private static final String PREF_LAST_SUBSCRIPTION_SYNC_TIMESTAMP = "last_sync_timestamp";
     private static final String PREF_LAST_EPISODE_ACTIONS_SYNC_TIMESTAMP = "last_episode_actions_sync_timestamp";
@@ -73,16 +80,15 @@ public class SyncService extends Worker {
     private static final String WORK_ID_SYNC = "SyncServiceWorkId";
     private static final ReentrantLock lock = new ReentrantLock();
 
-    private final ArrayList<ISyncService> syncServices = new ArrayList<>();
+    private final Map<String, ISyncService> syncServices = new HashMap<>();
 
     public SyncService(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
-        syncServices.add(new GpodnetService(AntennapodHttpClient.getHttpClient(),
+        syncServices.put(SYNC_PROVIDER_CHOICE_GPODDER_NET, new GpodnetService(AntennapodHttpClient.getHttpClient(),
                 GpodnetPreferences.getHosturl(), GpodnetPreferences.getDeviceID(),
                 GpodnetPreferences.getUsername(), GpodnetPreferences.getPassword()));
 
-        syncServices.add(new NextcloudSyncService(getApplicationContext()));
-
+        syncServices.put(SYNC_PROVIDER_CHOICE_NEXTCLOUD, new NextcloudSyncService(getApplicationContext()));
     }
 
     @Override
@@ -90,12 +96,10 @@ public class SyncService extends Worker {
     public Result doWork() {
         SharedPreferences.Editor prefs = getApplicationContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
                 .edit();
+        String selectedService = getSelectedSyncProviderKey(getApplicationContext());
+        ISyncService activeSyncProvider = getActiveSyncProvider(selectedService, this.syncServices);
+        getResultForService(prefs, activeSyncProvider);
 
-        for (ISyncService syncService : syncServices) {
-            if (syncService.isAuthenticated()) {
-                getResultForService(prefs, syncService);
-            }
-        }
         return Result.success();
     }
 
@@ -123,6 +127,18 @@ public class SyncService extends Worker {
         }
     }
 
+    public static void setIsProviderConnected(Context context, boolean isConnected) {
+        context.getSharedPreferences(SHARED_PREFERENCES_SYNCHRONIZATION, Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean(SHARED_PREFERENCE_IS_SYNC_PROVIDER_CONNECTED, isConnected)
+                .apply();
+    }
+
+    public static boolean isProviderConnected(Context context) {
+        return context.getSharedPreferences(SHARED_PREFERENCES_SYNCHRONIZATION, Context.MODE_PRIVATE)
+                .getBoolean(SHARED_PREFERENCE_IS_SYNC_PROVIDER_CONNECTED, false);
+    }
+
     public static void clearQueue(Context context) {
         executeLockedAsync(() ->
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit()
@@ -136,6 +152,9 @@ public class SyncService extends Worker {
     }
 
     public static void enqueueFeedAdded(Context context, String downloadUrl) {
+        if (!hasActiveSyncProvider(context)) {
+            return;
+        }
         executeLockedAsync(() -> {
             try {
                 SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -150,7 +169,23 @@ public class SyncService extends Worker {
         });
     }
 
+    private static boolean hasActiveSyncProvider(Context context) {
+        return getSelectedSyncProviderKey(context) != null && isProviderConnected(context);
+    }
+
+    private static String getSelectedSyncProviderKey(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(SHARED_PREFERENCES_SYNCHRONIZATION, Context.MODE_PRIVATE);
+        return preferences.getString(SHARED_PREFERENCE_SELECTED_SYNC_PROVIDER, null);
+    }
+
+    private static ISyncService getActiveSyncProvider(String selectedService, Map<String, ISyncService> syncProvider) {
+        return syncProvider.get(selectedService);
+    }
+
     public static void enqueueFeedRemoved(Context context, String downloadUrl) {
+        if (!hasActiveSyncProvider(context)) {
+            return;
+        }
         executeLockedAsync(() -> {
             try {
                 SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -166,6 +201,9 @@ public class SyncService extends Worker {
     }
 
     public static void enqueueEpisodeAction(Context context, EpisodeAction action) {
+        if (!hasActiveSyncProvider(context)) {
+            return;
+        }
         executeLockedAsync(() -> {
             try {
                 SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -181,6 +219,9 @@ public class SyncService extends Worker {
     }
 
     public static void enqueueEpisodePlayed(Context context, FeedMedia media, boolean completed) {
+        if (!hasActiveSyncProvider(context)) {
+            return;
+        }
         if (media.getItem() == null) {
             return;
         }

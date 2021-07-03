@@ -23,10 +23,10 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 public class NextcloudPreferencesFragment extends PreferenceFragmentCompat {
-    private static final String PREF_GPODNET_LOGIN = "pref_nextcloud_gpodder_connect";
-    private static final String PREF_GPODNET_SYNC = "pref_nextcloud_gpodder_sync";
-    private static final String PREF_GPODNET_FORCE_FULL_SYNC = "pref_nextcloud_gpodder_force_full_sync";
-    private static final String PREF_GPODNET_LOGOUT = "pref_nextcloud_gpodder_disconnect";
+    private static final String PREF_LOGIN = "pref_nextcloud_connect";
+    private static final String PREF_SYNC = "pref_nextcloud_sync";
+    private static final String PREF_FORCE_FULL_SYNC = "pref_nextcloud_force_full_sync";
+    private static final String PREF_LOGOUT = "pref_nextcloud_disconnect";
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -62,21 +62,22 @@ public class NextcloudPreferencesFragment extends PreferenceFragmentCompat {
     }
 
     private void setupNextcloudScreen() {
-        findPreference(PREF_GPODNET_LOGIN).setOnPreferenceClickListener(preference -> {
+        findPreference(PREF_LOGIN).setOnPreferenceClickListener(preference -> {
             openAccountChooser();
             updateNextcloudPreferenceScreen();
             return true;
         });
-        findPreference(PREF_GPODNET_SYNC).setOnPreferenceClickListener(preference -> {
+        findPreference(PREF_SYNC).setOnPreferenceClickListener(preference -> {
             SyncService.syncImmediately(getActivity().getApplicationContext());
             return true;
         });
-        findPreference(PREF_GPODNET_FORCE_FULL_SYNC).setOnPreferenceClickListener(preference -> {
+        findPreference(PREF_FORCE_FULL_SYNC).setOnPreferenceClickListener(preference -> {
             SyncService.fullSync(getContext());
             return true;
         });
-        findPreference(PREF_GPODNET_LOGOUT).setOnPreferenceClickListener(preference -> {
+        findPreference(PREF_LOGOUT).setOnPreferenceClickListener(preference -> {
             SingleAccountHelper.setCurrentAccount(getContext(), null);
+            SyncService.setIsProviderConnected(getContext(), false);
             updateNextcloudPreferenceScreen();
             return true;
         });
@@ -93,19 +94,19 @@ public class NextcloudPreferencesFragment extends PreferenceFragmentCompat {
         } catch (NoCurrentAccountSelectedException e) {
             e.printStackTrace();
         }
-        findPreference(PREF_GPODNET_LOGIN).setEnabled(!loggedIn);
-        findPreference(PREF_GPODNET_SYNC).setEnabled(loggedIn);
-        findPreference(PREF_GPODNET_FORCE_FULL_SYNC).setEnabled(loggedIn);
-        findPreference(PREF_GPODNET_LOGOUT).setEnabled(loggedIn);
+        findPreference(PREF_LOGIN).setEnabled(!loggedIn);
+        findPreference(PREF_SYNC).setEnabled(loggedIn);
+        findPreference(PREF_FORCE_FULL_SYNC).setEnabled(loggedIn);
+        findPreference(PREF_LOGOUT).setEnabled(loggedIn);
         if (loggedIn) {
             String format = getActivity().getString(R.string.pref_nextcloud_gpodder_login_status);
             String summary = String.format(format, ssoAccountName);
             Spanned formattedSummary = HtmlCompat.fromHtml(summary, HtmlCompat.FROM_HTML_MODE_LEGACY);
-            findPreference(PREF_GPODNET_LOGOUT).setSummary(formattedSummary);
+            findPreference(PREF_LOGOUT).setSummary(formattedSummary);
             updateLastGpodnetSyncReport(SyncService.isLastSyncSuccessful(getContext()),
                     SyncService.getLastSyncAttempt(getContext()));
         } else {
-            findPreference(PREF_GPODNET_LOGOUT).setSummary(null);
+            findPreference(PREF_LOGOUT).setSummary(null);
         }
     }
 

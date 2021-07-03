@@ -6,19 +6,19 @@
             android:icon="@drawable/nextcloud_logo_svg"
             android:summary="@string/pref_nextcloud_gpodder_description_summary"/>
     <Preference
-            android:key="pref_nextcloud_gpodder_connect"
+            android:key="pref_nextcloud_connect"
             android:title="@string/pref_nextcloud_gpodder_connect_title"
             android:summary="@string/pref_nextcloud_gpodder_connect_summary"/>
     <Preference
-            android:key="pref_nextcloud_gpodder_sync"
+            android:key="pref_nextcloud_sync"
             android:title="@string/pref_nextcloud_gpodder_sync_changes_title"
             android:summary="@string/pref_nextcloud_gpodder_sync_changes_sum"/>
     <Preference
-            android:key="pref_nextcloud_gpodder_force_full_sync"
+            android:key="pref_nextcloud_force_full_sync"
             android:title="@string/pref_nextcloud_gpodder_full_sync_title"
             android:summary="@string/pref_nextcloud_gpodder_full_sync_sum"/>
     <Preference
-            android:key="pref_nextcloud_gpodder_disconnect"
+            android:key="pref_nextcloud_disconnect"
             android:title="@string/pref_nextcloud_gpodder_disconnect_title"/>
 
 </PreferenceScreen>

@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,12 +16,11 @@ import com.bytehamster.lib.preferencesearch.SearchPreference;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.BugReportActivity;
 import de.danoeh.antennapod.activity.PreferenceActivity;
+import de.danoeh.antennapod.core.sync.SyncService;
 import de.danoeh.antennapod.core.util.IntentUtils;
 import de.danoeh.antennapod.fragment.preferences.about.AboutFragment;
 
-
 public class MainPreferencesFragment extends PreferenceFragmentCompat {
-    private static final String TAG = "MainPreferencesFragment";
 
     private static final String PREF_SCREEN_USER_INTERFACE = "prefScreenInterface";
     private static final String PREF_SCREEN_PLAYBACK = "prefScreenPlayback";
@@ -38,9 +35,6 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat {
     private static final String PREF_ABOUT = "prefAbout";
     private static final String PREF_NOTIFICATION = "notifications";
     private static final String PREF_CONTRIBUTE = "prefContribute";
-    private static final String SYNC_SERVICE_CHOICE_GPODDER_NET = "GPodder.net";
-    private static final String SHARED_PREFERENCES_SYNCHRONIZATION = "synchronization";
-    private static final String SELECTED_SERVICE = "selected_service";
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -84,22 +78,22 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat {
             return true;
         });
         findPreference(PREF_SCREEN_SYNCHRONIZATION).setOnPreferenceClickListener(preference -> {
-            SharedPreferences preferences = getActivity().getSharedPreferences(SHARED_PREFERENCES_SYNCHRONIZATION, Activity.MODE_PRIVATE);
-            String selectedService = preferences.getString(SELECTED_SERVICE, null);
+            SharedPreferences preferences = getActivity().getSharedPreferences(SyncService.SHARED_PREFERENCES_SYNCHRONIZATION, Activity.MODE_PRIVATE);
+            String selectedService = preferences.getString(SyncService.SHARED_PREFERENCE_SELECTED_SYNC_PROVIDER, null);
             if (selectedService == null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle(R.string.dialog_choose_sync_service_title);
-                String[] syncServiceNames = {SYNC_SERVICE_CHOICE_GPODDER_NET, "Nextcloud"};
+                String[] syncServiceNames = {SyncService.SYNC_PROVIDER_CHOICE_GPODDER_NET, "Nextcloud"};
                 builder.setItems(syncServiceNames, (dialog, which) -> {
-                    String userSelect = SYNC_SERVICE_CHOICE_GPODDER_NET;
+                    String userSelect = SyncService.SYNC_PROVIDER_CHOICE_GPODDER_NET;
                     switch (which) {
                         case 0: break;
                         case 1:
-                            userSelect = "Nextcloud";
+                            userSelect = SyncService.SYNC_PROVIDER_CHOICE_NEXTCLOUD;
                             break;
                     }
-                    preferences.edit().putString(SELECTED_SERVICE, userSelect).apply();
-                    if (userSelect.equals(SYNC_SERVICE_CHOICE_GPODDER_NET)) {
+                    preferences.edit().putString(SyncService.SHARED_PREFERENCE_SELECTED_SYNC_PROVIDER, userSelect).apply();
+                    if (userSelect.equals(SyncService.SYNC_PROVIDER_CHOICE_GPODDER_NET)) {
                         ((PreferenceActivity) getActivity()).openScreen(R.xml.preferences_gpodder);
                         return;
                     }
@@ -110,7 +104,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat {
                 return true;
             }
 
-            if (selectedService.equals(SYNC_SERVICE_CHOICE_GPODDER_NET)) {
+            if (selectedService.equals(SyncService.SYNC_PROVIDER_CHOICE_GPODDER_NET)) {
                 ((PreferenceActivity) getActivity()).openScreen(R.xml.preferences_gpodder);
                 return true;
             }
