@@ -64,5 +64,6 @@
     <attr name="ic_notifications" format="reference"/>
     <attr name="seek_background" format="color" />
     <attr name="ic_share" format="reference"/>
+    <attr name="ic_playlist_remove" format="reference"/>
     <attr name="ic_contribute" format="reference" />
 </resources>
