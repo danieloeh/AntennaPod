@@ -37,7 +37,7 @@ import jp.shts.android.library.TriangleLabelView;
 public class SubscriptionsRecyclerAdapter extends RecyclerView.Adapter<SubscriptionsRecyclerAdapter.SubscriptionViewHolder> implements View.OnCreateContextMenuListener
 {
     /** the position in the view that holds the add item; 0 is the first, -1 is the last position */
-    private static final String TAG = "SubscriptionsAdapter";
+    private static final String TAG = "SubscriptionsRecyclerAdapter";
 
     private final WeakReference<MainActivity> mainActivityRef;
     private final ItemAccess itemAccess;
@@ -52,81 +52,10 @@ public class SubscriptionsRecyclerAdapter extends RecyclerView.Adapter<Subscript
         return itemAccess.getItem(position);
     }
 //    @Override
-//    public int getCount() {
-//        return itemAccess.getCount();
-//    }
-//
-//
-//    @Override
-//    public boolean hasStableIds() {
-//        return true;
-//    }
-//
-//    @Override
 //    public long getItemId(int position) {
 //        return ((NavDrawerData.DrawerItem) getItem(position)).id;
 //    }
 //
-//    @Override
-//    public View getView(int position, View convertView, ViewGroup parent) {
-//        Holder holder;
-//
-//        if (convertView == null) {
-//            holder = new Holder();
-//
-//            LayoutInflater layoutInflater =
-//                    (LayoutInflater) mainActivityRef.get().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//            convertView = layoutInflater.inflate(R.layout.subscription_item, parent, false);
-//            holder.feedTitle = convertView.findViewById(R.id.txtvTitle);
-//            holder.imageView = convertView.findViewById(R.id.imgvCover);
-//            holder.count = convertView.findViewById(R.id.triangleCountView);
-//
-//
-//            convertView.setTag(holder);
-//        } else {
-//            holder = (Holder) convertView.getTag();
-//        }
-//
-//        final NavDrawerData.DrawerItem drawerItem = (NavDrawerData.DrawerItem) getItem(position);
-//        if (drawerItem == null) {
-//            return null;
-//        }
-//
-//        holder.feedTitle.setText(drawerItem.getTitle());
-//        holder.imageView.setContentDescription(drawerItem.getTitle());
-//        holder.feedTitle.setVisibility(View.VISIBLE);
-//
-//        // Fix TriangleLabelView corner for RTL
-//        if (TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault())
-//                == ViewCompat.LAYOUT_DIRECTION_RTL) {
-//            holder.count.setCorner(TriangleLabelView.Corner.TOP_LEFT);
-//        }
-//
-//        if (drawerItem.getCounter() > 0) {
-//            holder.count.setPrimaryText(NumberFormat.getInstance().format(drawerItem.getCounter()));
-//            holder.count.setVisibility(View.VISIBLE);
-//        } else {
-//            holder.count.setVisibility(View.GONE);
-//        }
-//
-//        if (drawerItem.type == NavDrawerData.DrawerItem.Type.FEED) {
-//            Feed feed = ((NavDrawerData.FeedDrawerItem) drawerItem).feed;
-//            boolean textAndImageCombined = feed.isLocalFeed()
-//                    && LocalFeedUpdater.getDefaultIconUrl(convertView.getContext()).equals(feed.getImageUrl());
-//            new CoverLoader(mainActivityRef.get())
-//                    .withUri(feed.getImageUrl())
-//                    .withPlaceholderView(holder.feedTitle, textAndImageCombined)
-//                    .withCoverView(holder.imageView)
-//                    .load();
-//        } else {
-//            new CoverLoader(mainActivityRef.get())
-//                    .withResource(R.drawable.ic_folder)
-//                    .withPlaceholderView(holder.feedTitle, true)
-//                    .withCoverView(holder.imageView)
-//                    .load();
-//        }
-//        return convertView;
-//    }
 
 //    @Override
 //    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -168,25 +97,12 @@ public class SubscriptionsRecyclerAdapter extends RecyclerView.Adapter<Subscript
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        PopupMenu popup = new PopupMenu(v.getContext(), v);
-        popup.getMenuInflater().inflate(R.menu.nav_feed_context, popup.getMenu());
-//        popup.setOnMenuItemClickListener(this);
-        popup.show();
-
-//        if (menuInfo == null) {
-//            return;
-//        }
-//        AdapterView.AdapterContextMenuInfo adapterInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
-//        int position = adapterInfo.position;
-//
-//        NavDrawerData.DrawerItem selectedObject = (NavDrawerData.DrawerItem) getItem(position);
-//
-//        if (selectedObject.type == NavDrawerData.DrawerItem.Type.FEED) {
-//            MenuInflater inflater = mainActivityRef.get().getMenuInflater();
-//            inflater.inflate(R.menu.nav_feed_context, menu);
-//           // selectedFeed = ((NavDrawerData.FeedDrawerItem) selectedObject).feed;
-//        }
-//        menu.setHeaderTitle(selectedObject.getTitle());
+        NavDrawerData.DrawerItem selectedObject = null;
+        if(selectedFeed != null ) {
+            MenuInflater inflater = mainActivityRef.get().getMenuInflater();
+            inflater.inflate(R.menu.nav_feed_context, menu);
+            menu.setHeaderTitle(selectedFeed.getTitle());
+        }
     }
 
     public interface ItemAccess {
@@ -240,27 +156,25 @@ public class SubscriptionsRecyclerAdapter extends RecyclerView.Adapter<Subscript
                         .load();
             }
             itemView.setOnLongClickListener(v -> {
-//                if (menuInfo == null) {
-//                    return;
-//                }
-//                AdapterView.AdapterContextMenuInfo adapterInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
-//                int position = adapterInfo.position;
-
-                NavDrawerData.DrawerItem selectedObject = (NavDrawerData.DrawerItem) drawerItem;
-
-                if (selectedObject.type == NavDrawerData.DrawerItem.Type.FEED) {
-//                    MenuInflater inflater = mainActivityRef.get().getMenuInflater();
-//                    inflater.inflate(R.menu.nav_feed_context, menu);
-                    selectedFeed = ((NavDrawerData.FeedDrawerItem) selectedObject).feed;
+                if (drawerItem.type == NavDrawerData.DrawerItem.Type.FEED) {
+                    selectedFeed = ((NavDrawerData.FeedDrawerItem) drawerItem).feed;
+                } else{
+                    selectedFeed = null;
                 }
-//                menu.setHeaderTitle(selectedObject.getTitle());
                 return false;
             });
+            itemView.setOnClickListener(v -> {
+                if (drawerItem == null) {
+                    return;
+                }
+                if (drawerItem.type == NavDrawerData.DrawerItem.Type.FEED) {
+                    Fragment fragment = FeedItemlistFragment.newInstance(((NavDrawerData.FeedDrawerItem) drawerItem).feed.getId());
+                    mainActivityRef.get().loadChildFragment(fragment);
+                } else if (drawerItem.type == NavDrawerData.DrawerItem.Type.FOLDER) {
+                    Fragment fragment = SubscriptionFragment.newInstance(drawerItem.getTitle());
+                    mainActivityRef.get().loadChildFragment(fragment);
+                }
+            });
         }
-
-
     }
-
-
-
 }
