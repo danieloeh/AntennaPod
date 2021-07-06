@@ -38,12 +38,13 @@ import static java.time.Instant.now;
 
 public class NextcloudSyncService implements ISyncService {
 
-    private Context mContext;
+    private final Context mContext;
     private NextcloudAPI nextcloudApi;
 
-    public NextcloudSyncService(Context mContext) {
-        this.mContext = mContext;
+    public NextcloudSyncService(Context context) {
+        this.mContext = context;
     }
+
     @Override
     public boolean isAuthenticated() {
         try {
