@@ -38,8 +38,8 @@ import static java.time.Instant.now;
 
 public class NextcloudSyncService implements ISyncService {
 
-    private final Context mContext;
-    private NextcloudAPI nextcloudAPI;
+    private Context mContext;
+    private NextcloudAPI nextcloudApi;
 
     public NextcloudSyncService(Context mContext) {
         this.mContext = mContext;
@@ -61,7 +61,10 @@ public class NextcloudSyncService implements ISyncService {
         SingleSignOnAccount ssoAccount = null;
         try {
             try {
-                ssoAccount = AccountImporter.getSingleSignOnAccount(mContext, SingleAccountHelper.getCurrentSingleSignOnAccount(mContext).name);
+                ssoAccount = AccountImporter.getSingleSignOnAccount(
+                        mContext,
+                        SingleAccountHelper.getCurrentSingleSignOnAccount(mContext).name
+                );
             } catch (NoCurrentAccountSelectedException e) {
                 e.printStackTrace();
             }
@@ -75,7 +78,7 @@ public class NextcloudSyncService implements ISyncService {
                 public void onError(Exception ex) {
                 }
             };
-            this.nextcloudAPI = new NextcloudAPI(mContext, ssoAccount, new GsonBuilder().create(), callback);
+            this.nextcloudApi = new NextcloudAPI(mContext, ssoAccount, new GsonBuilder().create(), callback);
         } catch (NextcloudFilesAppAccountNotFoundException e) {
             e.printStackTrace();
         }
@@ -94,7 +97,7 @@ public class NextcloudSyncService implements ISyncService {
                     .setParameter(parameters)
                     .build();
 
-            InputStream inputStream = this.nextcloudAPI.performNetworkRequest(nextcloudRequest);
+            InputStream inputStream = this.nextcloudApi.performNetworkRequest(nextcloudRequest);
             String responseString = ResponseMapper.convertStreamToString(inputStream);
             JSONObject json = new JSONObject(responseString);
             inputStream.close();
@@ -118,7 +121,11 @@ public class NextcloudSyncService implements ISyncService {
             HashMap<String, List<String>> header = new HashMap<>();
             header.put("Content-Type", Collections.singletonList("application/json"));
 
-            String body = "{\"add\": \"" + addedFeeds.toString() + "\", \"remove\": \"" + removedFeeds.toString() + "\"}";
+            String body = "{\"add\": \""
+                    + addedFeeds.toString()
+                    + "\", \"remove\": \""
+                    + removedFeeds.toString()
+                    + "\"}";
             NextcloudRequest nextcloudRequest = new NextcloudRequest.Builder()
                     .setMethod("POST")
                     .setUrl(Uri.encode("/index.php/apps/gpoddersync/subscription_change/create", "/"))
@@ -126,7 +133,7 @@ public class NextcloudSyncService implements ISyncService {
                     .setRequestBody(body)
                     .build();
 
-            this.nextcloudAPI.performNetworkRequest(nextcloudRequest).close();
+            this.nextcloudApi.performNetworkRequest(nextcloudRequest).close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -146,7 +153,7 @@ public class NextcloudSyncService implements ISyncService {
                     .setParameter(parameters)
                     .build();
 
-            InputStream inputStream = this.nextcloudAPI.performNetworkRequest(nextcloudRequest);
+            InputStream inputStream = this.nextcloudApi.performNetworkRequest(nextcloudRequest);
             String responseString = ResponseMapper.convertStreamToString(inputStream);
             inputStream.close();
             JSONObject json = new JSONObject(responseString);
@@ -177,7 +184,7 @@ public class NextcloudSyncService implements ISyncService {
                     .setRequestBody(body)
                     .build();
 
-            this.nextcloudAPI.performNetworkRequest(nextcloudRequest);
+            this.nextcloudApi.performNetworkRequest(nextcloudRequest);
         } catch (NextcloudFilesAppAccountNotFoundException e) {
             e.printStackTrace();
         } catch (Exception e) {

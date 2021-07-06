@@ -184,9 +184,6 @@ public class PreferenceActivity extends AppCompatActivity implements SearchPrefe
 
         try {
             AccountImporter.onActivityResult(requestCode, resultCode, data, this, account -> {
-                // As this library supports multiple accounts we created some helper methods if you only want to use one.
-                // The following line stores the selected account as the "default" account which can be queried by using
-                // the SingleAccountHelper.getCurrentSingleSignOnAccount(context) method
                 SingleAccountHelper.setCurrentAccount(getApplicationContext(), account.name);
                 SyncService.setIsProviderConnected(getApplicationContext(), true);
             });

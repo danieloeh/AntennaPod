@@ -174,7 +174,10 @@ public class SyncService extends Worker {
     }
 
     private static String getSelectedSyncProviderKey(Context context) {
-        SharedPreferences preferences = context.getSharedPreferences(SHARED_PREFERENCES_SYNCHRONIZATION, Context.MODE_PRIVATE);
+        SharedPreferences preferences = context.getSharedPreferences(
+                SHARED_PREFERENCES_SYNCHRONIZATION,
+                Context.MODE_PRIVATE
+        );
         return preferences.getString(SHARED_PREFERENCE_SELECTED_SYNC_PROVIDER, null);
     }
 

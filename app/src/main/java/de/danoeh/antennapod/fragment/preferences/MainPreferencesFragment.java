@@ -78,7 +78,8 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat {
             return true;
         });
         findPreference(PREF_SCREEN_SYNCHRONIZATION).setOnPreferenceClickListener(preference -> {
-            SharedPreferences preferences = getActivity().getSharedPreferences(SyncService.SHARED_PREFERENCES_SYNCHRONIZATION, Activity.MODE_PRIVATE);
+            SharedPreferences preferences = getActivity()
+                    .getSharedPreferences(SyncService.SHARED_PREFERENCES_SYNCHRONIZATION, Activity.MODE_PRIVATE);
             String selectedService = preferences.getString(SyncService.SHARED_PREFERENCE_SELECTED_SYNC_PROVIDER, null);
             if (selectedService == null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -91,8 +92,12 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat {
                         case 1:
                             userSelect = SyncService.SYNC_PROVIDER_CHOICE_NEXTCLOUD;
                             break;
+                        default:
+                            break;
                     }
-                    preferences.edit().putString(SyncService.SHARED_PREFERENCE_SELECTED_SYNC_PROVIDER, userSelect).apply();
+                    preferences.edit()
+                            .putString(SyncService.SHARED_PREFERENCE_SELECTED_SYNC_PROVIDER, userSelect)
+                            .apply();
                     if (userSelect.equals(SyncService.SYNC_PROVIDER_CHOICE_GPODDER_NET)) {
                         ((PreferenceActivity) getActivity()).openScreen(R.xml.preferences_gpodder);
                         return;
