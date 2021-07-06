@@ -38,17 +38,17 @@ import static java.time.Instant.now;
 
 public class NextcloudSyncService implements ISyncService {
 
-    private final Context mContext;
+    private final Context context;
     private NextcloudAPI nextcloudApi;
 
     public NextcloudSyncService(Context context) {
-        this.mContext = context;
+        this.context = context;
     }
 
     @Override
     public boolean isAuthenticated() {
         try {
-            SingleAccountHelper.getCurrentSingleSignOnAccount(mContext);
+            SingleAccountHelper.getCurrentSingleSignOnAccount(context);
             return true;
         } catch (NextcloudFilesAppAccountNotFoundException e) {
             return false;
@@ -63,8 +63,8 @@ public class NextcloudSyncService implements ISyncService {
         try {
             try {
                 ssoAccount = AccountImporter.getSingleSignOnAccount(
-                        mContext,
-                        SingleAccountHelper.getCurrentSingleSignOnAccount(mContext).name
+                        context,
+                        SingleAccountHelper.getCurrentSingleSignOnAccount(context).name
                 );
             } catch (NoCurrentAccountSelectedException e) {
                 e.printStackTrace();
@@ -79,7 +79,7 @@ public class NextcloudSyncService implements ISyncService {
                 public void onError(Exception ex) {
                 }
             };
-            this.nextcloudApi = new NextcloudAPI(mContext, ssoAccount, new GsonBuilder().create(), callback);
+            this.nextcloudApi = new NextcloudAPI(context, ssoAccount, new GsonBuilder().create(), callback);
         } catch (NextcloudFilesAppAccountNotFoundException e) {
             e.printStackTrace();
         }
