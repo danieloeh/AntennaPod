@@ -414,7 +414,15 @@ public class PlaybackServiceTaskManager {
                 timeLeft -= now - lastTick;
                 lastTick = now;
 
-                if (timeLeft < NOTIFICATION_THRESHOLD) {
+                boolean almostExpired = timeLeft < NOTIFICATION_THRESHOLD;
+
+                if (shakeListener == null  && SleepTimerPreferences.allowShake(almostExpired)) {
+                    shakeListener = new ShakeListener(context, this);
+                } else if (!SleepTimerPreferences.allowShake(almostExpired)) {
+                    removeShakeListener();
+                }
+
+                if (almostExpired) {
                     Log.d(TAG, "Sleep timer is about to expire");
                     if (SleepTimerPreferences.vibrate() && !hasVibrated) {
                         Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
@@ -423,17 +431,11 @@ public class PlaybackServiceTaskManager {
                             hasVibrated = true;
                         }
                     }
-                    if (shakeListener == null && SleepTimerPreferences.shakeToReset()) {
-                        shakeListener = new ShakeListener(context, this);
-                    }
                     postCallback(() -> callback.onSleepTimerAlmostExpired(timeLeft));
                 }
                 if (timeLeft <= 0) {
                     Log.d(TAG, "Sleep timer expired");
-                    if (shakeListener != null) {
-                        shakeListener.pause();
-                        shakeListener = null;
-                    }
+                    removeShakeListener();
                     hasVibrated = false;
                     if (!Thread.currentThread().isInterrupted()) {
                         postCallback(callback::onSleepTimerExpired);
@@ -441,6 +443,13 @@ public class PlaybackServiceTaskManager {
                         Log.d(TAG, "Sleep timer interrupted");
                     }
                 }
+            }
+        }
+
+        private void removeShakeListener() {
+            if (shakeListener != null) {
+                shakeListener.pause();
+                shakeListener = null;
             }
         }
 

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -37,6 +38,8 @@ public class SleepTimerDialog extends DialogFragment {
     private LinearLayout timeSetup;
     private LinearLayout timeDisplay;
     private TextView time;
+
+    private Spinner spShakeBehaviour;
 
     public SleepTimerDialog() {
 
@@ -115,26 +118,55 @@ public class SleepTimerDialog extends DialogFragment {
             imm.showSoftInput(etxtTime, InputMethodManager.SHOW_IMPLICIT);
         }, 100);
 
-        String[] spinnerContent = new String[] {
+        String[] spTimeUnitContent = new String[] {
                 getString(R.string.time_seconds),
                 getString(R.string.time_minutes),
                 getString(R.string.time_hours) };
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_spinner_item, spinnerContent);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spTimeUnit.setAdapter(spinnerAdapter);
+        ArrayAdapter<String> spTimeUnitAdapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_spinner_item, spTimeUnitContent);
+        spTimeUnitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spTimeUnit.setAdapter(spTimeUnitAdapter);
         spTimeUnit.setSelection(SleepTimerPreferences.lastTimerTimeUnit());
 
         CheckBox cbShakeToReset = content.findViewById(R.id.cbShakeToReset);
+        spShakeBehaviour = content.findViewById(R.id.spShakeBehaviour);
+        String[] spShakeBehaviourContent = new String[] {
+                getString(R.string.shake_during_fadeout),       //SHAKE_BEHAVIOUR_FADEOUT = 0
+                getString(R.string.shake_anytime) };            //SHAKE_BEHAVIOUR_ANYTIME = 1
+        ArrayAdapter<String> spShakeBehaviourAdapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_spinner_item, spShakeBehaviourContent);
+        spShakeBehaviourAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spShakeBehaviour.setAdapter(spShakeBehaviourAdapter);
+        spShakeBehaviour.setSelection(SleepTimerPreferences.shakeBehaviour());
+        spShakeBehaviour.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                SleepTimerPreferences.setShakeBehaviour(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                //shouldn't happen
+                throw new IllegalStateException("Shake Behaviour deselection should not be permitted");
+            }
+        });
+
         CheckBox cbVibrate = content.findViewById(R.id.cbVibrate);
         CheckBox chAutoEnable = content.findViewById(R.id.chAutoEnable);
 
-        cbShakeToReset.setChecked(SleepTimerPreferences.shakeToReset());
+        boolean shakeToReset = SleepTimerPreferences.shakeToReset();
+
+        cbShakeToReset.setChecked(shakeToReset);
         cbVibrate.setChecked(SleepTimerPreferences.vibrate());
         chAutoEnable.setChecked(SleepTimerPreferences.autoEnable());
 
+        setShakeBehaviourVisible(shakeToReset);
+
         cbShakeToReset.setOnCheckedChangeListener((buttonView, isChecked)
-                -> SleepTimerPreferences.setShakeToReset(isChecked));
+                -> {
+            SleepTimerPreferences.setShakeToReset(isChecked);
+            setShakeBehaviourVisible(isChecked);
+        });
         cbVibrate.setOnCheckedChangeListener((buttonView, isChecked)
                 -> SleepTimerPreferences.setVibrate(isChecked));
         chAutoEnable.setOnCheckedChangeListener((compoundButton, isChecked)
@@ -174,6 +206,10 @@ public class SleepTimerDialog extends DialogFragment {
         timeSetup.setVisibility(controller.sleepTimerActive() ? View.GONE : View.VISIBLE);
         timeDisplay.setVisibility(controller.sleepTimerActive() ? View.VISIBLE : View.GONE);
         time.setText(Converter.getDurationStringLong((int) controller.getSleepTimerTimeLeft()));
+    }
+
+    private void setShakeBehaviourVisible(boolean visible) {
+        spShakeBehaviour.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
     private void closeKeyboard(View content) {

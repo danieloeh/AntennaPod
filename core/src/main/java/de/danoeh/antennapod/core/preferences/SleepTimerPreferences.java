@@ -16,12 +16,18 @@ public class SleepTimerPreferences {
     private static final String PREF_TIME_UNIT = "LastTimeUnit";
     private static final String PREF_VIBRATE = "Vibrate";
     private static final String PREF_SHAKE_TO_RESET = "ShakeToReset";
+    private static final String PREF_SHAKE_BEHAVIOUR = "lastShakeBehaviour";
     private static final String PREF_AUTO_ENABLE = "AutoEnable";
 
     private static final TimeUnit[] UNITS = { TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS };
 
     private static final String DEFAULT_VALUE = "15";
     private static final int DEFAULT_TIME_UNIT = 1;
+
+    private static final int SHAKE_BEHAVIOUR_FADEOUT = 0;
+    private static final int SHAKE_BEHAVIOUR_ANYTIME = 1;
+
+    private static final int DEFAULT_SHAKE_BEHAVIOUR = SHAKE_BEHAVIOUR_FADEOUT;
 
     private static SharedPreferences prefs;
 
@@ -64,8 +70,20 @@ public class SleepTimerPreferences {
         prefs.edit().putBoolean(PREF_SHAKE_TO_RESET, shakeToReset).apply();
     }
 
+    public static void setShakeBehaviour(int shakeBehaviour) {
+        prefs.edit().putInt(PREF_SHAKE_BEHAVIOUR, shakeBehaviour).apply();
+    }
+
     public static boolean shakeToReset() {
         return prefs.getBoolean(PREF_SHAKE_TO_RESET, true);
+    }
+
+    public static int shakeBehaviour() {
+        return prefs.getInt(PREF_SHAKE_BEHAVIOUR, DEFAULT_SHAKE_BEHAVIOUR);
+    }
+
+    public static boolean allowShake(boolean almostExpired) {
+        return shakeToReset() && (almostExpired || (shakeBehaviour() == SHAKE_BEHAVIOUR_ANYTIME));
     }
 
     public static void setAutoEnable(boolean autoEnable) {

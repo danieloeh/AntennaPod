@@ -114,11 +114,27 @@
             android:orientation="vertical"
             android:layout_marginTop="8dp">
 
-        <CheckBox
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
                 android:id="@+id/cbShakeToReset"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
                 android:text="@string/shake_to_reset_label"/>
+
+            <Spinner
+                android:id="@+id/spShakeBehaviour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"/>
+
+        </RelativeLayout>
 
         <CheckBox
                 android:id="@+id/cbVibrate"
