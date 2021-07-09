@@ -44,4 +44,10 @@
         app:primaryText="Test"
         app:primaryTextColor="?attr/colorOnSecondary"
         app:primaryTextSize="12sp" />
+
+    <CheckBox
+        android:id="@+id/selectCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:buttonTint="#FFFFFF" />
 </RelativeLayout>
