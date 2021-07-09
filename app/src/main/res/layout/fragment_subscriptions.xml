@@ -66,4 +66,6 @@
             android:layout_alignParentRight="true"
             android:contentDescription="@string/add_feed_label"
             app:srcCompat="@drawable/ic_add"/>
+
+    <include layout="@layout/multi_select_speed_dial" />
 </RelativeLayout>

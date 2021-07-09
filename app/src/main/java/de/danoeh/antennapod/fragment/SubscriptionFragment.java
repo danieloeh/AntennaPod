@@ -298,32 +298,11 @@ public class SubscriptionFragment extends Fragment implements Toolbar.OnMenuItem
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        if (menuInfo == null) {
-            return;
-        }
-        AdapterView.AdapterContextMenuInfo adapterInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
-        int position = adapterInfo.position;
-
-        NavDrawerData.DrawerItem selectedObject = (NavDrawerData.DrawerItem) subscriptionAdapter.getItem(position);
-
-        if (selectedObject.type == NavDrawerData.DrawerItem.Type.FEED) {
-            MenuInflater inflater = requireActivity().getMenuInflater();
-            inflater.inflate(R.menu.nav_feed_context, menu);
-            selectedFeed = ((NavDrawerData.FeedDrawerItem) selectedObject).feed;
-        }
-        menu.setHeaderTitle(selectedObject.getTitle());
-    }
-
-    @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if (selectedFeed == null) {
+        Feed feed = subscriptionAdapter.getSelectedFeed();
+        if (feed == null) {
             return false;
         }
-
-        Feed feed = selectedFeed;
-        selectedFeed = null;
         switch (item.getItemId()) {
             case R.id.remove_all_new_flags_item:
                 displayConfirmationDialog(
@@ -343,8 +322,12 @@ public class SubscriptionFragment extends Fragment implements Toolbar.OnMenuItem
             case R.id.remove_item:
                 RemoveFeedDialog.show(getContext(), feed, null);
                 return true;
-            default:
+            default: {
+                if (subscriptionAdapter.onContextItemSelected(item)) {
+                    return true;
+                }
                 return super.onContextItemSelected(item);
+            }
         }
     }
 
