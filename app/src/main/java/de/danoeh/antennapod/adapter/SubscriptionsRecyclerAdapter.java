@@ -1,21 +1,17 @@
 package de.danoeh.antennapod.adapter;
 
-import android.content.Context;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.core.text.TextUtilsCompat;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
@@ -30,7 +26,6 @@ import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.core.feed.LocalFeedUpdater;
 import de.danoeh.antennapod.core.storage.NavDrawerData;
 import de.danoeh.antennapod.fragment.FeedItemlistFragment;
-import de.danoeh.antennapod.fragment.ItemFragment;
 import de.danoeh.antennapod.fragment.SubscriptionFragment;
 import de.danoeh.antennapod.model.feed.Feed;
 import jp.shts.android.library.TriangleLabelView;
@@ -121,8 +116,7 @@ public class SubscriptionsRecyclerAdapter extends SelectableAdapter<Subscription
 
         NavDrawerData.DrawerItem getItem(int position);
     }
-
-    class SubscriptionViewHolder extends RecyclerView.ViewHolder {
+    public class SubscriptionViewHolder extends RecyclerView.ViewHolder {
         private TextView feedTitle;
         private ImageView imageView;
         private TriangleLabelView count;
@@ -141,7 +135,7 @@ public class SubscriptionsRecyclerAdapter extends SelectableAdapter<Subscription
             feedTitle.setVisibility(View.VISIBLE);
 
             if (TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault())
-                    ==ViewCompat.LAYOUT_DIRECTION_RTL) {
+                    == ViewCompat.LAYOUT_DIRECTION_RTL) {
                 count.setCorner(TriangleLabelView.Corner.TOP_LEFT);
             }
 
@@ -152,64 +146,64 @@ public class SubscriptionsRecyclerAdapter extends SelectableAdapter<Subscription
                 count.setVisibility(View.GONE);
             }
 
-            if (drawerItem.type == NavDrawerData.DrawerItem.Type.FEED) {
-                Feed feed = ((NavDrawerData.FeedDrawerItem) drawerItem).feed;
-                boolean textAndImageCombind = feed.isLocalFeed()
-                        && LocalFeedUpdater.getDefaultIconUrl(itemView.getContext()).equals(feed.getImageUrl());
-                new CoverLoader(mainActivityRef.get())
-                        .withUri(feed.getImageUrl())
-                        .withPlaceholderView(feedTitle, textAndImageCombind)
-                        .withCoverView(imageView)
-                        .load();
-            } else {
-                new CoverLoader(mainActivityRef.get())
-                        .withResource(R.drawable.ic_folder)
-                        .withPlaceholderView(feedTitle, true)
-                        .withCoverView(imageView)
-                        .load();
-            }
+        if (drawerItem.type == NavDrawerData.DrawerItem.Type.FEED) {
+            Feed feed = ((NavDrawerData.FeedDrawerItem) drawerItem).feed;
+            boolean textAndImageCombind = feed.isLocalFeed()
+                    && LocalFeedUpdater.getDefaultIconUrl(itemView.getContext()).equals(feed.getImageUrl());
+            new CoverLoader(mainActivityRef.get())
+                    .withUri(feed.getImageUrl())
+                    .withPlaceholderView(feedTitle, textAndImageCombind)
+                    .withCoverView(imageView)
+                    .load();
+        } else {
+            new CoverLoader(mainActivityRef.get())
+                    .withResource(R.drawable.ic_folder)
+                    .withPlaceholderView(feedTitle, true)
+                    .withCoverView(imageView)
+                    .load();
+        }
 
-            if (inActionMode()) {
-                selectCheckbox.setVisibility(View.VISIBLE);
-                if (isSelected(position)) {
-                    selectCheckbox.setChecked(true);
-                } else {
-                    selectCheckbox.setChecked(false);
-                }
-                selectCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        setSelected(position, isChecked);
-                    }
-                });
+        if (inActionMode()) {
+            selectCheckbox.setVisibility(View.VISIBLE);
+            if (isSelected(position)) {
+                selectCheckbox.setChecked(true);
             } else {
-                selectCheckbox.setVisibility(View.GONE);
+                selectCheckbox.setChecked(false);
             }
-
-            itemView.setOnLongClickListener(v -> {
-                if(!inActionMode())
-                    if (drawerItem.type == NavDrawerData.DrawerItem.Type.FEED) {
-                        selectedFeed = ((NavDrawerData.FeedDrawerItem) drawerItem).feed;
-                        longPressedPosition = position;
-                    } else{
-                        selectedFeed = null;
-                    }
-                return false;
-            });
-            itemView.setOnClickListener(v -> {
-                if (drawerItem == null) {
-                    return;
-                } else if (inActionMode()) {
-                    selectCheckbox.setChecked(!isSelected(position));
-                    return;
-                } else if (drawerItem.type == NavDrawerData.DrawerItem.Type.FEED) {
-                    Fragment fragment = FeedItemlistFragment.newInstance(((NavDrawerData.FeedDrawerItem) drawerItem).feed.getId());
-                    mainActivityRef.get().loadChildFragment(fragment);
-                } else if (drawerItem.type == NavDrawerData.DrawerItem.Type.FOLDER) {
-                    Fragment fragment = SubscriptionFragment.newInstance(drawerItem.getTitle());
-                    mainActivityRef.get().loadChildFragment(fragment);
+            selectCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    setSelected(position, isChecked);
                 }
             });
+        } else {
+            selectCheckbox.setVisibility(View.GONE);
+        }
+
+        itemView.setOnLongClickListener(v -> {
+            if(!inActionMode())
+                if (drawerItem.type == NavDrawerData.DrawerItem.Type.FEED) {
+                    selectedFeed = ((NavDrawerData.FeedDrawerItem) drawerItem).feed;
+                    longPressedPosition = position;
+                } else{
+                    selectedFeed = null;
+                }
+            return false;
+        });
+        itemView.setOnClickListener(v -> {
+            if (drawerItem == null) {
+                return;
+            } else if (inActionMode()) {
+                selectCheckbox.setChecked(!isSelected(position));
+                return;
+            } else if (drawerItem.type == NavDrawerData.DrawerItem.Type.FEED) {
+                Fragment fragment = FeedItemlistFragment.newInstance(((NavDrawerData.FeedDrawerItem) drawerItem).feed.getId());
+                mainActivityRef.get().loadChildFragment(fragment);
+            } else if (drawerItem.type == NavDrawerData.DrawerItem.Type.FOLDER) {
+                Fragment fragment = SubscriptionFragment.newInstance(drawerItem.getTitle());
+                mainActivityRef.get().loadChildFragment(fragment);
+            }
+        });
         }
     }
 }
