@@ -461,8 +461,8 @@
     <string name="pref_nextcloud_gpodder_sync_changes_sum">Do sync now</string>
     <string name="pref_nextcloud_gpodder_full_sync_title">Do full sync</string>
     <string name="pref_nextcloud_gpodder_full_sync_sum">Do full sync now</string>
-    <string name="pref_nextcloud_gpodder_description_summary">Use Nextcloud to sync. You need an account on a nextcloud server that has gpoddersync app installed.</string>
-    <string name="pref_nextcloud_gpodder_login_status"><![CDATA[Logged in as <i>%1$s</i>]]></string>
+    <string name="sync_provider_dialog_choice_nextcloud_description">Use Nextcloud to sync. You need an account on a nextcloud server that has gpoddersync app installed.</string>
+    <string name="pref_nextcloud_gpodder_login_status"><![CDATA[Logged in as <i>%1$s</i>. <br/><br/>%2$s]]></string>
     <string name="dialog_choose_sync_service_title">Choose synchronization service</string>
     <string name="pref_playback_speed_sum">Customize the speeds available for variable speed playback</string>
     <string name="pref_feed_playback_speed_sum">The speed to use when starting audio playback for episodes in this podcast</string>
@@ -853,4 +853,12 @@
     <string name="on_demand_config_setting_changed">Setting updated successfully.</string>
     <string name="on_demand_config_stream_text">Looks like you stream a lot. Do you want episode lists to show stream buttons?</string>
     <string name="on_demand_config_download_text">Looks like you download a lot. Do you want episode lists to show download buttons?</string>
+    <string name="synchronization">Synchronization</string>
+    <string name="preference_synchronization_summary_unchoosen">You can choose from multiple providers to synchronize your subscriptions and episode play state with</string>
+    <string name="preference_synchronization_summary_nextcloud">Your subscriptions and episode states are synchronized via the gpoddersync app on a nextcloud server</string>
+    <string name="synchronization_choose_and_login_summary">Choose a sync provider and login</string>
+    <string name="synchronization_choose_and_login_title">Choose sync provider</string>
+    <string name="pref_synchronization_logout_summary">You can choose your sync provider again once you have logged out</string>
+    <string name="pref_synchronization_force_sync_summary">Sync all subscriptions and episode states</string>
+    <string name="pref_synchronization_sync_summary">Sync subscription and episode state changes</string>
 </resources>

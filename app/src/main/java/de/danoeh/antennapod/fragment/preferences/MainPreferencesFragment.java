@@ -78,42 +78,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat {
             return true;
         });
         findPreference(PREF_SCREEN_SYNCHRONIZATION).setOnPreferenceClickListener(preference -> {
-            SharedPreferences preferences = getActivity()
-                    .getSharedPreferences(SyncService.SHARED_PREFERENCES_SYNCHRONIZATION, Activity.MODE_PRIVATE);
-            String selectedService = preferences.getString(SyncService.SHARED_PREFERENCE_SELECTED_SYNC_PROVIDER, null);
-            if (selectedService == null) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle(R.string.dialog_choose_sync_service_title);
-                String[] syncServiceNames = {SyncService.SYNC_PROVIDER_CHOICE_GPODDER_NET, "Nextcloud"};
-                builder.setItems(syncServiceNames, (dialog, which) -> {
-                    String userSelect = SyncService.SYNC_PROVIDER_CHOICE_GPODDER_NET;
-                    switch (which) {
-                        case 0: break;
-                        case 1:
-                            userSelect = SyncService.SYNC_PROVIDER_CHOICE_NEXTCLOUD;
-                            break;
-                        default:
-                            break;
-                    }
-                    preferences.edit()
-                            .putString(SyncService.SHARED_PREFERENCE_SELECTED_SYNC_PROVIDER, userSelect)
-                            .apply();
-                    if (userSelect.equals(SyncService.SYNC_PROVIDER_CHOICE_GPODDER_NET)) {
-                        ((PreferenceActivity) getActivity()).openScreen(R.xml.preferences_gpodder);
-                        return;
-                    }
-                    ((PreferenceActivity) getActivity()).openScreen(R.xml.preferences_nextcloud);
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                return true;
-            }
-
-            if (selectedService.equals(SyncService.SYNC_PROVIDER_CHOICE_GPODDER_NET)) {
-                ((PreferenceActivity) getActivity()).openScreen(R.xml.preferences_gpodder);
-                return true;
-            }
-            ((PreferenceActivity) getActivity()).openScreen(R.xml.preferences_nextcloud);
+            ((PreferenceActivity) getActivity()).openScreen(R.xml.preferences_synchronization);
             return true;
         });
         findPreference(PREF_SCREEN_STORAGE).setOnPreferenceClickListener(preference -> {
@@ -180,8 +145,8 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat {
                 .addBreadcrumb(PreferenceActivity.getTitleOfPage(R.xml.preferences_network))
                 .addBreadcrumb(R.string.automation)
                 .addBreadcrumb(PreferenceActivity.getTitleOfPage(R.xml.preferences_autodownload));
-        config.index(R.xml.preferences_gpodder)
-                .addBreadcrumb(PreferenceActivity.getTitleOfPage(R.xml.preferences_gpodder));
+        config.index(R.xml.preferences_synchronization)
+                .addBreadcrumb(PreferenceActivity.getTitleOfPage(R.xml.preferences_synchronization));
         config.index(R.xml.preferences_notifications)
                 .addBreadcrumb(PreferenceActivity.getTitleOfPage(R.xml.preferences_notifications));
         config.index(R.xml.feed_settings)

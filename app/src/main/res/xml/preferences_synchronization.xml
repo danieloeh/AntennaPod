@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <Preference
+            android:key="preference_synchronization_description"
+            android:icon="@drawable/ic_notification_sync"
+            android:summary="@string/preference_synchronization_summary_unchoosen"/>
+    <Preference
+            android:key="pref_synchronization_authenticate"
+            android:title="@string/synchronization_choose_and_login_title"
+            android:summary="@string/synchronization_choose_and_login_summary"/>
+    <Preference
+            android:key="pref_gpodnet_setlogin_information"
+            android:title="@string/pref_gpodnet_setlogin_information_title"
+            android:summary="@string/pref_gpodnet_setlogin_information_sum"
+            app:isPreferenceVisible="false"/>
+
+    <Preference
+            android:key="pref_synchronization_sync"
+            android:title="@string/pref_gpodnet_sync_changes_title"
+            android:summary="@string/pref_synchronization_sync_summary"/>
+    <Preference
+            android:key="pref_synchronization_force_full_sync"
+            android:title="@string/pref_gpodnet_full_sync_title"
+            android:summary="@string/pref_synchronization_force_sync_summary"/>
+    <Preference
+            android:key="pref_synchronization_logout"
+            android:title="Logout"
+            android:summary="@string/pref_synchronization_logout_summary"/>
+
+</PreferenceScreen>
