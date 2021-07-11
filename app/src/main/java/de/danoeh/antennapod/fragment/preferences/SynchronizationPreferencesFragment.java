@@ -1,6 +1,7 @@
 package de.danoeh.antennapod.fragment.preferences;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -11,6 +12,13 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import android.text.Spanned;
 import android.text.format.DateUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.nextcloud.android.sso.AccountImporter;
@@ -93,8 +101,43 @@ public class SynchronizationPreferencesFragment extends PreferenceFragmentCompat
         findPreference(PREFERENCE_LOGIN).setOnPreferenceClickListener(preference -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle(R.string.dialog_choose_sync_service_title);
-            String[] syncServiceNames = {SYNC_PROVIDER_CHOICE_GPODDER_NET, "Nextcloud"};
-            builder.setItems(syncServiceNames, (dialog, which) -> {
+            String[] syncProviderDescriptions = {getString(R.string.gpodnet_description), getString(R.string.sync_provider_dialog_choice_nextcloud_description)};
+            int[] syncProviderIcons = {R.drawable.gpodder_icon, R.drawable.nextcloud_logo_svg};
+
+            ListAdapter adapter = new ArrayAdapter<String>(
+                    getContext(), R.layout.alertdialog_sync_provider_chooser, syncProviderDescriptions) {
+
+                ViewHolder holder;
+
+                class ViewHolder {
+                    ImageView icon;
+                    TextView title;
+                }
+
+                public View getView(int position, View convertView, ViewGroup parent) {
+                    final LayoutInflater inflater = LayoutInflater.from(getContext());
+                    if (convertView == null) {
+                        convertView = inflater.inflate(
+                                R.layout.alertdialog_sync_provider_chooser, null);
+
+                        holder = new ViewHolder();
+                        holder.icon = (ImageView) convertView
+                                .findViewById(R.id.icon);
+                        holder.title = (TextView) convertView
+                                .findViewById(R.id.title);
+                        convertView.setTag(holder);
+                    } else {
+                        holder = (ViewHolder) convertView.getTag();
+                    }
+
+                    holder.title.setText(syncProviderDescriptions[position]);
+
+                    holder.icon.setImageResource(syncProviderIcons[position]);
+                    return convertView;
+                }
+            };
+
+            builder.setAdapter(adapter, (dialog, which) -> {
                 String userSelect = SYNC_PROVIDER_CHOICE_GPODDER_NET;
                 switch (which) {
                     case 0:
@@ -114,6 +157,7 @@ public class SynchronizationPreferencesFragment extends PreferenceFragmentCompat
                 openNextcloudAccountChooser();
                 updateScreen();
             });
+
             AlertDialog dialog = builder.create();
             dialog.show();
             return true;

@@ -463,7 +463,7 @@
     <string name="pref_nextcloud_gpodder_full_sync_sum">Do full sync now</string>
     <string name="sync_provider_dialog_choice_nextcloud_description">Use Nextcloud to sync. You need an account on a nextcloud server that has gpoddersync app installed.</string>
     <string name="pref_nextcloud_gpodder_login_status"><![CDATA[Logged in as <i>%1$s</i>. <br/><br/>%2$s]]></string>
-    <string name="dialog_choose_sync_service_title">Choose synchronization service</string>
+    <string name="dialog_choose_sync_service_title">Choose synchronization provider</string>
     <string name="pref_playback_speed_sum">Customize the speeds available for variable speed playback</string>
     <string name="pref_feed_playback_speed_sum">The speed to use when starting audio playback for episodes in this podcast</string>
     <string name="pref_feed_skip">Auto Skip</string>
