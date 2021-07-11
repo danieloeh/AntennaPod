@@ -443,16 +443,11 @@
     <string name="pref_theme_title_dark">Dark</string>
     <string name="pref_theme_title_trueblack">Black (AMOLED ready)</string>
     <string name="pref_episode_cache_unlimited">Unlimited</string>
-    <string name="pref_gpodnet_authenticate_title">Login</string>
-    <string name="pref_gpodnet_authenticate_sum">Login with your gpodder.net account in order to sync your subscriptions.</string>
-    <string name="pref_gpodnet_logout_title">Logout</string>
     <string name="pref_gpodnet_logout_toast">Logout was successful</string>
     <string name="pref_gpodnet_setlogin_information_title">Change login information</string>
     <string name="pref_gpodnet_setlogin_information_sum">Change the login information for your gpodder.net account.</string>
     <string name="pref_gpodnet_sync_changes_title">Synchronize now</string>
-    <string name="pref_gpodnet_sync_changes_sum">Sync subscription and episode state changes with gpodder.net.</string>
     <string name="pref_gpodnet_full_sync_title">Force full synchronization</string>
-    <string name="pref_gpodnet_full_sync_sum">Sync all subscriptions and episode states with gpodder.net.</string>
     <string name="pref_gpodnet_login_status"><![CDATA[Logged in as <i>%1$s</i> with device <i>%2$s</i>]]></string>
     <string name="pref_nextcloud_gpodder_connect_title">Connect</string>
     <string name="pref_nextcloud_gpodder_connect_summary">Connect to nextcloud</string>
