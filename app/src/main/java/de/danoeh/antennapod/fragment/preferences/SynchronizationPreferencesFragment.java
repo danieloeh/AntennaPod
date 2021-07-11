@@ -2,6 +2,7 @@ package de.danoeh.antennapod.fragment.preferences;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -22,11 +23,13 @@ import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.nextcloud.android.sso.AccountImporter;
+import com.nextcloud.android.sso.exceptions.AccountImportCancelledException;
 import com.nextcloud.android.sso.exceptions.AndroidGetAccountsPermissionNotGranted;
 import com.nextcloud.android.sso.exceptions.NextcloudFilesAppAccountNotFoundException;
 import com.nextcloud.android.sso.exceptions.NextcloudFilesAppNotInstalledException;
 import com.nextcloud.android.sso.exceptions.NoCurrentAccountSelectedException;
 import com.nextcloud.android.sso.helper.SingleAccountHelper;
+import com.nextcloud.android.sso.model.SingleSignOnAccount;
 import com.nextcloud.android.sso.ui.UiExceptionManager;
 
 import de.danoeh.antennapod.R;
@@ -278,9 +281,24 @@ public class SynchronizationPreferencesFragment extends PreferenceFragmentCompat
 
     private void openNextcloudAccountChooser() {
         try {
-            AccountImporter.pickNewAccount(getActivity());
+            AccountImporter.pickNewAccount(this);
         } catch (NextcloudFilesAppNotInstalledException | AndroidGetAccountsPermissionNotGranted e) {
             UiExceptionManager.showDialogForException(getContext(), e);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        try {
+            AccountImporter.onActivityResult(requestCode, resultCode, data, SynchronizationPreferencesFragment.this, singleSignOnAccount -> {
+                SingleAccountHelper.setCurrentAccount(getContext(), singleSignOnAccount.name);
+                SyncService.setIsProviderConnected(getContext(), true);
+                updateScreen();
+            });
+        } catch (AccountImportCancelledException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -19,6 +19,7 @@ import com.bytehamster.lib.preferencesearch.SearchPreferenceResultListener;
 import com.nextcloud.android.sso.AccountImporter;
 import com.nextcloud.android.sso.exceptions.AccountImportCancelledException;
 import com.nextcloud.android.sso.helper.SingleAccountHelper;
+import com.nextcloud.android.sso.model.SingleSignOnAccount;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
@@ -174,19 +175,4 @@ public class PreferenceActivity extends AppCompatActivity implements SearchPrefe
             result.highlight(fragment);
         }
     }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        try {
-            AccountImporter.onActivityResult(requestCode, resultCode, data, this, account -> {
-                SingleAccountHelper.setCurrentAccount(getApplicationContext(), account.name);
-                SyncService.setIsProviderConnected(getApplicationContext(), true);
-            });
-        } catch (AccountImportCancelledException e) {
-            e.printStackTrace();
-        }
-    }
-
 }
