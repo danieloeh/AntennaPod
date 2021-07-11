@@ -68,9 +68,12 @@ public class SynchronizationPreferencesFragment extends PreferenceFragmentCompat
 
     private int getIconForSelectedSyncProvider(String currentSyncProviderKey) {
         switch (currentSyncProviderKey) {
-            case SYNC_PROVIDER_CHOICE_GPODDER_NET: return R.drawable.gpodder_icon;
-            case SYNC_PROVIDER_CHOICE_NEXTCLOUD: return R.drawable.nextcloud_logo_svg;
-            default: return R.drawable.ic_notification_sync;
+            case SYNC_PROVIDER_CHOICE_GPODDER_NET:
+                return R.drawable.gpodder_icon;
+            case SYNC_PROVIDER_CHOICE_NEXTCLOUD:
+                return R.drawable.nextcloud_logo_svg;
+            default:
+                return R.drawable.ic_notification_sync;
         }
     }
 
@@ -102,7 +105,10 @@ public class SynchronizationPreferencesFragment extends PreferenceFragmentCompat
         findPreference(PREFERENCE_LOGIN).setOnPreferenceClickListener(preference -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle(R.string.dialog_choose_sync_service_title);
-            String[] syncProviderDescriptions = {getString(R.string.gpodnet_description), getString(R.string.sync_provider_dialog_choice_nextcloud_description)};
+            String[] syncProviderDescriptions = {
+                    getString(R.string.gpodnet_description),
+                    getString(R.string.sync_provider_dialog_choice_nextcloud_description)
+            };
             int[] syncProviderIcons = {R.drawable.gpodder_icon, R.drawable.nextcloud_logo_svg};
 
             ListAdapter adapter = new ArrayAdapter<String>(
@@ -151,7 +157,8 @@ public class SynchronizationPreferencesFragment extends PreferenceFragmentCompat
                 }
                 setSelectedSyncProvider(userSelect);
                 if (userSelect.equals(SYNC_PROVIDER_CHOICE_GPODDER_NET)) {
-                    new GpodderAuthenticationFragment().show(getChildFragmentManager(), GpodderAuthenticationFragment.TAG);
+                    new GpodderAuthenticationFragment()
+                            .show(getChildFragmentManager(), GpodderAuthenticationFragment.TAG);
                     updateScreen();
                     return;
                 }
@@ -235,7 +242,8 @@ public class SynchronizationPreferencesFragment extends PreferenceFragmentCompat
 
     private String getUsernameFromSelectedSyncProvider(String currentSyncProviderKey) {
         switch (currentSyncProviderKey) {
-            case SYNC_PROVIDER_CHOICE_GPODDER_NET: return GpodnetPreferences.getUsername();
+            case SYNC_PROVIDER_CHOICE_GPODDER_NET:
+                return GpodnetPreferences.getUsername();
             case SYNC_PROVIDER_CHOICE_NEXTCLOUD:
                 try {
                     return SingleAccountHelper.getCurrentSingleSignOnAccount(getContext()).name;
@@ -246,16 +254,20 @@ public class SynchronizationPreferencesFragment extends PreferenceFragmentCompat
                     e.printStackTrace();
                     return "";
                 }
-            default: return "";
+            default:
+                return "";
         }
 
     }
 
     private int getHeaderSummary(String currentSyncProviderKey) {
         switch (currentSyncProviderKey) {
-            case SYNC_PROVIDER_CHOICE_GPODDER_NET: return R.string.gpodnet_description;
-            case SYNC_PROVIDER_CHOICE_NEXTCLOUD: return R.string.preference_synchronization_summary_nextcloud;
-            default: return R.string.preference_synchronization_summary_unchoosen;
+            case SYNC_PROVIDER_CHOICE_GPODDER_NET:
+                return R.string.gpodnet_description;
+            case SYNC_PROVIDER_CHOICE_NEXTCLOUD:
+                return R.string.preference_synchronization_summary_nextcloud;
+            default:
+                return R.string.preference_synchronization_summary_unchoosen;
         }
     }
 
@@ -290,11 +302,17 @@ public class SynchronizationPreferencesFragment extends PreferenceFragmentCompat
         super.onActivityResult(requestCode, resultCode, data);
 
         try {
-            AccountImporter.onActivityResult(requestCode, resultCode, data, SynchronizationPreferencesFragment.this, singleSignOnAccount -> {
-                SingleAccountHelper.setCurrentAccount(getContext(), singleSignOnAccount.name);
-                SyncService.setIsProviderConnected(getContext(), true);
-                updateScreen();
-            });
+            AccountImporter.onActivityResult(
+                    requestCode,
+                    resultCode,
+                    data,
+                    SynchronizationPreferencesFragment.this,
+                    singleSignOnAccount
+                            -> {
+                        SingleAccountHelper.setCurrentAccount(getContext(), singleSignOnAccount.name);
+                        SyncService.setIsProviderConnected(getContext(), true);
+                        updateScreen();
+                    });
         } catch (AccountImportCancelledException e) {
             e.printStackTrace();
         }
