@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.appcompat.app.ActionBar;
@@ -16,23 +15,18 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResult;
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResultListener;
-import com.nextcloud.android.sso.AccountImporter;
-import com.nextcloud.android.sso.exceptions.AccountImportCancelledException;
-import com.nextcloud.android.sso.helper.SingleAccountHelper;
-import com.nextcloud.android.sso.model.SingleSignOnAccount;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
-import de.danoeh.antennapod.core.sync.SyncService;
 import de.danoeh.antennapod.databinding.SettingsActivityBinding;
 import de.danoeh.antennapod.fragment.preferences.AutoDownloadPreferencesFragment;
-import de.danoeh.antennapod.fragment.preferences.SynchronizationPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.ImportExportPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.MainPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.NetworkPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.NotificationPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.PlaybackPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.StoragePreferencesFragment;
+import de.danoeh.antennapod.fragment.preferences.SynchronizationPreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.SwipePreferencesFragment;
 import de.danoeh.antennapod.fragment.preferences.UserInterfacePreferencesFragment;
 
