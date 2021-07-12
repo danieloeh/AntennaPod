@@ -1,33 +1,32 @@
 <?xml version='1.0' encoding='utf-8'?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:squareImageView="http://schemas.android.com/apk/de.danoeh.antennapod"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:foreground="?attr/selectableItemBackground">
 
     <de.danoeh.antennapod.ui.common.SquareImageView
         android:id="@+id/imgvCover"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:scaleType="fitCenter"
         android:background="@color/non_square_icon_background"
-        tools:src="@mipmap/ic_launcher_round"
-        squareImageView:direction="width"/>
+        android:scaleType="fitCenter"
+        squareImageView:direction="width"
+        tools:src="@mipmap/ic_launcher_round" />
 
     <com.joanzapata.iconify.widget.IconTextView
         android:id="@+id/txtvTitle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/non_square_icon_background"
-        android:layout_alignLeft="@+id/imgvCover"
-        android:layout_alignRight="@+id/imgvCover"
         android:layout_alignStart="@+id/imgvCover"
-        android:layout_alignEnd="@+id/imgvCover"
+        android:layout_alignLeft="@+id/imgvCover"
         android:layout_alignTop="@+id/imgvCover"
+        android:layout_alignEnd="@+id/imgvCover"
+        android:layout_alignRight="@+id/imgvCover"
         android:layout_alignBottom="@+id/imgvCover"
+        android:background="@color/non_square_icon_background"
         android:ellipsize="end"
         android:gravity="center"
         android:textColor="?android:attr/textColorPrimary"
@@ -37,12 +36,18 @@
         android:id="@+id/triangleCountView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         app:backgroundColor="?attr/colorSecondary"
         app:corner="rightTop"
         app:primaryText="Test"
         app:primaryTextColor="?attr/colorOnSecondary"
         app:primaryTextSize="12sp" />
+
+    <CheckBox
+        android:id="@+id/selectCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:buttonTint="#FFFFFF" />
 </RelativeLayout>
