@@ -21,6 +21,7 @@ import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import de.danoeh.antennapod.core.ClientConfig;
 import de.danoeh.antennapod.core.R;
 import de.danoeh.antennapod.core.event.SyncServiceEvent;
 import de.danoeh.antennapod.model.feed.Feed;
@@ -88,7 +89,10 @@ public class SyncService extends Worker {
                 GpodnetPreferences.getHosturl(), GpodnetPreferences.getDeviceID(),
                 GpodnetPreferences.getUsername(), GpodnetPreferences.getPassword()));
 
-        syncServices.put(SYNC_PROVIDER_CHOICE_NEXTCLOUD, new NextcloudSyncService(getApplicationContext()));
+        syncServices.put(
+                SYNC_PROVIDER_CHOICE_NEXTCLOUD,
+                new NextcloudSyncService(getApplicationContext(), ClientConfig.USER_AGENT)
+        );
     }
 
     @Override

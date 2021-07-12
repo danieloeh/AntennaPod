@@ -40,9 +40,11 @@ public class NextcloudSyncService implements ISyncService {
 
     private final Context context;
     private NextcloudAPI nextcloudApi;
+    private String userAgent;
 
-    public NextcloudSyncService(Context context) {
+    public NextcloudSyncService(Context context, String userAgent) {
         this.context = context;
+        this.userAgent = userAgent;
     }
 
     @Override
@@ -92,10 +94,12 @@ public class NextcloudSyncService implements ISyncService {
             String uri = "/index.php/apps/gpoddersync/subscriptions";
             HashMap<String, String> parameters = new HashMap<>();
             parameters.put("since", String.valueOf(lastSync));
+            HashMap<String, List<String>> header = getHeaderWithUserAgent();
             NextcloudRequest nextcloudRequest = new NextcloudRequest.Builder()
                     .setMethod("GET")
                     .setUrl(Uri.encode(uri, "/"))
                     .setParameter(parameters)
+                    .setHeader(header)
                     .build();
 
             InputStream inputStream = this.nextcloudApi.performNetworkRequest(nextcloudRequest);
@@ -115,11 +119,17 @@ public class NextcloudSyncService implements ISyncService {
         }
     }
 
+    private HashMap<String, List<String>> getHeaderWithUserAgent() {
+        HashMap<String, List<String>> header = new HashMap<>();
+        header.put("User-Agent", Collections.singletonList(userAgent));
+        return header;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public UploadChangesResponse uploadSubscriptionChanges(List<String> addedFeeds, List<String> removedFeeds) {
         try {
-            HashMap<String, List<String>> header = new HashMap<>();
+            HashMap<String, List<String>> header = getHeaderWithUserAgent();
             header.put("Content-Type", Collections.singletonList("application/json"));
 
             String body = "{\"add\": \""
@@ -175,7 +185,7 @@ public class NextcloudSyncService implements ISyncService {
     @Override
     public UploadChangesResponse uploadEpisodeActions(List<EpisodeAction> queuedEpisodeActions) {
         try {
-            HashMap<String, List<String>> header = new HashMap<>();
+            HashMap<String, List<String>> header = getHeaderWithUserAgent();
             header.put("Content-Type", Collections.singletonList("application/json"));
             String body = createBody(queuedEpisodeActions.toString());
             NextcloudRequest nextcloudRequest = new NextcloudRequest.Builder()
