@@ -448,14 +448,6 @@
     <string name="pref_gpodnet_setlogin_information_sum">Change the login information for your gpodder.net account.</string>
     <string name="pref_gpodnet_sync_changes_title">Synchronize now</string>
     <string name="pref_gpodnet_full_sync_title">Force full synchronization</string>
-    <string name="pref_gpodnet_login_status"><![CDATA[Logged in as <i>%1$s</i> with device <i>%2$s</i>]]></string>
-    <string name="pref_nextcloud_gpodder_connect_title">Connect</string>
-    <string name="pref_nextcloud_gpodder_connect_summary">Connect to nextcloud</string>
-    <string name="pref_nextcloud_gpodder_disconnect_title">Disconnect from nextcloud</string>
-    <string name="pref_nextcloud_gpodder_sync_changes_title">Do sync</string>
-    <string name="pref_nextcloud_gpodder_sync_changes_sum">Do sync now</string>
-    <string name="pref_nextcloud_gpodder_full_sync_title">Do full sync</string>
-    <string name="pref_nextcloud_gpodder_full_sync_sum">Do full sync now</string>
     <string name="sync_provider_dialog_choice_nextcloud_description">Use Nextcloud to sync. You need an account on a nextcloud server that has gpoddersync app installed.</string>
     <string name="pref_nextcloud_gpodder_login_status"><![CDATA[Logged in as <i>%1$s</i>. <br/><br/>%2$s]]></string>
     <string name="dialog_choose_sync_service_title">Choose synchronization provider</string>
