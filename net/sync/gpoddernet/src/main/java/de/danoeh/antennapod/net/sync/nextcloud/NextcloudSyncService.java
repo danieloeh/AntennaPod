@@ -15,6 +15,7 @@ import com.nextcloud.android.sso.exceptions.NoCurrentAccountSelectedException;
 import com.nextcloud.android.sso.helper.SingleAccountHelper;
 import com.nextcloud.android.sso.model.SingleSignOnAccount;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -132,16 +133,15 @@ public class NextcloudSyncService implements ISyncService {
             HashMap<String, List<String>> header = getHeaderWithUserAgent();
             header.put("Content-Type", Collections.singletonList("application/json"));
 
-            String body = "{\"add\": \""
-                    + addedFeeds.toString()
-                    + "\", \"remove\": \""
-                    + removedFeeds.toString()
-                    + "\"}";
+            final JSONObject requestObject = new JSONObject();
+            requestObject.put("add", new JSONArray(addedFeeds));
+            requestObject.put("remove", new JSONArray(removedFeeds));
+
             NextcloudRequest nextcloudRequest = new NextcloudRequest.Builder()
                     .setMethod("POST")
                     .setUrl(Uri.encode("/index.php/apps/gpoddersync/subscription_change/create", "/"))
                     .setHeader(header)
-                    .setRequestBody(body)
+                    .setRequestBody(requestObject.toString())
                     .build();
 
             this.nextcloudApi.performNetworkRequest(nextcloudRequest).close();
