@@ -722,6 +722,7 @@
     <string name="discover_more">more »</string>
     <string name="discover_powered_by_itunes">Suggestions by iTunes</string>
     <string name="search_powered_by">Results by %1$s</string>
+    <string name="network_error_msg">Could not connect to network.</string>
 
     <!-- Local feeds -->
     <string name="add_local_folder">Add local folder</string>

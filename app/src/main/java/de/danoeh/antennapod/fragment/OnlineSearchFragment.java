@@ -178,7 +178,7 @@ public class OnlineSearchFragment extends Fragment {
         }, error -> {
                 Log.e(TAG, Log.getStackTraceString(error));
                 progressBar.setVisibility(View.GONE);
-                txtvError.setText(error.toString());
+                txtvError.setText(R.string.network_error_msg);
                 txtvError.setVisibility(View.VISIBLE);
                 butRetry.setOnClickListener(v -> search(query));
                 butRetry.setVisibility(View.VISIBLE);
