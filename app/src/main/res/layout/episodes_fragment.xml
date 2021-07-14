@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:navigationIcon="?homeAsUpIndicator"
+            android:id="@+id/toolbar"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtvInformation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:visibility="gone"
+            tools:text="(i) Information" />
+
+        <ProgressBar
+            android:id="@+id/progLoading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:indeterminateOnly="true"
+            android:visibility="gone"
+            tools:background="@android:color/holo_red_light" />
+
+        <LinearLayout
+            android:id="@+id/loadingMore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingTop="4dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="4dp"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:gravity="center_horizontal"
+                android:indeterminateOnly="true"
+                tools:background="@android:color/holo_red_light" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:text="@string/loading_more" />
+
+        </LinearLayout>
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/loadingMore"
+            android:layout_below="@+id/txtvInformation">
+
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefresh"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <de.danoeh.antennapod.view.EpisodeItemListRecyclerView
+                    android:id="@android:id/list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:paddingHorizontal="@dimen/additional_horizontal_spacing"
+                    android:paddingTop="@dimen/list_vertical_padding"
+                    android:paddingBottom="@dimen/list_vertical_padding"
+                    tools:itemCount="13"
+                    tools:listitem="@layout/feeditemlist_item" />
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/floatingFilterButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="?attr/colorPrimary"
+                android:clickable="true"
+                app:layout_anchor="@id/quickfiltermenu"
+                app:srcCompat="@drawable/ic_baseline_home_24" />
+
+            <com.google.android.material.bottomappbar.BottomAppBar
+                android:id="@+id/quickfiltermenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:paddingRight="72dp"
+                android:visibility="visible"
+                app:backgroundTint="?attr/colorPrimary"
+                app:fabAlignmentMode="end"
+                app:hideOnScroll="true"
+                app:navigationIcon="@drawable/ic_menu" />
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

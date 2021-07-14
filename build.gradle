@@ -44,7 +44,7 @@ project.ext {
     mediaVersion = "1.1.0"
     preferenceVersion = "1.1.1"
     workManagerVersion = "2.3.4"
-    googleMaterialVersion = "1.1.0"
+    googleMaterialVersion = "1.4.0"
 
     // Third-party
     commonslangVersion = "3.6"

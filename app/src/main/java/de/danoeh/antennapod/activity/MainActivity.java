@@ -57,6 +57,7 @@ import de.danoeh.antennapod.fragment.AudioPlayerFragment;
 import de.danoeh.antennapod.fragment.DownloadsFragment;
 import de.danoeh.antennapod.fragment.EpisodesFragment;
 import de.danoeh.antennapod.fragment.FeedItemlistFragment;
+import de.danoeh.antennapod.fragment.InboxFragment;
 import de.danoeh.antennapod.fragment.NavDrawerFragment;
 import de.danoeh.antennapod.fragment.PlaybackHistoryFragment;
 import de.danoeh.antennapod.fragment.QueueFragment;
@@ -263,6 +264,9 @@ public class MainActivity extends CastEnabledActivity {
         Log.d(TAG, "loadFragment(tag: " + tag + ", args: " + args + ")");
         Fragment fragment;
         switch (tag) {
+            case InboxFragment.TAG:
+                fragment = new InboxFragment();
+                break;
             case QueueFragment.TAG:
                 fragment = new QueueFragment();
                 break;
@@ -325,6 +329,10 @@ public class MainActivity extends CastEnabledActivity {
         if (drawerLayout != null) { // Tablet layout does not have a drawer
             drawerLayout.closeDrawer(navDrawer);
         }
+    }
+
+    public void openDrawer() {
+        drawerLayout.openDrawer(navDrawer);
     }
 
     public void loadChildFragment(Fragment fragment, TransitionEffect transition) {

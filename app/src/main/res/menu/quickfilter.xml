@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/filter_all"
+        android:icon="@drawable/ic_list"
+        custom:showAsAction="always"
+        android:title="@string/all_episodes_short_label"/>
+
+    <item
+        android:id="@+id/filter_unplayed"
+        android:icon="@drawable/ic_play_24dp"
+        custom:showAsAction="always"
+        android:title="@string/unplayed_label"/>
+
+    <item
+        android:id="@+id/filter_downloaded"
+        android:icon="@drawable/ic_download"
+        custom:showAsAction="always"
+        android:title="@string/downloaded_label"/>
+
+    <item
+        android:id="@+id/filter_favorites"
+        android:icon="@drawable/ic_star"
+        custom:showAsAction="always"
+        android:title="@string/favorite_episodes_label"/>
+
+</menu>

@@ -11,10 +11,11 @@
     <string name="statistics_label">Statistics</string>
     <string name="add_feed_label">Add Podcast</string>
     <string name="episodes_label">Episodes</string>
+    <string name="inbox_label">Inbox</string>
     <string name="queue_label">Queue</string>
     <string name="all_episodes_short_label">All</string>
-    <string name="new_episodes_label">New</string>
     <string name="favorite_episodes_label">Favorites</string>
+    <string name="downloaded_label">Downloaded</string>
     <string name="new_label">New</string>
     <string name="settings_label">Settings</string>
     <string name="downloads_label">Downloads</string>
@@ -194,6 +195,7 @@
     <string name="pause_label">Pause</string>
     <string name="stream_label">Stream</string>
     <string name="delete_label">Delete</string>
+    <string name="unplayed_label">Unplayed</string>
     <string name="delete_failed">Unable to delete file. Rebooting the device could help.</string>
     <string name="delete_episode_label">Delete Episode</string>
     <plurals name="deleted_multi_episode_batch_label">
@@ -233,7 +235,6 @@
     <string name="visit_website_label">Visit Website</string>
     <string name="skip_episode_label">Skip episode</string>
     <string name="reset_position">Reset Playback Position</string>
-    <string name="removed_item">Item removed</string>
     <string name="no_items_selected">No items selected</string>
 
     <!-- Download messages and labels -->

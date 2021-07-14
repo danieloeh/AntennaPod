@@ -22,6 +22,7 @@ import java.util.List;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.dialog.SwipeActionsDialog;
 import de.danoeh.antennapod.fragment.EpisodesFragment;
+import de.danoeh.antennapod.fragment.InboxFragment;
 import de.danoeh.antennapod.fragment.QueueFragment;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
@@ -93,9 +94,9 @@ public class SwipeActions extends ItemTouchHelper.SimpleCallback implements Life
     public static Actions getPrefsWithDefaults(Context context, String tag) {
         String defaultActions;
         switch (tag) {
-            /*case InboxFragment.TAG:
-                defaultActions = new int[] {ADD_TO_QUEUE, MARK_UNPLAYED};
-                break;*/
+            case InboxFragment.TAG:
+                defaultActions = SwipeAction.ADD_TO_QUEUE + "," + SwipeAction.REMOVE_FROM_INBOX;
+                break;
             case QueueFragment.TAG:
                 defaultActions = SwipeAction.REMOVE_FROM_QUEUE + "," + SwipeAction.REMOVE_FROM_QUEUE;
                 break;
