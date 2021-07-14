@@ -4,6 +4,8 @@ import java.util.List;
 
 public interface ISyncService {
 
+    boolean isAuthenticated();
+
     void login() throws SyncServiceException;
 
     SubscriptionChanges getSubscriptionChanges(long lastSync) throws SyncServiceException;

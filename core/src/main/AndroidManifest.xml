@@ -10,6 +10,11 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <queries>
+        <package android:name="com.nextcloud.client" />
+        <package android:name="com.nextcloud.android.beta" />
+    </queries>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

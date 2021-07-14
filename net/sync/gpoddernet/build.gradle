@@ -9,4 +9,6 @@ dependencies {
 
     implementation "com.squareup.okhttp3:okhttp:$okhttpVersion"
     implementation "org.apache.commons:commons-lang3:$commonslangVersion"
+
+    implementation "com.github.nextcloud:Android-SingleSignOn:0.5.1"
 }
