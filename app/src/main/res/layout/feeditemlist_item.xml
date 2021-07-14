@@ -85,6 +85,7 @@
                     android:id="@+id/imgvCover"
                     android:layout_width="@dimen/thumbnail_length_queue_item"
                     android:layout_height="@dimen/thumbnail_length_queue_item"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:layout_centerVertical="true"
                     android:importantForAccessibility="no"
                     tools:src="@tools:sample/avatars" />

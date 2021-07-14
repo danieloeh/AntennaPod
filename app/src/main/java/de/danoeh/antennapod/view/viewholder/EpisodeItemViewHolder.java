@@ -1,5 +1,6 @@
 package de.danoeh.antennapod.view.viewholder;
 
+import android.content.Intent;
 import android.os.Build;
 import android.text.Layout;
 import android.text.format.Formatter;
@@ -132,6 +133,9 @@ public class EpisodeItemViewHolder extends RecyclerView.ViewHolder {
                     .withPlaceholderView(placeholder)
                     .withCoverView(cover)
                     .load();
+
+            Intent openFeed = MainActivity.getIntentToOpenFeed(activity, item.getFeedId());
+            cover.setOnClickListener(view -> activity.startActivity(openFeed));
         }
     }
 
