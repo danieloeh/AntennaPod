@@ -1,5 +1,6 @@
 package de.danoeh.antennapod.activity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -9,8 +10,8 @@ import android.os.Environment;
 import android.util.Log;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,7 +24,6 @@ import de.danoeh.antennapod.core.preferences.UserPreferences;
 
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -113,26 +113,21 @@ public class OpmlImportActivity extends AppCompatActivity {
     }
 
     private void requestPermission() {
-        String[] permissions = { android.Manifest.permission.READ_EXTERNAL_STORAGE };
-        ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_READ_EXTERNAL_STORAGE);
+        requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode != PERMISSION_REQUEST_READ_EXTERNAL_STORAGE) {
-            return;
-        }
-        if (grantResults.length > 0 && ArrayUtils.contains(grantResults, PackageManager.PERMISSION_GRANTED)) {
-            startImport();
-        } else {
-            new AlertDialog.Builder(this)
-                    .setMessage(R.string.opml_import_ask_read_permission)
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> requestPermission())
-                    .setNegativeButton(R.string.cancel_label, (dialog, which) -> finish())
-                    .show();
-        }
-    }
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    startImport();
+                } else {
+                    new AlertDialog.Builder(this)
+                            .setMessage(R.string.opml_import_ask_read_permission)
+                            .setPositiveButton(android.R.string.ok, (dialog, which) -> requestPermission())
+                            .setNegativeButton(R.string.cancel_label, (dialog, which) -> finish())
+                            .show();
+                }
+            });
 
     /** Starts the import process. */
     private void startImport() {
