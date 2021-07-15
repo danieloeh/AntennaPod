@@ -85,6 +85,8 @@ public class PlaybackControlsDialog extends DialogFragment {
         barRightVolume.setProgress(UserPreferences.getRightVolumePercentage());
         final CheckBox stereoToMono = dialog.findViewById(R.id.stereo_to_mono);
         stereoToMono.setChecked(UserPreferences.stereoToMono());
+        final CheckBox repeatEpisode = dialog.findViewById(R.id.repeat_episode);
+        repeatEpisode.setChecked(UserPreferences.repeatEpisode());
         if (controller != null && !controller.canDownmix()) {
             stereoToMono.setEnabled(false);
             String sonicOnly = getString(R.string.sonic_only);
@@ -144,6 +146,9 @@ public class PlaybackControlsDialog extends DialogFragment {
             if (controller != null) {
                 controller.setDownmix(isChecked);
             }
+        });
+        repeatEpisode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            UserPreferences.repeatEpisode(isChecked);
         });
     }
 

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:padding="16dp">
 
     <LinearLayout
@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="8dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,9 +27,9 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                style="@style/AntennaPod.TextView.ListItemPrimaryTitle"
                 android:layout_weight="1"
-                android:text="@string/playback_speed" />
+                android:text="@string/playback_speed"
+                style="@style/AntennaPod.TextView.ListItemPrimaryTitle" />
 
             <TextView
                 android:id="@+id/txtvPlaybackSpeed"
@@ -42,15 +42,15 @@
         <de.danoeh.antennapod.view.PlaybackSpeedSeekBar
             android:id="@+id/speed_seek_bar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="4dp"
-            style="@style/AntennaPod.TextView.ListItemPrimaryTitle"
-            android:text="@string/volume" />
+            android:text="@string/volume"
+            style="@style/AntennaPod.TextView.ListItemPrimaryTitle" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -101,8 +101,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            style="@style/AntennaPod.TextView.ListItemPrimaryTitle"
-            android:text="@string/audio_effects" />
+            android:text="@string/audio_effects"
+            style="@style/AntennaPod.TextView.ListItemPrimaryTitle" />
 
         <CheckBox
             android:id="@+id/skipSilence"
@@ -115,5 +115,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/stereo_to_mono" />
+
+        <CheckBox
+            android:id="@+id/repeat_episode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/repeat" />
+
     </LinearLayout>
+
 </ScrollView>

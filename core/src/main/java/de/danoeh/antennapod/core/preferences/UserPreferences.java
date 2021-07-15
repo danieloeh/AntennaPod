@@ -141,6 +141,7 @@ public class UserPreferences {
     public static final int EPISODE_CLEANUP_NULL = -2;
     public static final int EPISODE_CLEANUP_EXCEPT_FAVORITE = -3;
     public static final int EPISODE_CLEANUP_DEFAULT = 0;
+    public static final String PREF_REPEAT_EPISODE = "RepeatEpisode";
 
     // Constants
     private static final int NOTIFICATION_BUTTON_REWIND = 0;
@@ -885,6 +886,16 @@ public class UserPreferences {
     public static void stereoToMono(boolean enable) {
         prefs.edit()
                 .putBoolean(PREF_STEREO_TO_MONO, enable)
+                .apply();
+    }
+
+    public static boolean repeatEpisode() {
+        return prefs.getBoolean(PREF_REPEAT_EPISODE, false);
+    }
+
+    public static void repeatEpisode(boolean enable) {
+        prefs.edit()
+                .putBoolean(PREF_REPEAT_EPISODE, enable)
                 .apply();
     }
 
