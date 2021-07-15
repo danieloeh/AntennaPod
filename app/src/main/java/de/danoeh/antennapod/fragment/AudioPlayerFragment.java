@@ -544,21 +544,21 @@ public class AudioPlayerFragment extends Fragment implements
         if (feedItem != null && FeedItemMenuHandler.onMenuItemClicked(this, item.getItemId(), feedItem)) {
             return true;
         }
-        switch (item.getItemId()) {
-            case R.id.disable_sleeptimer_item: // Fall-through
-            case R.id.set_sleeptimer_item:
-                new SleepTimerDialog().show(getChildFragmentManager(), "SleepTimerDialog");
-                return true;
-            case R.id.audio_controls:
-                PlaybackControlsDialog dialog = PlaybackControlsDialog.newInstance();
-                dialog.show(getChildFragmentManager(), "playback_controls");
-                return true;
-            case R.id.open_feed_item:
-                if (feedItem != null) {
-                    Intent intent = MainActivity.getIntentToOpenFeed(getContext(), feedItem.getFeedId());
-                    startActivity(intent);
-                }
-                return true;
+
+        final int itemId = item.getItemId();
+        if (itemId == R.id.disable_sleeptimer_item || itemId == R.id.set_sleeptimer_item) {
+            new SleepTimerDialog().show(getChildFragmentManager(), "SleepTimerDialog");
+            return true;
+        } else if (itemId == R.id.audio_controls) {
+            PlaybackControlsDialog dialog = PlaybackControlsDialog.newInstance();
+            dialog.show(getChildFragmentManager(), "playback_controls");
+            return true;
+        } else if (itemId == R.id.open_feed_item) {
+            if (feedItem != null) {
+                Intent intent = MainActivity.getIntentToOpenFeed(getContext(), feedItem.getFeedId());
+                startActivity(intent);
+            }
+            return true;
         }
         return false;
     }

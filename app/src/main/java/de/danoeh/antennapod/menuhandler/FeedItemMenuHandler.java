@@ -142,73 +142,60 @@ public class FeedItemMenuHandler {
                                             @NonNull FeedItem selectedItem) {
 
         @NonNull Context context = fragment.requireContext();
-        switch (menuItemId) {
-            case R.id.skip_episode_item:
-                IntentUtils.sendLocalBroadcast(context, PlaybackService.ACTION_SKIP_CURRENT_EPISODE);
-                break;
-            case R.id.remove_item:
-                DBWriter.deleteFeedMediaOfItem(context, selectedItem.getMedia().getId());
-                break;
-            case R.id.remove_new_flag_item:
-                removeNewFlagWithUndo(fragment, selectedItem);
-                break;
-            case R.id.mark_read_item:
-                selectedItem.setPlayed(true);
-                DBWriter.markItemPlayed(selectedItem, FeedItem.PLAYED, true);
-                if (GpodnetPreferences.loggedIn()) {
-                    FeedMedia media = selectedItem.getMedia();
-                    // not all items have media, Gpodder only cares about those that do
-                    if (media != null) {
-                        EpisodeAction actionPlay = new EpisodeAction.Builder(selectedItem, EpisodeAction.PLAY)
-                                .currentTimestamp()
-                                .started(media.getDuration() / 1000)
-                                .position(media.getDuration() / 1000)
-                                .total(media.getDuration() / 1000)
-                                .build();
-                        SyncService.enqueueEpisodeAction(context, actionPlay);
-                    }
-                }
-                break;
-            case R.id.mark_unread_item:
-                selectedItem.setPlayed(false);
-                DBWriter.markItemPlayed(selectedItem, FeedItem.UNPLAYED, false);
-                if (GpodnetPreferences.loggedIn() && selectedItem.getMedia() != null) {
-                    EpisodeAction actionNew = new EpisodeAction.Builder(selectedItem, EpisodeAction.NEW)
+        if (menuItemId == R.id.skip_episode_item) {
+            IntentUtils.sendLocalBroadcast(context, PlaybackService.ACTION_SKIP_CURRENT_EPISODE);
+        } else if (menuItemId == R.id.remove_item) {
+            DBWriter.deleteFeedMediaOfItem(context, selectedItem.getMedia().getId());
+        } else if (menuItemId == R.id.remove_new_flag_item) {
+            removeNewFlagWithUndo(fragment, selectedItem);
+        } else if (menuItemId == R.id.mark_read_item) {
+            selectedItem.setPlayed(true);
+            DBWriter.markItemPlayed(selectedItem, FeedItem.PLAYED, true);
+            if (GpodnetPreferences.loggedIn()) {
+                FeedMedia media = selectedItem.getMedia();
+                // not all items have media, Gpodder only cares about those that do
+                if (media != null) {
+                    EpisodeAction actionPlay = new EpisodeAction.Builder(selectedItem, EpisodeAction.PLAY)
                             .currentTimestamp()
+                            .started(media.getDuration() / 1000)
+                            .position(media.getDuration() / 1000)
+                            .total(media.getDuration() / 1000)
                             .build();
-                    SyncService.enqueueEpisodeAction(context, actionNew);
+                    SyncService.enqueueEpisodeAction(context, actionPlay);
                 }
-                break;
-            case R.id.add_to_queue_item:
-                DBWriter.addQueueItem(context, selectedItem);
-                break;
-            case R.id.remove_from_queue_item:
-                DBWriter.removeQueueItem(context, true, selectedItem);
-                break;
-            case R.id.add_to_favorites_item:
-                DBWriter.addFavoriteItem(selectedItem);
-                break;
-            case R.id.remove_from_favorites_item:
-                DBWriter.removeFavoriteItem(selectedItem);
-                break;
-            case R.id.reset_position:
-                selectedItem.getMedia().setPosition(0);
-                if (PlaybackPreferences.getCurrentlyPlayingFeedMediaId() == selectedItem.getMedia().getId()) {
-                    PlaybackPreferences.writeNoMediaPlaying();
-                    IntentUtils.sendLocalBroadcast(context, PlaybackService.ACTION_SHUTDOWN_PLAYBACK_SERVICE);
-                }
-                DBWriter.markItemPlayed(selectedItem, FeedItem.UNPLAYED, true);
-                break;
-            case R.id.visit_website_item:
-                IntentUtils.openInBrowser(context, FeedItemUtil.getLinkWithFallback(selectedItem));
-                break;
-            case R.id.share_item:
-                ShareDialog shareDialog = ShareDialog.newInstance(selectedItem);
-                shareDialog.show((fragment.getActivity().getSupportFragmentManager()), "ShareEpisodeDialog");
-                break;
-            default:
-                Log.d(TAG, "Unknown menuItemId: " + menuItemId);
-                return false;
+            }
+        } else if (menuItemId == R.id.mark_unread_item) {
+            selectedItem.setPlayed(false);
+            DBWriter.markItemPlayed(selectedItem, FeedItem.UNPLAYED, false);
+            if (GpodnetPreferences.loggedIn() && selectedItem.getMedia() != null) {
+                EpisodeAction actionNew = new EpisodeAction.Builder(selectedItem, EpisodeAction.NEW)
+                        .currentTimestamp()
+                        .build();
+                SyncService.enqueueEpisodeAction(context, actionNew);
+            }
+        } else if (menuItemId == R.id.add_to_queue_item) {
+            DBWriter.addQueueItem(context, selectedItem);
+        } else if (menuItemId == R.id.remove_from_queue_item) {
+            DBWriter.removeQueueItem(context, true, selectedItem);
+        } else if (menuItemId == R.id.add_to_favorites_item) {
+            DBWriter.addFavoriteItem(selectedItem);
+        } else if (menuItemId == R.id.remove_from_favorites_item) {
+            DBWriter.removeFavoriteItem(selectedItem);
+        } else if (menuItemId == R.id.reset_position) {
+            selectedItem.getMedia().setPosition(0);
+            if (PlaybackPreferences.getCurrentlyPlayingFeedMediaId() == selectedItem.getMedia().getId()) {
+                PlaybackPreferences.writeNoMediaPlaying();
+                IntentUtils.sendLocalBroadcast(context, PlaybackService.ACTION_SHUTDOWN_PLAYBACK_SERVICE);
+            }
+            DBWriter.markItemPlayed(selectedItem, FeedItem.UNPLAYED, true);
+        } else if (menuItemId == R.id.visit_website_item) {
+            IntentUtils.openInBrowser(context, FeedItemUtil.getLinkWithFallback(selectedItem));
+        } else if (menuItemId == R.id.share_item) {
+            ShareDialog shareDialog = ShareDialog.newInstance(selectedItem);
+            shareDialog.show((fragment.getActivity().getSupportFragmentManager()), "ShareEpisodeDialog");
+        } else {
+            Log.d(TAG, "Unknown menuItemId: " + menuItemId);
+            return false;
         }
         // Refresh menu state
 

@@ -20,7 +20,7 @@ import static java.util.Collections.singletonList;
 /**
  * Test class for GpodnetService
  */
-@Ignore
+@Ignore("???")
 @RunWith(AndroidJUnit4.class)
 public class GPodnetServiceTest {
 

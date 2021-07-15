@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:viewBindingIgnore="true">
 
     <FrameLayout
-            android:id="@+id/navDrawerFragment"
-            android:layout_width="300dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:orientation="vertical" />
+        android:id="@+id/navDrawerFragment"
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:orientation="vertical" />
 
     <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="?android:attr/listDivider" />
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="?android:attr/listDivider" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:id="@+id/overview_coordinator_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        android:id="@+id/overview_coordinator_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <FrameLayout
             android:id="@+id/main_view"
@@ -33,11 +34,11 @@
             tools:background="@android:color/holo_red_dark" />
 
         <FrameLayout
-            android:elevation="8dp"
             android:id="@+id/audioplayerFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?android:attr/windowBackground"
+            android:elevation="8dp"
             android:visibility="gone"
             app:layout_behavior="de.danoeh.antennapod.view.LockableBottomSheetBehavior" />
 

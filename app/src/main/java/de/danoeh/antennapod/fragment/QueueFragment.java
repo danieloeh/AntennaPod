@@ -258,77 +258,76 @@ public class QueueFragment extends Fragment implements Toolbar.OnMenuItemClickLi
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.queue_lock:
-                toggleQueueLock();
-                return true;
-            case R.id.refresh_item:
-                AutoUpdateManager.runImmediate(requireContext());
-                return true;
-            case R.id.clear_queue:
-                // make sure the user really wants to clear the queue
-                ConfirmationDialog conDialog = new ConfirmationDialog(getActivity(),
-                        R.string.clear_queue_label,
-                        R.string.clear_queue_confirmation_msg) {
+        final int itemId = item.getItemId();
+        if (itemId == R.id.queue_lock) {
+            toggleQueueLock();
+            return true;
+        } else if (itemId == R.id.refresh_item) {
+            AutoUpdateManager.runImmediate(requireContext());
+            return true;
+        } else if (itemId == R.id.clear_queue) {
+            // make sure the user really wants to clear the queue
+            ConfirmationDialog conDialog = new ConfirmationDialog(getActivity(),
+                    R.string.clear_queue_label,
+                    R.string.clear_queue_confirmation_msg) {
 
-                    @Override
-                    public void onConfirmButtonPressed(
-                            DialogInterface dialog) {
-                        dialog.dismiss();
-                        DBWriter.clearQueue();
-                    }
-                };
-                conDialog.createNewDialog().show();
-                return true;
-            case R.id.queue_sort_episode_title_asc:
-                setSortOrder(SortOrder.EPISODE_TITLE_A_Z);
-                return true;
-            case R.id.queue_sort_episode_title_desc:
-                setSortOrder(SortOrder.EPISODE_TITLE_Z_A);
-                return true;
-            case R.id.queue_sort_date_asc:
-                setSortOrder(SortOrder.DATE_OLD_NEW);
-                return true;
-            case R.id.queue_sort_date_desc:
-                setSortOrder(SortOrder.DATE_NEW_OLD);
-                return true;
-            case R.id.queue_sort_duration_asc:
-                setSortOrder(SortOrder.DURATION_SHORT_LONG);
-                return true;
-            case R.id.queue_sort_duration_desc:
-                setSortOrder(SortOrder.DURATION_LONG_SHORT);
-                return true;
-            case R.id.queue_sort_feed_title_asc:
-                setSortOrder(SortOrder.FEED_TITLE_A_Z);
-                return true;
-            case R.id.queue_sort_feed_title_desc:
-                setSortOrder(SortOrder.FEED_TITLE_Z_A);
-                return true;
-            case R.id.queue_sort_random:
-                setSortOrder(SortOrder.RANDOM);
-                return true;
-            case R.id.queue_sort_smart_shuffle_asc:
-                setSortOrder(SortOrder.SMART_SHUFFLE_OLD_NEW);
-                return true;
-            case R.id.queue_sort_smart_shuffle_desc:
-                setSortOrder(SortOrder.SMART_SHUFFLE_NEW_OLD);
-                return true;
-            case R.id.queue_keep_sorted:
-                boolean keepSortedOld = UserPreferences.isQueueKeepSorted();
-                boolean keepSortedNew = !keepSortedOld;
-                UserPreferences.setQueueKeepSorted(keepSortedNew);
-                if (keepSortedNew) {
-                    SortOrder sortOrder = UserPreferences.getQueueKeepSortedOrder();
-                    DBWriter.reorderQueue(sortOrder, true);
+                @Override
+                public void onConfirmButtonPressed(
+                        DialogInterface dialog) {
+                    dialog.dismiss();
+                    DBWriter.clearQueue();
                 }
-                if (recyclerAdapter != null) {
-                    recyclerAdapter.updateDragDropEnabled();
-                }
-                refreshToolbarState();
-                return true;
-            default:
-                return false;
+            };
+            conDialog.createNewDialog().show();
+            return true;
+        } else if (itemId == R.id.queue_sort_episode_title_asc) {
+            setSortOrder(SortOrder.EPISODE_TITLE_A_Z);
+            return true;
+        } else if (itemId == R.id.queue_sort_episode_title_desc) {
+            setSortOrder(SortOrder.EPISODE_TITLE_Z_A);
+            return true;
+        } else if (itemId == R.id.queue_sort_date_asc) {
+            setSortOrder(SortOrder.DATE_OLD_NEW);
+            return true;
+        } else if (itemId == R.id.queue_sort_date_desc) {
+            setSortOrder(SortOrder.DATE_NEW_OLD);
+            return true;
+        } else if (itemId == R.id.queue_sort_duration_asc) {
+            setSortOrder(SortOrder.DURATION_SHORT_LONG);
+            return true;
+        } else if (itemId == R.id.queue_sort_duration_desc) {
+            setSortOrder(SortOrder.DURATION_LONG_SHORT);
+            return true;
+        } else if (itemId == R.id.queue_sort_feed_title_asc) {
+            setSortOrder(SortOrder.FEED_TITLE_A_Z);
+            return true;
+        } else if (itemId == R.id.queue_sort_feed_title_desc) {
+            setSortOrder(SortOrder.FEED_TITLE_Z_A);
+            return true;
+        } else if (itemId == R.id.queue_sort_random) {
+            setSortOrder(SortOrder.RANDOM);
+            return true;
+        } else if (itemId == R.id.queue_sort_smart_shuffle_asc) {
+            setSortOrder(SortOrder.SMART_SHUFFLE_OLD_NEW);
+            return true;
+        } else if (itemId == R.id.queue_sort_smart_shuffle_desc) {
+            setSortOrder(SortOrder.SMART_SHUFFLE_NEW_OLD);
+            return true;
+        } else if (itemId == R.id.queue_keep_sorted) {
+            boolean keepSortedOld = UserPreferences.isQueueKeepSorted();
+            boolean keepSortedNew = !keepSortedOld;
+            UserPreferences.setQueueKeepSorted(keepSortedNew);
+            if (keepSortedNew) {
+                SortOrder sortOrder = UserPreferences.getQueueKeepSortedOrder();
+                DBWriter.reorderQueue(sortOrder, true);
+            }
+            if (recyclerAdapter != null) {
+                recyclerAdapter.updateDragDropEnabled();
+            }
+            refreshToolbarState();
+            return true;
         }
+        return false;
     }
 
     private void toggleQueueLock() {
@@ -404,20 +403,19 @@ public class QueueFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             return true;
         }
 
-        switch(item.getItemId()) {
-            case R.id.move_to_top_item:
-                queue.add(0, queue.remove(position));
-                recyclerAdapter.notifyItemMoved(position, 0);
-                DBWriter.moveQueueItemToTop(selectedItem.getId(), true);
-                return true;
-            case R.id.move_to_bottom_item:
-                queue.add(queue.size()-1, queue.remove(position));
-                recyclerAdapter.notifyItemMoved(position, queue.size()-1);
-                DBWriter.moveQueueItemToBottom(selectedItem.getId(), true);
-                return true;
-            default:
-                return FeedItemMenuHandler.onMenuItemClicked(this, item.getItemId(), selectedItem);
+        final int itemId = item.getItemId();
+        if (itemId == R.id.move_to_top_item) {
+            queue.add(0, queue.remove(position));
+            recyclerAdapter.notifyItemMoved(position, 0);
+            DBWriter.moveQueueItemToTop(selectedItem.getId(), true);
+            return true;
+        } else if (itemId == R.id.move_to_bottom_item) {
+            queue.add(queue.size() - 1, queue.remove(position));
+            recyclerAdapter.notifyItemMoved(position, queue.size() - 1);
+            DBWriter.moveQueueItemToBottom(selectedItem.getId(), true);
+            return true;
         }
+        return FeedItemMenuHandler.onMenuItemClicked(this, item.getItemId(), selectedItem);
     }
 
     @Override

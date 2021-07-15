@@ -1,5 +1,6 @@
 package de.danoeh.antennapod.activity;
 
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -115,6 +116,8 @@ public class BugReportActivity extends AppCompatActivity {
                 i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
                     PackageManager pm = getPackageManager();
+                    // TODO: Deal with https://developer.android.com/about/versions/11/privacy/package-visibility
+                    @SuppressLint("QueryPermissionsNeeded")
                     List<ResolveInfo> resInfos = pm.queryIntentActivities(i, PackageManager.MATCH_DEFAULT_ONLY);
                     for (ResolveInfo resolveInfo : resInfos) {
                         String packageName = resolveInfo.activityInfo.packageName;

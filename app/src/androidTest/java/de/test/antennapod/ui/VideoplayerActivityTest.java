@@ -19,7 +19,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
  * Test class for VideoplayerActivity
  */
 @MediumTest
-@Ignore
+@Ignore("???")
 public class VideoplayerActivityTest {
 
     @Rule

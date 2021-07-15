@@ -122,43 +122,42 @@ public abstract class EpisodesListFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (!super.onOptionsItemSelected(item)) {
-            switch (item.getItemId()) {
-                case R.id.refresh_item:
-                    AutoUpdateManager.runImmediate(requireContext());
-                    return true;
-                case R.id.mark_all_read_item:
-                    ConfirmationDialog markAllReadConfirmationDialog = new ConfirmationDialog(getActivity(),
-                            R.string.mark_all_read_label,
-                            R.string.mark_all_read_confirmation_msg) {
+            final int itemId = item.getItemId();
+            if (itemId == R.id.refresh_item) {
+                AutoUpdateManager.runImmediate(requireContext());
+                return true;
+            } else if (itemId == R.id.mark_all_read_item) {
+                ConfirmationDialog markAllReadConfirmationDialog = new ConfirmationDialog(getActivity(),
+                        R.string.mark_all_read_label,
+                        R.string.mark_all_read_confirmation_msg) {
 
-                        @Override
-                        public void onConfirmButtonPressed(DialogInterface dialog) {
-                            dialog.dismiss();
-                            DBWriter.markAllItemsRead();
-                            ((MainActivity) getActivity()).showSnackbarAbovePlayer(
-                                    R.string.mark_all_read_msg, Toast.LENGTH_SHORT);
-                        }
-                    };
-                    markAllReadConfirmationDialog.createNewDialog().show();
-                    return true;
-                case R.id.remove_all_new_flags_item:
-                    ConfirmationDialog removeAllNewFlagsConfirmationDialog = new ConfirmationDialog(getActivity(),
-                            R.string.remove_all_new_flags_label,
-                            R.string.remove_all_new_flags_confirmation_msg) {
+                    @Override
+                    public void onConfirmButtonPressed(DialogInterface dialog) {
+                        dialog.dismiss();
+                        DBWriter.markAllItemsRead();
+                        ((MainActivity) getActivity()).showSnackbarAbovePlayer(
+                                R.string.mark_all_read_msg, Toast.LENGTH_SHORT);
+                    }
+                };
+                markAllReadConfirmationDialog.createNewDialog().show();
+                return true;
+            } else if (itemId == R.id.remove_all_new_flags_item) {
+                ConfirmationDialog removeAllNewFlagsConfirmationDialog = new ConfirmationDialog(getActivity(),
+                        R.string.remove_all_new_flags_label,
+                        R.string.remove_all_new_flags_confirmation_msg) {
 
-                        @Override
-                        public void onConfirmButtonPressed(DialogInterface dialog) {
-                            dialog.dismiss();
-                            DBWriter.removeAllNewFlags();
-                            ((MainActivity) getActivity()).showSnackbarAbovePlayer(
-                                    R.string.removed_all_new_flags_msg, Toast.LENGTH_SHORT);
-                        }
-                    };
-                    removeAllNewFlagsConfirmationDialog.createNewDialog().show();
-                    return true;
-                default:
-                    return false;
+                    @Override
+                    public void onConfirmButtonPressed(DialogInterface dialog) {
+                        dialog.dismiss();
+                        DBWriter.removeAllNewFlags();
+                        ((MainActivity) getActivity()).showSnackbarAbovePlayer(
+                                R.string.removed_all_new_flags_msg, Toast.LENGTH_SHORT);
+                    }
+                };
+                removeAllNewFlagsConfirmationDialog.createNewDialog().show();
+                return true;
             }
+            return false;
         } else {
             return true;
         }

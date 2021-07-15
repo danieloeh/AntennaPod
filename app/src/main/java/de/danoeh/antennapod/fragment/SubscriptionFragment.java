@@ -172,31 +172,30 @@ public class SubscriptionFragment extends Fragment implements Toolbar.OnMenuItem
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.refresh_item:
-                AutoUpdateManager.runImmediate(requireContext());
-                return true;
-            case R.id.subscriptions_filter:
-                SubscriptionsFilterDialog.showDialog(requireContext());
-                return true;
-            case R.id.subscriptions_sort:
-                FeedSortDialog.showDialog(requireContext());
-                return true;
-            case R.id.subscription_num_columns_2:
-                setColumnNumber(2);
-                return true;
-            case R.id.subscription_num_columns_3:
-                setColumnNumber(3);
-                return true;
-            case R.id.subscription_num_columns_4:
-                setColumnNumber(4);
-                return true;
-            case R.id.subscription_num_columns_5:
-                setColumnNumber(5);
-                return true;
-            default:
-                return false;
+        final int itemId = item.getItemId();
+        if (itemId == R.id.refresh_item) {
+            AutoUpdateManager.runImmediate(requireContext());
+            return true;
+        } else if (itemId == R.id.subscriptions_filter) {
+            SubscriptionsFilterDialog.showDialog(requireContext());
+            return true;
+        } else if (itemId == R.id.subscriptions_sort) {
+            FeedSortDialog.showDialog(requireContext());
+            return true;
+        } else if (itemId == R.id.subscription_num_columns_2) {
+            setColumnNumber(2);
+            return true;
+        } else if (itemId == R.id.subscription_num_columns_3) {
+            setColumnNumber(3);
+            return true;
+        } else if (itemId == R.id.subscription_num_columns_4) {
+            setColumnNumber(4);
+            return true;
+        } else if (itemId == R.id.subscription_num_columns_5) {
+            setColumnNumber(5);
+            return true;
         }
+        return false;
     }
 
     private void setColumnNumber(int columns) {
@@ -315,28 +314,27 @@ public class SubscriptionFragment extends Fragment implements Toolbar.OnMenuItem
 
         Feed feed = selectedFeed;
         selectedFeed = null;
-        switch (item.getItemId()) {
-            case R.id.remove_all_new_flags_item:
-                displayConfirmationDialog(
-                        R.string.remove_all_new_flags_label,
-                        R.string.remove_all_new_flags_confirmation_msg,
-                        () -> DBWriter.removeFeedNewFlag(feed.getId()));
-                return true;
-            case R.id.mark_all_read_item:
-                displayConfirmationDialog(
-                        R.string.mark_all_read_label,
-                        R.string.mark_all_read_confirmation_msg,
-                        () -> DBWriter.markFeedRead(feed.getId()));
-                return true;
-            case R.id.rename_item:
-                new RenameFeedDialog(getActivity(), feed).show();
-                return true;
-            case R.id.remove_item:
-                RemoveFeedDialog.show(getContext(), feed, null);
-                return true;
-            default:
-                return super.onContextItemSelected(item);
+        final int itemId = item.getItemId();
+        if (itemId == R.id.remove_all_new_flags_item) {
+            displayConfirmationDialog(
+                    R.string.remove_all_new_flags_label,
+                    R.string.remove_all_new_flags_confirmation_msg,
+                    () -> DBWriter.removeFeedNewFlag(feed.getId()));
+            return true;
+        } else if (itemId == R.id.mark_all_read_item) {
+            displayConfirmationDialog(
+                    R.string.mark_all_read_label,
+                    R.string.mark_all_read_confirmation_msg,
+                    () -> DBWriter.markFeedRead(feed.getId()));
+            return true;
+        } else if (itemId == R.id.rename_item) {
+            new RenameFeedDialog(getActivity(), feed).show();
+            return true;
+        } else if (itemId == R.id.remove_item) {
+            RemoveFeedDialog.show(getContext(), feed, null);
+            return true;
         }
+        return super.onContextItemSelected(item);
     }
 
     private <T> void displayConfirmationDialog(@StringRes int title, @StringRes int message, Callable<? extends T> task) {

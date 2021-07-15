@@ -1,5 +1,6 @@
 package de.danoeh.antennapod.core.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -82,6 +83,8 @@ public class ShareUtils {
         i.putExtra(Intent.EXTRA_STREAM,  fileUri);
         i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            // TODO: Deal with https://developer.android.com/about/versions/11/privacy/package-visibility
+            @SuppressLint("QueryPermissionsNeeded")
             List<ResolveInfo> resInfoList = context.getPackageManager()
                     .queryIntentActivities(i, PackageManager.MATCH_DEFAULT_ONLY);
             for (ResolveInfo resolveInfo : resInfoList) {
