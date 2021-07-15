@@ -88,30 +88,28 @@ public class PreferenceActivity extends AppCompatActivity implements SearchPrefe
     }
 
     public static int getTitleOfPage(int preferences) {
-        switch (preferences) {
-            case R.xml.preferences_network:
-                return R.string.network_pref;
-            case R.xml.preferences_autodownload:
-                return R.string.pref_automatic_download_title;
-            case R.xml.preferences_playback:
-                return R.string.playback_pref;
-            case R.xml.preferences_storage:
-                return R.string.storage_pref;
-            case R.xml.preferences_import_export:
-                return R.string.import_export_pref;
-            case R.xml.preferences_user_interface:
-                return R.string.user_interface_label;
-            case R.xml.preferences_gpodder:
-                return R.string.gpodnet_main_label;
-            case R.xml.preferences_notifications:
-                return R.string.notification_pref_fragment;
-            case R.xml.feed_settings:
-                return R.string.feed_settings_label;
-            case R.xml.preferences_swipe:
-                return R.string.swipeactions_label;
-            default:
-                return R.string.settings_label;
+        if (preferences == R.xml.preferences_network) {
+            return R.string.network_pref;
+        } else if (preferences == R.xml.preferences_autodownload) {
+            return R.string.pref_automatic_download_title;
+        } else if (preferences == R.xml.preferences_playback) {
+            return R.string.playback_pref;
+        } else if (preferences == R.xml.preferences_storage) {
+            return R.string.storage_pref;
+        } else if (preferences == R.xml.preferences_import_export) {
+            return R.string.import_export_pref;
+        } else if (preferences == R.xml.preferences_user_interface) {
+            return R.string.user_interface_label;
+        } else if (preferences == R.xml.preferences_gpodder) {
+            return R.string.gpodnet_main_label;
+        } else if (preferences == R.xml.preferences_notifications) {
+            return R.string.notification_pref_fragment;
+        } else if (preferences == R.xml.feed_settings) {
+            return R.string.feed_settings_label;
+        } else if (preferences == R.xml.preferences_swipe) {
+            return R.string.swipeactions_label;
         }
+        return R.string.settings_label;
     }
 
     public PreferenceFragmentCompat openScreen(int screen) {

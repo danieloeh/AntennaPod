@@ -119,20 +119,19 @@ public class OpmlFeedChooserActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.select_all_item:
-                selectAll.setVisible(false);
-                selectAllItems(true);
-                deselectAll.setVisible(true);
-                return true;
-            case R.id.deselect_all_item:
-                deselectAll.setVisible(false);
-                selectAllItems(false);
-                selectAll.setVisible(true);
-                return true;
-            default:
-                return false;
+        final int itemId = item.getItemId();
+        if (itemId == R.id.select_all_item) {
+            selectAll.setVisible(false);
+            selectAllItems(true);
+            deselectAll.setVisible(true);
+            return true;
+        } else if (itemId == R.id.deselect_all_item) {
+            deselectAll.setVisible(false);
+            selectAllItems(false);
+            selectAll.setVisible(true);
+            return true;
         }
+        return false;
     }
 
     private void selectAllItems(boolean b) {

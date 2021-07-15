@@ -1,5 +1,6 @@
 package de.danoeh.antennapod.fragment.preferences;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -228,6 +229,8 @@ public class ImportExportPreferencesFragment extends PreferenceFragmentCompat {
             sendIntent.setType("text/plain");
             sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+                // TODO: Deal with https://developer.android.com/about/versions/11/privacy/package-visibility
+                @SuppressLint("QueryPermissionsNeeded")
                 List<ResolveInfo> resInfoList = getContext().getPackageManager()
                         .queryIntentActivities(sendIntent, PackageManager.MATCH_DEFAULT_ONLY);
                 for (ResolveInfo resolveInfo : resInfoList) {

@@ -332,17 +332,16 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         if (feedMenuHandled) {
             return true;
         }
-        switch (item.getItemId()) {
-            case R.id.rename_item:
-                new RenameFeedDialog(getActivity(), feed).show();
-                return true;
-            case R.id.remove_item:
-                RemoveFeedDialog.show(getContext(), feed, () ->
-                        ((MainActivity) getActivity()).loadFragment(EpisodesFragment.TAG, null));
-                return true;
-            default:
-                return false;
+        final int itemId = item.getItemId();
+        if (itemId == R.id.rename_item) {
+            new RenameFeedDialog(getActivity(), feed).show();
+            return true;
+        } else if (itemId == R.id.remove_item) {
+            RemoveFeedDialog.show(getContext(), feed, () ->
+                    ((MainActivity) getActivity()).loadFragment(EpisodesFragment.TAG, null));
+            return true;
         }
+        return false;
     }
 
     @Override

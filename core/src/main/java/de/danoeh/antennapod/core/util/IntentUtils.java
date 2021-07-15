@@ -1,5 +1,6 @@
 package de.danoeh.antennapod.core.util;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +22,8 @@ public class IntentUtils {
      *  Checks if there is at least one exported activity that can be performed for the intent
      */
     public static boolean isCallable(final Context context, final Intent intent) {
+        // TODO: Deal with https://developer.android.com/about/versions/11/privacy/package-visibility
+        @SuppressLint("QueryPermissionsNeeded")
         List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent,
                 PackageManager.MATCH_DEFAULT_ONLY);
         for(ResolveInfo info : list) {
