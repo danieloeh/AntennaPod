@@ -120,6 +120,7 @@ dependencies {
     annotationProcessor "androidx.annotation:annotation:$annotationVersion"
     implementation "androidx.appcompat:appcompat:$appcompatVersion"
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
+    implementation "androidx.fragment:fragment:$fragmentVersion"
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
     implementation "androidx.media:media:$mediaVersion"
     implementation "androidx.preference:preference:$preferenceVersion"

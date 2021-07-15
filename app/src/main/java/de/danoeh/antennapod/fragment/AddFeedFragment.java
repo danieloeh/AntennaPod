@@ -13,6 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -48,13 +51,16 @@ import java.util.Collections;
 public class AddFeedFragment extends Fragment {
 
     public static final String TAG = "AddFeedFragment";
-    private static final int REQUEST_CODE_CHOOSE_OPML_IMPORT_PATH = 1;
-    private static final int REQUEST_CODE_ADD_LOCAL_FOLDER = 2;
     private static final String KEY_UP_ARROW = "up_arrow";
 
     private AddfeedBinding viewBinding;
     private MainActivity activity;
     private boolean displayUpArrow;
+
+    private final ActivityResultLauncher<Intent> chooseOpmlImportPathLauncher =
+            registerForActivityResult(new StartActivityForResult(), this::chooseOpmlImportPathResult);
+    private final ActivityResultLauncher<Intent> addLocalFolderLauncher =
+            registerForActivityResult(new StartActivityForResult(), this::addLocalFolderResult);
 
     @Override
     @Nullable
@@ -94,7 +100,7 @@ public class AddFeedFragment extends Fragment {
                 Intent intentGetContentAction = new Intent(Intent.ACTION_GET_CONTENT);
                 intentGetContentAction.addCategory(Intent.CATEGORY_OPENABLE);
                 intentGetContentAction.setType("*/*");
-                startActivityForResult(intentGetContentAction, REQUEST_CODE_CHOOSE_OPML_IMPORT_PATH);
+                chooseOpmlImportPathLauncher.launch(intentGetContentAction);
             } catch (ActivityNotFoundException e) {
                 e.printStackTrace();
                 ((MainActivity) getActivity())
@@ -109,7 +115,7 @@ public class AddFeedFragment extends Fragment {
             try {
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivityForResult(intent, REQUEST_CODE_ADD_LOCAL_FOLDER);
+                addLocalFolderLauncher.launch(intent);
             } catch (ActivityNotFoundException e) {
                 e.printStackTrace();
                 ((MainActivity) getActivity())
@@ -171,22 +177,25 @@ public class AddFeedFragment extends Fragment {
         setRetainInstance(true);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK || data == null) {
+    private void chooseOpmlImportPathResult(final ActivityResult result) {
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
             return;
         }
-        Uri uri = data.getData();
+        final Uri uri = result.getData().getData();
+        final Intent intent = new Intent(getContext(), OpmlImportActivity.class);
+        intent.setData(uri);
+        startActivity(intent);
+    }
 
-        if (requestCode == REQUEST_CODE_CHOOSE_OPML_IMPORT_PATH) {
-            Intent intent = new Intent(getContext(), OpmlImportActivity.class);
-            intent.setData(uri);
-            startActivity(intent);
-        } else if (requestCode == REQUEST_CODE_ADD_LOCAL_FOLDER) {
-            Observable.fromCallable(() -> addLocalFolder(uri))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
+    private void addLocalFolderResult(final ActivityResult result) {
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
+            return;
+        }
+        final Uri uri = result.getData().getData();
+        Observable.fromCallable(() -> addLocalFolder(uri))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
                         feed -> {
                             Fragment fragment = FeedItemlistFragment.newInstance(feed.getId());
                             ((MainActivity) getActivity()).loadChildFragment(fragment);
@@ -195,7 +204,6 @@ public class AddFeedFragment extends Fragment {
                             ((MainActivity) getActivity())
                                     .showSnackbarAbovePlayer(error.getLocalizedMessage(), Snackbar.LENGTH_LONG);
                         });
-        }
     }
 
     private Feed addLocalFolder(Uri uri) throws DownloadRequestException {

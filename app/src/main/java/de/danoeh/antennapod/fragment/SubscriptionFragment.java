@@ -214,8 +214,8 @@ public class SubscriptionFragment extends Fragment implements Toolbar.OnMenuItem
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View v, Bundle savedInstanceState) {
+        super.onViewCreated(v, savedInstanceState);
 
         subscriptionAdapter = new SubscriptionsAdapter((MainActivity) getActivity(), itemAccess);
         subscriptionGridLayout.setAdapter(subscriptionAdapter);
