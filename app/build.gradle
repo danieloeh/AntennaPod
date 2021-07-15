@@ -1,7 +1,7 @@
 plugins {
     id('com.android.application')
     id('com.getkeepsafe.dexcount')
-    id('com.github.triplet.play') version '2.7.5' apply false
+    id('com.github.triplet.play') version '3.4.0' apply false
 }
 apply from: "../common.gradle"
 apply from: "../playFlavor.gradle"
@@ -170,8 +170,8 @@ dependencies {
 if (project.hasProperty("antennaPodPlayPublisherCredentials")) {
     apply plugin: 'com.github.triplet.play'
     play {
-        track = 'alpha'
-        serviceAccountCredentials = file(antennaPodPlayPublisherCredentials)
+        track.set('alpha')
+        serviceAccountCredentials.set(file(antennaPodPlayPublisherCredentials))
     }
 }
 

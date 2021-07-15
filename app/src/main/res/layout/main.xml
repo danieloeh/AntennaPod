@@ -6,8 +6,11 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:ignore="InconsistentLayout">
+        tools:ignore="InconsistentLayout"
+        tools:viewBindingIgnore="true">
     <!-- InconsistentLayout: Tablet layout does not have a drawer -->
+    <!-- viewBindingIgnore: Configurations for main.xml must
+            agree on the root element's ID -->
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:id="@+id/overview_coordinator_layout"
