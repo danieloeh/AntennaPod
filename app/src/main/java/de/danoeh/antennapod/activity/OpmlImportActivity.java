@@ -7,6 +7,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -32,8 +35,9 @@ import java.util.ArrayList;
  * */
 public class OpmlImportActivity extends AppCompatActivity {
     private static final String TAG = "OpmlImportBaseActivity";
-    private static final int PERMISSION_REQUEST_READ_EXTERNAL_STORAGE = 5;
     @Nullable private Uri uri;
+    private final ActivityResultLauncher<Intent> opmlFeedChooserLauncher =
+            registerForActivityResult(new StartActivityForResult(), this::opmlFeedChooserResult);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,31 +62,31 @@ public class OpmlImportActivity extends AppCompatActivity {
      * Handles the choices made by the user in the OpmlFeedChooserActivity and
      * starts the OpmlFeedQueuer if necessary.
      */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    private void opmlFeedChooserResult(final ActivityResult result) {
         Log.d(TAG, "Received result");
-        if (resultCode == RESULT_CANCELED) {
+        if (result.getResultCode() == RESULT_CANCELED) {
             Log.d(TAG, "Activity was cancelled");
             finish();
         } else {
-            int[] selected = data.getIntArrayExtra(OpmlFeedChooserActivity.EXTRA_SELECTED_ITEMS);
-            if (selected != null && selected.length > 0) {
-                OpmlFeedQueuer queuer = new OpmlFeedQueuer(this, selected) {
+            if (result.getData() != null) {
+                int[] selected = result.getData().getIntArrayExtra(OpmlFeedChooserActivity.EXTRA_SELECTED_ITEMS);
+                if (selected != null && selected.length > 0) {
+                    OpmlFeedQueuer queuer = new OpmlFeedQueuer(this, selected) {
 
-                    @Override
-                    protected void onPostExecute(Void result) {
-                        super.onPostExecute(result);
-                        Intent intent = new Intent(OpmlImportActivity.this, MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                    }
+                        @Override
+                        protected void onPostExecute(Void result) {
+                            super.onPostExecute(result);
+                            Intent intent = new Intent(OpmlImportActivity.this, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                    | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        }
 
-                };
-                queuer.executeAsync();
-            } else {
-                Log.d(TAG, "No items were selected");
+                    };
+                    queuer.executeAsync();
+                } else {
+                    Log.d(TAG, "No items were selected");
+                }
             }
         }
     }
@@ -147,9 +151,9 @@ public class OpmlImportActivity extends AppCompatActivity {
                     if (result != null) {
                         Log.d(TAG, "Parsing was successful");
                         OpmlImportHolder.setReadElements(result);
-                        startActivityForResult(new Intent(
+                        opmlFeedChooserLauncher.launch(new Intent(
                                 OpmlImportActivity.this,
-                                OpmlFeedChooserActivity.class), 0);
+                                OpmlFeedChooserActivity.class));
                     } else {
                         Log.d(TAG, "Parser error occurred");
                     }
