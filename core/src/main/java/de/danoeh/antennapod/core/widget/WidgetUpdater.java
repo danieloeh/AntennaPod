@@ -19,6 +19,7 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.concurrent.TimeUnit;
 
 import de.danoeh.antennapod.core.R;
+import de.danoeh.antennapod.core.preferences.UserPreferences;
 import de.danoeh.antennapod.model.playback.MediaType;
 import de.danoeh.antennapod.core.glide.ApGlideSettings;
 import de.danoeh.antennapod.core.receiver.MediaButtonReceiver;
@@ -119,7 +120,10 @@ public abstract class WidgetUpdater {
             if (progressString != null) {
                 views.setViewVisibility(R.id.txtvProgress, View.VISIBLE);
                 views.setTextViewText(R.id.txtvProgress, progressString);
+                views.setOnClickPendingIntent(R.id.txtvProgress,
+                        createProgressStringIntent(context));
             }
+
 
             if (widgetState.status == PlayerStatus.PLAYING) {
                 views.setImageViewResource(R.id.butPlay, R.drawable.ic_pause);
@@ -132,6 +136,8 @@ public abstract class WidgetUpdater {
                 views.setImageViewResource(R.id.butPlayExtended, R.drawable.ic_play_48dp);
                 views.setContentDescription(R.id.butPlayExtended, context.getString(R.string.play_label));
             }
+
+
             views.setOnClickPendingIntent(R.id.butPlay,
                     createMediaButtonIntent(context, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE));
             views.setOnClickPendingIntent(R.id.butPlayExtended,
@@ -189,6 +195,14 @@ public abstract class WidgetUpdater {
         }
     }
 
+    private static PendingIntent createProgressStringIntent(Context context) {
+        Intent startingIntent = new Intent(context, MediaButtonReceiver.class);
+        startingIntent.setAction(MediaButtonReceiver.NOTIFY_PROGRESS_STRING_RECEIVER);
+        startingIntent.putExtra(MediaButtonReceiver.DUMMY_VALUE, MediaButtonReceiver.DUMMY_VALUE);
+        return PendingIntent.getBroadcast(context, 0, startingIntent, 0);
+
+    }
+
     /**
      * Returns number of cells needed for given size of the widget.
      *
@@ -216,12 +230,21 @@ public abstract class WidgetUpdater {
     }
 
     private static String getProgressString(int position, int duration, float speed) {
+        boolean showTimeLeft = UserPreferences.shouldShowRemainingTime();
         if (position >= 0 && duration > 0) {
             TimeSpeedConverter converter = new TimeSpeedConverter(speed);
+            int remainingTime = converter.convert(Math.max(duration - position, 0));
             position = converter.convert(position);
             duration = converter.convert(duration);
-            return Converter.getDurationStringLong(position) + " / "
-                    + Converter.getDurationStringLong(duration);
+
+            if (showTimeLeft) {
+                return Converter.getDurationStringLong(position) + " / " + ((remainingTime > 0) ? "-" : "")
+                        + Converter.getDurationStringLong(remainingTime);
+            } else {
+                return Converter.getDurationStringLong(position) + " / "
+                        + Converter.getDurationStringLong(duration);
+            }
+
         } else {
             return null;
         }

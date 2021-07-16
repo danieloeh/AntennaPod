@@ -1,5 +1,6 @@
 package de.danoeh.antennapod.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,6 +40,7 @@ import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.core.event.FavoritesEvent;
 import de.danoeh.antennapod.core.event.PlaybackPositionEvent;
 import de.danoeh.antennapod.core.event.ServiceEvent;
+import de.danoeh.antennapod.core.widget.WidgetUpdaterJobService;
 import de.danoeh.antennapod.model.feed.Chapter;
 import de.danoeh.antennapod.core.event.UnreadItemsUpdateEvent;
 import de.danoeh.antennapod.model.feed.FeedItem;
@@ -241,6 +243,7 @@ public class AudioPlayerFragment extends Fragment implements
             UserPreferences.setShowRemainTimeSetting(showTimeLeft);
             updatePosition(new PlaybackPositionEvent(controller.getPosition(),
                     controller.getDuration()));
+            WidgetUpdaterJobService.performBackgroundUpdate(getContext());
         });
     }
 
@@ -530,6 +533,7 @@ public class AudioPlayerFragment extends Fragment implements
         ((CastEnabledActivity) getActivity()).requestCastButton(toolbar.getMenu());
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (controller == null) {
