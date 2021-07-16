@@ -345,12 +345,12 @@ public final class DBTasks {
         }
         // Did not find item with same ID. Try to guess duplicates based on other metadata.
         for (FeedItem item : feed.getItems()) {
-            if (item.getMedia() == null || TextUtils.isEmpty(item.getMedia().getStreamUrl())) {
-                continue;
-            }
-
             boolean isDuplicate = false;
-            if (TextUtils.equals(item.getMedia().getStreamUrl(), searchItem.getMedia().getStreamUrl())) {
+            if ((item.getMedia() != null)
+                    && (searchItem.getMedia() != null)
+                    && !TextUtils.isEmpty(item.getMedia().getStreamUrl())
+                    && !TextUtils.isEmpty(searchItem.getMedia().getStreamUrl())
+                    && TextUtils.equals(item.getMedia().getStreamUrl(), searchItem.getMedia().getStreamUrl())) {
                 Log.d(TAG, "Removing duplicate episode stream url " + item.getMedia().getStreamUrl());
                 isDuplicate = true;
             } else if (TextUtils.equals(item.getTitle(), searchItem.getTitle())
